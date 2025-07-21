@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import UploadComponent from '../components/UploadComponent.vue'
+function handleFileParsed() {
+  console.log('UploadView: File has been parsed successfully.')
+}
 </script>
 
 <template>
   <main>
     <h1>Here comes the upload!</h1>
-    <UploadComponent class="upload-component" />
+    <UploadComponent class="upload-component" @fileParsed="handleFileParsed" />
   </main>
 </template>
 
