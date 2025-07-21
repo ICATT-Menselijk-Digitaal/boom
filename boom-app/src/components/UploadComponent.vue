@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import Papa from 'papaparse'
-import { ref } from 'vue'
 
-const fileErrorMsg = ref('')
+// TEMP variable to hold the file
 let csvFile: File
 
 const emit = defineEmits(['fileParsed'])
@@ -13,7 +12,8 @@ function parseFile() {
     header: true,
     complete: (results) => {
       console.log('Parsed Results:', results)
-      emit('fileParsed')
+      // Emit event to notify parent component
+      emit('fileParsed', results.data)
     },
     error: (error) => {
       console.error('Error parsing file:', error)
@@ -30,21 +30,23 @@ function checkFileHandler() {
 
     // Check if the file is a CSV
     if (file.type !== 'text/csv') {
-      console.error('Please upload a valid CSV file.')
-      fileErrorMsg.value = 'Please upload a valid CSV file.'
+      fileInput.setCustomValidity('Please upload a valid CSV file.')
+      fileInput.reportValidity()
+      fileInput.value = '' // Clear the input
       return
     }
     // Check if the file size exceeds 5MB
     if (file.size > fileSizeLimit) {
-      console.error('File size exceeds the limit of 5MB.')
-      fileErrorMsg.value = 'File size exceeds the limit of 5MB.'
+      fileInput.setCustomValidity('File size exceeds 5MB limit.')
+      fileInput.reportValidity()
+      fileInput.value = '' // Clear the input
       return
     }
-    fileErrorMsg.value = ''
     csvFile = file
   } else {
-    console.error('No file selected or file input not found.')
-    fileErrorMsg.value = 'No file selected or file input not found.'
+    fileInput.setCustomValidity('Please select a file CSV to upload.')
+    fileInput.reportValidity()
+    fileInput.value = '' // Clear the input
   }
 }
 </script>
@@ -54,7 +56,6 @@ function checkFileHandler() {
     <h2>Upload a CSV file</h2>
     <div class="upload-box">
       <input type="file" id="upload-field" @change="checkFileHandler" accept=".csv" />
-      <p class="warning-message">{{ fileErrorMsg }}</p>
     </div>
     <button @click="parseFile">Upload</button>
   </div>
@@ -66,10 +67,5 @@ function checkFileHandler() {
   flex-direction: column;
   margin-bottom: 20px;
   margin-top: 10px;
-}
-
-.warning-message {
-  color: red;
-  font-size: 0.9em;
 }
 </style>
