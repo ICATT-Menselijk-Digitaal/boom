@@ -30,24 +30,24 @@ function checkFileHandler() {
 
     // Check if the file is a CSV
     if (file.type !== 'text/csv') {
-      fileInput.setCustomValidity('Please upload a valid CSV file.')
-      fileInput.reportValidity()
-      fileInput.value = '' // Clear the input
+      fileInputValidityHelper('Please upload a valid CSV file.', fileInput)
       return
     }
     // Check if the file size exceeds 5MB
     if (file.size > fileSizeLimit) {
-      fileInput.setCustomValidity('File size exceeds 5MB limit.')
-      fileInput.reportValidity()
-      fileInput.value = '' // Clear the input
+      fileInputValidityHelper('File size exceeds 5MB limit.', fileInput)
       return
     }
     csvFile = file
   } else {
-    fileInput.setCustomValidity('Please select a file CSV to upload.')
-    fileInput.reportValidity()
-    fileInput.value = '' // Clear the input
+    fileInputValidityHelper('Please select a file to upload.', fileInput)
   }
+}
+
+function fileInputValidityHelper(msg: string, fileInput: HTMLInputElement) {
+  fileInput.setCustomValidity(msg)
+  fileInput.reportValidity()
+  fileInput.value = '' // Clear the input
 }
 </script>
 

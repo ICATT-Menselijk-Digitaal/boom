@@ -6,7 +6,22 @@ const csvData = inject('csvData')
 
 <template>
   <h1>Observe that uploaded data!</h1>
-  <div class="data-box">{{ csvData }}</div>
+  <div class="data-box">
+    <table>
+      <tr>
+        <th>Naam</th>
+        <th>Adres</th>
+      </tr>
+      <tr v-for="(item, index) in csvData" :key="index">
+        <td>
+          {{ item['naam'] }}
+        </td>
+        <td>
+          {{ item['adres'] }}
+        </td>
+      </tr>
+    </table>
+  </div>
 </template>
 
 <style scoped>
