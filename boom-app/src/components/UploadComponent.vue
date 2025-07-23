@@ -3,23 +3,14 @@ import Papa from 'papaparse'
 import { ref } from 'vue'
 import type { CsvOutput } from '@/types'
 
-/*
- * Reference to the file input element.
- * Used to access the file input for validation and file selection.
- */
 const fileInputRef = ref<HTMLInputElement | null>(null)
+const fileSizeLimit = 5 * 1024 * 1024 // 5MB
 
 /**
  * Emits events to the parent component.
  * @emits fileParsed - Emitted when the CSV file is successfully parsed.
  */
 const emit = defineEmits(['fileParsed'])
-
-/**
- * Maximum allowed file size for upload (5MB).
- * @type {number}
- */
-const fileSizeLimit = 5 * 1024 * 1024 // 5MB
 
 /**
  * Parses the selected CSV file using PapaParse.
@@ -47,7 +38,8 @@ function parseFile() {
 
 /**
  * Validates file type and size.
- * Sets custom validity messages if either are invalid.
+ * Returns an error message if the file is invalid, otherwise returns an empty string.
+ * @returns {string} - Error message or empty string if valid.
  */
 function isUploadedFileValid() {
   const file = fileInputRef.value?.files?.[0]

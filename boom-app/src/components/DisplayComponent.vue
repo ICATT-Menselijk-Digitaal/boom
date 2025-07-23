@@ -9,15 +9,13 @@ defineProps<{ csvData: CsvOutput | undefined }>()
   <div class="data-box">
     <table>
       <tr>
-        <th>Naam</th>
-        <th>Adres</th>
+        <th v-for="(headerName, index) in csvData?.headers" :key="index">
+          {{ headerName }}
+        </th>
       </tr>
       <tr v-for="(item, index) in csvData?.data" :key="index">
-        <td>
-          {{ item.naam }}
-        </td>
-        <td>
-          {{ item.adres }}
+        <td v-for="(headerName, index) in csvData?.headers" :key="index">
+          {{ item[headerName] }}
         </td>
       </tr>
     </table>
@@ -34,5 +32,10 @@ h1 {
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
+}
+
+th {
+  font-weight: bold;
+  font-size: large;
 }
 </style>
