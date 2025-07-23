@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import Papa from 'papaparse'
 import { ref } from 'vue'
+import type { CsvOutput } from '@/types'
 
 /*
  * Reference to the file input element.
  * Used to access the file input for validation and file selection.
  */
 const fileInputRef = ref<HTMLInputElement | null>(null)
-
-type CsvOutput = {
-  headers: string[]
-  data: Record<string, string>[]
-}
 
 /**
  * Emits events to the parent component.
@@ -27,7 +23,7 @@ const fileSizeLimit = 5 * 1024 * 1024 // 5MB
 
 /**
  * Parses the selected CSV file using PapaParse.
- * Emits 'fileParsed' event with the parsed data on success.
+ * Emits 'fileParsed' event on success with the parsed data.
  */
 function parseFile() {
   const csvFile = fileInputRef.value?.files?.[0] as File
@@ -50,10 +46,10 @@ function parseFile() {
 }
 
 /**
- * Handles file input change event.
- * Validates file type and size before assigning to csvFile.
+ * Validates file type and size.
+ * Sets custom validity messages if either are invalid.
  */
-function checkFile() {
+function isUploadedFileValid() {
   const file = fileInputRef.value?.files?.[0]
   // Check if the file input exists and has files
   if (file) {
@@ -61,7 +57,7 @@ function checkFile() {
     if (file.type !== 'text/csv') {
       fileInputRef.value?.setCustomValidity('Please upload a valid CSV file.')
     }
-    // Check if the file size exceeds 5MB
+    // Check if the file size exceeds size limit
     if (file.size > fileSizeLimit) {
       fileInputRef.value?.setCustomValidity('File size exceeds 5MB limit.')
     }
@@ -77,7 +73,13 @@ function checkFile() {
     <form @submit.prevent="parseFile">
       <div class="upload-box">
         <label for="fileUpload">Select a file to upload</label>
-        <input type="file" name="fileUpload" @change="checkFile" ref="fileInputRef" accept=".csv" />
+        <input
+          type="file"
+          name="fileUpload"
+          @change="isUploadedFileValid"
+          ref="fileInputRef"
+          accept=".csv"
+        />
       </div>
       <button type="submit">Upload</button>
     </form>

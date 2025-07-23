@@ -2,11 +2,7 @@
 import DisplayComponent from '@/components/DisplayComponent.vue'
 import UploadComponent from '../components/UploadComponent.vue'
 import { ref } from 'vue'
-
-type CsvOutput = {
-  headers: string[]
-  data: Record<string, string>[]
-}
+import type { CsvOutput } from '@/types'
 
 const csvData = ref<CsvOutput>({
   headers: [],
@@ -14,7 +10,7 @@ const csvData = ref<CsvOutput>({
 })
 
 /**
- * Saves the 'fileParsed' event emitted by the UploadComponent.
+ * Handles the 'fileParsed' event and saves the CsvOutput data to pass that to the DisplayComponent.
  * @param {CsvOutput} receivedData - The parsed CSV data.
  */
 function handleFileParsed(receivedData: CsvOutput) {

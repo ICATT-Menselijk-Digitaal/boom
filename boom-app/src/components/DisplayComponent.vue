@@ -1,8 +1,5 @@
 <script setup lang="ts">
-type CsvOutput = {
-  headers: string[]
-  data: Record<string, string>[]
-}
+import type { CsvOutput } from '@/types'
 
 defineProps<{ csvData: CsvOutput | undefined }>()
 </script>
