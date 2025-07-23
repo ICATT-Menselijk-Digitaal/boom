@@ -55,15 +55,23 @@ function isUploadedFileValid() {
   if (file) {
     // Check if the file is a CSV
     if (file.type !== 'text/csv') {
-      fileInputRef.value?.setCustomValidity('Please upload a valid CSV file.')
+      return 'Please upload a valid CSV file.'
     }
     // Check if the file size exceeds size limit
     if (file.size > fileSizeLimit) {
-      fileInputRef.value?.setCustomValidity('File size exceeds 5MB limit.')
+      return 'File size exceeds 5MB limit.'
     }
   } else {
-    fileInputRef.value?.setCustomValidity('Please select a file to upload.')
+    return 'Please select a file to upload.'
   }
+  return '' // Valid file
+}
+
+/**
+ * Checks the uploaded file and sets custom validity based on validation results.
+ */
+function checkUploadedFile() {
+  fileInputRef.value?.setCustomValidity(isUploadedFileValid())
 }
 </script>
 
@@ -76,7 +84,7 @@ function isUploadedFileValid() {
         <input
           type="file"
           name="fileUpload"
-          @change="isUploadedFileValid"
+          @change="checkUploadedFile"
           ref="fileInputRef"
           accept=".csv"
         />
