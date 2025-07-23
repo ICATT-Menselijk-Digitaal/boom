@@ -1,23 +1,32 @@
 <script setup lang="ts">
 import DisplayComponent from '@/components/DisplayComponent.vue'
 import UploadComponent from '../components/UploadComponent.vue'
-import { ref, provide } from 'vue'
+import { ref } from 'vue'
 
-const csvData = ref<unknown[]>([])
-
-function handleFileParsed(data: unknown[]) {
-  csvData.value = data
-  console.log('UploadView: File has been parsed successfully: ', csvData.value)
+type CsvOutput = {
+  headers: string[]
+  data: Record<string, string>[]
 }
 
-provide('csvData', csvData)
+const csvData = ref<CsvOutput>({
+  headers: [],
+  data: [],
+})
+
+/**
+ * Saves the 'fileParsed' event emitted by the UploadComponent.
+ * @param {CsvOutput} receivedData - The parsed CSV data.
+ */
+function handleFileParsed(receivedData: CsvOutput) {
+  csvData.value = receivedData
+}
 </script>
 
 <template>
   <main>
     <h1>Here comes the upload!</h1>
     <UploadComponent class="upload-component" @fileParsed="handleFileParsed" />
-    <DisplayComponent />
+    <DisplayComponent :csvData="csvData" />
   </main>
 </template>
 

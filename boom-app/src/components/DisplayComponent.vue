@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { inject } from 'vue'
+type CsvOutput = {
+  headers: string[]
+  data: Record<string, string>[]
+}
 
-const csvData = inject('csvData')
+defineProps<{ csvData: CsvOutput | undefined }>()
 </script>
 
 <template>
@@ -12,12 +15,12 @@ const csvData = inject('csvData')
         <th>Naam</th>
         <th>Adres</th>
       </tr>
-      <tr v-for="(item, index) in csvData" :key="index">
+      <tr v-for="(item, index) in csvData?.data" :key="index">
         <td>
-          {{ item['naam'] }}
+          {{ item.naam }}
         </td>
         <td>
-          {{ item['adres'] }}
+          {{ item.adres }}
         </td>
       </tr>
     </table>
