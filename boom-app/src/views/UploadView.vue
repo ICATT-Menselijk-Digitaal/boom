@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DisplayComponent from '@/components/DisplayComponent.vue'
-import UploadComponent from '../components/UploadComponent.vue'
+import UploadComponent from '@/components/UploadComponent.vue'
 import { ref } from 'vue'
 import type { CsvOutput } from '@/types'
 
