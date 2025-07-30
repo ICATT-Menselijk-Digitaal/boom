@@ -88,7 +88,7 @@ function checkUploadedFile() {
       <label for="fileUpload">Select a file to upload</label>
       <input
         type="file"
-        name="fileUpload"
+        id="fileUpload"
         @change="checkUploadedFile"
         ref="fileInputRef"
         accept=".csv"
