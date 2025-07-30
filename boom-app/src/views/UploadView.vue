@@ -22,12 +22,14 @@ function handleFileParsed(receivedData: CsvOutput) {
   <main>
     <h1>Let's Upload!</h1>
     <CsvUploadForm @fileParsed="handleFileParsed" />
+    <h2>Observe that uploaded data!</h2>
     <CsvOutputTable :csvData="csvData" />
   </main>
 </template>
 
 <style scoped>
-h1 {
+h1,
+h2 {
   text-align: center;
 }
 </style>
