@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import UploadComponent from '../components/UploadComponent.vue'
 import { ref } from 'vue'
 import type { CsvOutput } from '@/types'
 import CsvOutputTable from '@/components/CsvOutputTable.vue'
+import CsvUploadForm from '@/components/CsvUploadForm.vue'
 
 const csvData = ref<CsvOutput>({
   headers: [],
@@ -21,7 +21,7 @@ function handleFileParsed(receivedData: CsvOutput) {
 <template>
   <main>
     <h1>Let's Upload!</h1>
-    <UploadComponent @fileParsed="handleFileParsed" />
+    <CsvUploadForm @fileParsed="handleFileParsed" />
     <CsvOutputTable :csvData="csvData" />
   </main>
 </template>
