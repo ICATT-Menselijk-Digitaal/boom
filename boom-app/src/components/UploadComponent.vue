@@ -68,22 +68,20 @@ function checkUploadedFile() {
 </script>
 
 <template>
-  <div class="upload-component">
-    <h2>Upload a CSV file</h2>
-    <form @submit.prevent="parseFile">
-      <div class="upload-box">
-        <label for="fileUpload">Select a file to upload</label>
-        <input
-          type="file"
-          name="fileUpload"
-          @change="checkUploadedFile"
-          ref="fileInputRef"
-          accept=".csv"
-        />
-      </div>
-      <button type="submit">Upload</button>
-    </form>
-  </div>
+  <h2>Upload a CSV file</h2>
+  <form @submit.prevent="parseFile">
+    <div class="upload-box">
+      <label for="fileUpload">Select a file to upload</label>
+      <input
+        type="file"
+        name="fileUpload"
+        @change="checkUploadedFile"
+        ref="fileInputRef"
+        accept=".csv"
+      />
+    </div>
+    <button type="submit">Upload</button>
+  </form>
 </template>
 
 <style scoped>
