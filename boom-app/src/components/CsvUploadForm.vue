@@ -13,26 +13,40 @@ const fileSizeLimit = 5 * 1024 * 1024 // 5MB
 const emit = defineEmits(['fileParsed'])
 
 /**
- * Parses the selected CSV file using PapaParse.
+ * Parses the selected CSV file.
  * Emits 'fileParsed' event on success with the parsed data.
  */
-function parseFile() {
+function uploadFile() {
   const csvFile = fileInputRef.value?.files?.[0] as File
-
-  Papa.parse(csvFile, {
-    // Config header: if true it will parse the rows as objects of data keyed by the field name
-    header: true,
-    // Config complete: called when the parsing is successful and emits a 'fileParsed' event
-    complete: (results) => {
-      const output: CsvOutput = {
-        headers: results.meta.fields || [],
-        data: results.data as Record<string, string>[],
-      }
+  parseFileAsync(csvFile)
+    .then((output) => {
       emit('fileParsed', output)
-    },
-    error: (error) => {
+    })
+    .catch((error) => {
       console.error('Error parsing file:', error.message)
-    },
+    })
+}
+
+/**
+ * Parses the CSV file using PapaParse.
+ * @param {File} file - The CSV file to parse.
+ * @returns {Promise<CsvOutput>} - A promise that resolves with the parsed CSV data.
+ */
+function parseFileAsync(file: File) {
+  return new Promise((resolve, reject) => {
+    Papa.parse(file, {
+      header: true,
+      complete: (results) => {
+        const output: CsvOutput = {
+          headers: results.meta.fields || [],
+          data: results.data as Record<string, string>[],
+        }
+        resolve(output)
+      },
+      error: (error) => {
+        reject(error)
+      },
+    })
   })
 }
 
@@ -68,25 +82,33 @@ function checkUploadedFile() {
 </script>
 
 <template>
-  <div class="upload-component">
-    <h2>Upload a CSV file</h2>
-    <form @submit.prevent="parseFile">
-      <div class="upload-box">
-        <label for="fileUpload">Select a file to upload</label>
-        <input
-          type="file"
-          name="fileUpload"
-          @change="checkUploadedFile"
-          ref="fileInputRef"
-          accept=".csv"
-        />
-      </div>
-      <button type="submit">Upload</button>
-    </form>
-  </div>
+  <h2>Upload a CSV file</h2>
+  <form @submit.prevent="uploadFile">
+    <div class="upload-box">
+      <label for="fileUpload">Select a file to upload</label>
+      <input
+        type="file"
+        id="fileUpload"
+        @change="checkUploadedFile"
+        ref="fileInputRef"
+        accept=".csv"
+      />
+    </div>
+    <button type="submit">Upload</button>
+  </form>
 </template>
 
 <style scoped>
+h2 {
+  text-align: center;
+}
+form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
 .upload-box {
   display: flex;
   flex-direction: column;

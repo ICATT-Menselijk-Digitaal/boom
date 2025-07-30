@@ -5,28 +5,35 @@ defineProps<{ csvData: CsvOutput | undefined }>()
 </script>
 
 <template>
-  <h1>Observe that uploaded data!</h1>
-  <div class="data-box">
-    <table>
+  <h2>Observe that uploaded data!</h2>
+  <table>
+    <caption>
+      An organized view of your uploaded CSV data.
+    </caption>
+    <thead>
       <tr>
         <th v-for="(headerName, index) in csvData?.headers" :key="index">
           {{ headerName }}
         </th>
       </tr>
+    </thead>
+    <tbody>
       <tr v-for="(item, index) in csvData?.data" :key="index">
         <td v-for="(headerName, index) in csvData?.headers" :key="index">
           {{ item[headerName] }}
         </td>
       </tr>
-    </table>
-  </div>
+    </tbody>
+  </table>
 </template>
 
 <style scoped>
-h1 {
+h2 {
   text-align: center;
 }
-.data-box {
+table {
+  width: 100%;
+  column-span: all;
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
