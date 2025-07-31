@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+
 defineProps<{
   data: string[] | null
   title?: string | null
+  mapping: Map<string, string>
 }>()
 const emit = defineEmits<{ (e: 'selectionChange', value: string): void }>()
 const selectedItemName = ref<string>('')
@@ -20,6 +22,9 @@ function selectOption(selectedValue: string) {
         v-for="(itemName, index) in data"
         :key="index"
         :class="{ selected: selectedItemName === itemName }"
+        :style="{
+          backgroundColor: '',
+        }"
         @click="selectOption(itemName)"
       >
         {{ itemName }}

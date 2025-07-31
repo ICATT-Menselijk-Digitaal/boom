@@ -15,19 +15,22 @@ const objectList = {
   Betonpaal: { properties: { naam: { type: 'string' } } },
 }
 
-const mappedNames = ref<Record<string, string>>({}) // Object to hold header names for each object type
+const mappedAttributes = ref<Map<string, string>>(new Map<string, string>())
 
 const selectedObjectType = ref<string>('')
-const selectedObjectTypeName = ref<string>('')
+const selectedObjectTypeAttribute = ref<string>('')
 
-function assignHeaderName(headerName: string) {
-  mappedNames.value[selectedObjectTypeName.value] = headerName
-  console.log(
-    `Assigned header "${headerName}" to object attribute "${selectedObjectTypeName.value}"`,
-  )
+function headerSelectionChangeHandler(headerName: string) {
+  // Registreer de geselecteerd header naam
 }
-function objectSelectionChange(objectTypeName: string) {
-  selectedObjectTypeName.value = objectTypeName
+function objectSelectionChangeHandler(objectTypeAttribute: string) {
+  // Registreer het geselecteerde object-type attribuut
+  selectedObjectTypeAttribute.value = objectTypeAttribute
+}
+function objectTypeChangeHandler(objectType: keyof typeof objectList) {
+  // Registeer het geselecteerd object-type
+  selectedObjectType.value = objectType
+  // Laad de map met alle object-type attributen die gemapped moeten worden
 }
 </script>
 
@@ -37,20 +40,22 @@ function objectSelectionChange(objectTypeName: string) {
     <div class="mapping-component">
       <SelectObjectType
         :objectList="Object.keys(objectList)"
-        @selectionChange="(selection: string) => (selectedObjectType = selection)"
+        @selectionChange="objectTypeChangeHandler"
       />
     </div>
     <div class="mapping-component">
       <SelectList
         :data="Object.keys(objectList[selectedObjectType as keyof typeof objectList].properties)"
         :title="'ObjectType'"
-        @selectionChange="objectSelectionChange"
+        :mapping="mappedAttributes"
+        @selectionChange="objectSelectionChangeHandler"
       />
       <SelectList
         :data="csvData.headers"
         :title="'Headers'"
-        :key="selectedObjectTypeName"
-        @selectionChange="(headerName: string) => assignHeaderName(headerName)"
+        :mapping="mappedAttributes"
+        :key="selectedObjectTypeAttribute"
+        @selectionChange="headerSelectionChangeHandler"
       />
     </div>
   </main>
