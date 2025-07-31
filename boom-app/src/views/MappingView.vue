@@ -26,24 +26,30 @@ function assignHeaderName(headerName: string) {
     `Assigned header "${headerName}" to object attribute "${selectedObjectTypeName.value}"`,
   )
 }
+function objectSelectionChange(objectTypeName: string) {
+  selectedObjectTypeName.value = objectTypeName
+}
 </script>
 
 <template>
   <main>
     <h1>Ok let's Map!</h1>
-    <SelectObjectType
-      :objectList="Object.keys(objectList)"
-      @selectionChange="(selection: string) => (selectedObjectType = selection)"
-    />
+    <div class="mapping-component">
+      <SelectObjectType
+        :objectList="Object.keys(objectList)"
+        @selectionChange="(selection: string) => (selectedObjectType = selection)"
+      />
+    </div>
     <div class="mapping-component">
       <SelectList
         :data="Object.keys(objectList[selectedObjectType as keyof typeof objectList].properties)"
         :title="'ObjectType'"
-        @selectionChange="(objectTypeName: string) => (selectedObjectTypeName = objectTypeName)"
+        @selectionChange="objectSelectionChange"
       />
       <SelectList
         :data="csvData.headers"
         :title="'Headers'"
+        :key="selectedObjectTypeName"
         @selectionChange="(headerName: string) => assignHeaderName(headerName)"
       />
     </div>
