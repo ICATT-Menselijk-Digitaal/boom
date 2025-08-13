@@ -3,7 +3,6 @@ const props = defineProps<{
   objectNamesList: string[]
 }>()
 const selectedObjectType = defineModel()
-// const selectedObjectType = ref<string>('') // Selected object type
 </script>
 
 <template>
