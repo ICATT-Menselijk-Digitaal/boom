@@ -1,23 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-defineEmits(['selectionChange'])
 const props = defineProps<{
-  objectList: string[]
+  objectNamesList: string[]
 }>()
-const selectedObjectType = ref<string>('') // Selected object type
+const selectedObjectType = defineModel()
+// const selectedObjectType = ref<string>('') // Selected object type
 </script>
 
 <template>
   <div class="wrapper">
-    <h2>Select Object Type</h2>
     <label for="selectObjectType">Select an object-type</label>
-    <select
-      id="selectObjectType"
-      v-model="selectedObjectType"
-      :change="$emit('selectionChange', selectedObjectType)"
-    >
-      <option v-for="oType in props.objectList" :key="oType">
+    <select id="selectObjectType" v-model="selectedObjectType">
+      <option v-for="oType in props.objectNamesList" :key="oType">
         {{ oType }}
       </option>
     </select>
@@ -27,13 +20,9 @@ const selectedObjectType = ref<string>('') // Selected object type
 <style scoped>
 .wrapper {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
-.object-display-box {
-  margin-top: 20px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  min-height: 10em;
+label {
+  margin-right: 1em;
 }
 </style>

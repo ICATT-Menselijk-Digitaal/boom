@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import SelectList from '@/components/SelectList.vue'
 import SelectObjectType from '@/components/SelectObjectType.vue'
 import { ref } from 'vue'
 
-const exampleHeaderNames = ['Naam', 'Adres'] // Example header names
-const csvData = {
-  headers: exampleHeaderNames,
-  data: [],
-}
+// Example header names
+const exampleHeaderNames = ['Naam', 'Adres']
+
 const objectList = {
   '': { properties: {} },
   Smoel: { properties: { naam: { type: 'string' }, adres: { type: 'string' } } },
@@ -15,49 +12,17 @@ const objectList = {
   Betonpaal: { properties: { naam: { type: 'string' } } },
 }
 
-const mappedAttributes = ref<Map<string, string>>(new Map<string, string>())
-
-const selectedObjectType = ref<string>('')
-const selectedObjectTypeAttribute = ref<string>('')
-
-function headerSelectionChangeHandler(headerName: string) {
-  // Registreer de geselecteerd header naam
-}
-function objectSelectionChangeHandler(objectTypeAttribute: string) {
-  // Registreer het geselecteerde object-type attribuut
-  selectedObjectTypeAttribute.value = objectTypeAttribute
-}
-function objectTypeChangeHandler(objectType: keyof typeof objectList) {
-  // Registeer het geselecteerd object-type
-  selectedObjectType.value = objectType
-  // Laad de map met alle object-type attributen die gemapped moeten worden
-}
+const selectedObjectType = ref()
 </script>
 
 <template>
   <main>
     <h1>Ok let's Map!</h1>
-    <div class="mapping-component">
-      <SelectObjectType
-        :objectList="Object.keys(objectList)"
-        @selectionChange="objectTypeChangeHandler"
-      />
+    <div class="selection-component box">
+      <h2>Select Object Type</h2>
+      <SelectObjectType v-model="selectedObjectType" :objectNamesList="Object.keys(objectList)" />
     </div>
-    <div class="mapping-component">
-      <SelectList
-        :data="Object.keys(objectList[selectedObjectType as keyof typeof objectList].properties)"
-        :title="'ObjectType'"
-        :mapping="mappedAttributes"
-        @selectionChange="objectSelectionChangeHandler"
-      />
-      <SelectList
-        :data="csvData.headers"
-        :title="'Headers'"
-        :mapping="mappedAttributes"
-        :key="selectedObjectTypeAttribute"
-        @selectionChange="headerSelectionChangeHandler"
-      />
-    </div>
+    <div class="mapping-component box"></div>
   </main>
 </template>
 
@@ -68,6 +33,12 @@ h1 {
 .mapping-component {
   display: flex;
   flex-direction: row;
+}
+.selection-component {
+  display: flex;
+  flex-direction: column;
+}
+.box {
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
