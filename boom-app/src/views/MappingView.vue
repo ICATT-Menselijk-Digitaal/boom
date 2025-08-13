@@ -31,12 +31,15 @@ const exampleObjects: ObjectType[] = [
 ]
 const selectedObjectTypeName = ref<string>()
 const mapping = ref<Record<string, string>>({})
+const isObjectSelected = ref(false)
+const isMapping = ref(true)
 
 watch(selectedObjectTypeName, (newValue) => {
   mapping.value = createMapping(
     getObjectTypeByName(exampleObjects, newValue || ''),
     exampleHeaderNames,
   )
+  isObjectSelected.value = newValue !== ''
 })
 
 /**
@@ -47,6 +50,13 @@ watch(selectedObjectTypeName, (newValue) => {
 function updateMapping(objectTypeName: string, selectedHeaderName: string) {
   mapping.value[objectTypeName] = selectedHeaderName ?? ''
 }
+
+function resetMapping() {
+  selectedObjectTypeName.value = ''
+  mapping.value = {}
+  isObjectSelected.value = false
+  isMapping.value = true
+}
 </script>
 
 <template>
@@ -54,12 +64,15 @@ function updateMapping(objectTypeName: string, selectedHeaderName: string) {
     <h1>Ok let's Map!</h1>
     <div class="column-box box">
       <h2>Select Object Type</h2>
+      <p>Select an object type from the list below that you want to use.</p>
       <SelectObjectType
         v-model="selectedObjectTypeName"
         :objectNamesList="getObjectTypeNames(exampleObjects)"
       />
     </div>
-    <div class="column-box box">
+    <div v-if="isMapping && isObjectSelected" class="flex column box">
+      <h2>Map properties to header names</h2>
+      <p>For each object type property, select the CSV header name that matches it.</p>
       <MappingRow
         v-for="objectTypeName in getObjectTypePropertyNames(
           getObjectTypeByName(exampleObjects, selectedObjectTypeName || ''),
@@ -69,6 +82,15 @@ function updateMapping(objectTypeName: string, selectedHeaderName: string) {
         :headerNames="exampleHeaderNames"
         @updateSelectedHeaderName="updateMapping"
       />
+      <button @click="isMapping = false">Save Mapping</button>
+    </div>
+    <div v-if="!isMapping && isObjectSelected" class="flex column box">
+      <h2>Result of Mapping</h2>
+      <pre>{{ mapping }}</pre>
+      <div class="flex row">
+        <button @click="isMapping = true">Edit Mapping</button>
+        <button @click="resetMapping">Reset mapping</button>
+      </div>
     </div>
   </main>
 </template>
@@ -77,14 +99,23 @@ function updateMapping(objectTypeName: string, selectedHeaderName: string) {
 h1 {
   text-align: center;
 }
-.column-box {
+.flex {
   display: flex;
+  gap: 0.5em;
+}
+.column {
   flex-direction: column;
+}
+.row {
+  flex-direction: row;
 }
 .box {
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
+}
+button {
+  align-self: flex-start;
 }
 </style>

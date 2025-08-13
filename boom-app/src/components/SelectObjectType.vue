@@ -7,7 +7,7 @@ const selectedObjectType = defineModel()
 
 <template>
   <div class="wrapper">
-    <label for="selectObjectType">Select an object-type</label>
+    <label for="selectObjectType">Object type</label>
     <select id="selectObjectType" v-model="selectedObjectType">
       <option v-for="oType in props.objectNamesList" :key="oType">
         {{ oType }}
