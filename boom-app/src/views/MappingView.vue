@@ -16,6 +16,7 @@ const exampleObjects: ObjectType[] = [
     title: 'Boom',
     type: 'object',
     properties: { name: { type: 'string' }, location: { type: 'string' } },
+    required: ['name', 'location'],
   },
   {
     title: 'Smoel',
@@ -80,13 +81,18 @@ function resetMapping() {
       <h2>Map properties to header names</h2>
       <p>For each object type property, select the CSV header name that matches it.</p>
       <MappingRow
-        v-for="objectTypeName in getObjectTypePropertyNames(
+        v-for="objectTypePropertyName in getObjectTypePropertyNames(
           getObjectTypeByName(exampleObjects, selectedObjectTypeName || ''),
         )"
-        :key="objectTypeName"
-        :objectTypeName="objectTypeName"
+        :key="objectTypePropertyName"
+        :objectTypePropertyName="objectTypePropertyName"
         :headerNames="exampleHeaderNames"
-        v-model="mapping[objectTypeName]"
+        :required="
+          getObjectTypeByName(exampleObjects, selectedObjectTypeName || '').required?.includes(
+            objectTypePropertyName,
+          )
+        "
+        v-model="mapping[objectTypePropertyName]"
         @updateSelectedHeaderName="updateMapping"
       />
       <button @click="isMapping = false">Save Mapping</button>

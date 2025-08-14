@@ -10,6 +10,7 @@ type ObjectType = {
   title: string
   type: 'object'
   properties: Record<string, { type: 'string' }>
+  required?: string[]
 }
 
 export type { CsvOutput, ObjectType }
