@@ -26,6 +26,7 @@ const exampleObjects: ObjectType[] = [
       lastname: { type: 'string' },
       address: { type: 'string' },
     },
+    required: ['firstname'],
   },
 ]
 const selectedObjectTypeName = ref<string>()
@@ -80,22 +81,24 @@ function resetMapping() {
     <div v-if="isMapping && isObjectSelected" class="flex column box">
       <h2>Map properties to header names</h2>
       <p>For each object type property, select the CSV header name that matches it.</p>
-      <MappingRow
-        v-for="objectTypePropertyName in getObjectTypePropertyNames(
-          getObjectTypeByName(exampleObjects, selectedObjectTypeName || ''),
-        )"
-        :key="objectTypePropertyName"
-        :objectTypePropertyName="objectTypePropertyName"
-        :headerNames="exampleHeaderNames"
-        :required="
-          getObjectTypeByName(exampleObjects, selectedObjectTypeName || '').required?.includes(
-            objectTypePropertyName,
-          )
-        "
-        v-model="mapping[objectTypePropertyName]"
-        @updateSelectedHeaderName="updateMapping"
-      />
-      <button @click="isMapping = false">Save Mapping</button>
+      <form class="flex column" @submit.prevent="isMapping = false">
+        <MappingRow
+          v-for="objectTypePropertyName in getObjectTypePropertyNames(
+            getObjectTypeByName(exampleObjects, selectedObjectTypeName || ''),
+          )"
+          :key="objectTypePropertyName"
+          :objectTypePropertyName="objectTypePropertyName"
+          :headerNames="exampleHeaderNames"
+          :required="
+            getObjectTypeByName(exampleObjects, selectedObjectTypeName || '').required?.includes(
+              objectTypePropertyName,
+            )
+          "
+          v-model="mapping[objectTypePropertyName]"
+          @updateSelectedHeaderName="updateMapping"
+        />
+        <button type="submit">Save Mapping</button>
+      </form>
     </div>
     <div v-if="!isMapping && isObjectSelected" class="flex column box">
       <h2>Result of Mapping</h2>

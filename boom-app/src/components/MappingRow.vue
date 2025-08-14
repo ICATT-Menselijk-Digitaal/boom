@@ -15,15 +15,15 @@ const selectedHeaderName = defineModel<string>({
 
 <template>
   <div class="flex wrapper">
-    <label for="headerSelect{{ props.objectTypePropertyName }}"
+    <label :for="props.objectTypePropertyName"
       >Object type property
       <i class="green">{{ props.objectTypePropertyName }}</i>
-      maps to: {{ required ? '(required)' : '' }}</label
-    >
+      maps to: <i>{{ required ? '(required)' : '' }}</i>
+    </label>
     <select
       @change="emits('updateSelectedHeaderName', props.objectTypePropertyName, selectedHeaderName)"
       v-model="selectedHeaderName"
-      id="headerSelect{{ props.objectTypePropertyName }}"
+      :id="props.objectTypePropertyName"
       :required="props.required || false"
     >
       <option selected :disabled="props.required" value=""></option>
