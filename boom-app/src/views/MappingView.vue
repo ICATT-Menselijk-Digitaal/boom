@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
-import SelectObjectType from '@/components/SelectObjectType.vue'
 import {
   createMapping,
   getObjectTypeByName,
@@ -10,9 +9,8 @@ import {
 import type { ObjectType } from '@/types'
 import { ref, watch } from 'vue'
 
-// Example header names
+// Temporary placeholders for data
 const exampleHeaderNames = ['name', 'address']
-
 const exampleObjects: ObjectType[] = [
   {
     title: 'Boom',
@@ -69,10 +67,14 @@ function resetMapping() {
     <div class="flex column box">
       <h2>Select Object Type</h2>
       <p>Select an object type from the list below that you want to use.</p>
-      <SelectObjectType
-        v-model="selectedObjectTypeName"
-        :objectNamesList="getObjectTypeNames(exampleObjects)"
-      />
+      <div class="flex row">
+        <label for="selectObjectType">Object type</label>
+        <select id="selectObjectType" v-model="selectedObjectTypeName">
+          <option v-for="objectType in getObjectTypeNames(exampleObjects)" :key="objectType">
+            {{ objectType }}
+          </option>
+        </select>
+      </div>
     </div>
     <div v-if="isMapping && isObjectSelected" class="flex column box">
       <h2>Map properties to header names</h2>
