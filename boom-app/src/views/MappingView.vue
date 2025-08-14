@@ -30,10 +30,11 @@ const exampleObjects: ObjectType[] = [
   },
 ]
 const selectedObjectTypeName = ref<string>()
-const mapping = ref<Record<string, string>>({})
+const mapping = ref<Record<string, string>>({}) // key: object type name, value: header name
 const isObjectSelected = ref(false)
 const isMapping = ref(true)
 
+// Create an automatic mapping when the selected object type is changed/selected.
 watch(selectedObjectTypeName, (newValue) => {
   mapping.value = createMapping(
     getObjectTypeByName(exampleObjects, newValue || ''),
@@ -51,6 +52,9 @@ function updateMapping(objectTypeName: string, selectedHeaderName: string) {
   mapping.value[objectTypeName] = selectedHeaderName ?? ''
 }
 
+/**
+ * Resets the mapping state and starts the view at select object type.
+ */
 function resetMapping() {
   selectedObjectTypeName.value = ''
   mapping.value = {}
@@ -62,7 +66,7 @@ function resetMapping() {
 <template>
   <main>
     <h1>Ok let's Map!</h1>
-    <div class="column-box box">
+    <div class="flex column box">
       <h2>Select Object Type</h2>
       <p>Select an object type from the list below that you want to use.</p>
       <SelectObjectType
@@ -80,6 +84,7 @@ function resetMapping() {
         :key="objectTypeName"
         :objectTypeName="objectTypeName"
         :headerNames="exampleHeaderNames"
+        v-model="mapping[objectTypeName]"
         @updateSelectedHeaderName="updateMapping"
       />
       <button @click="isMapping = false">Save Mapping</button>
@@ -98,22 +103,6 @@ function resetMapping() {
 <style scoped>
 h1 {
   text-align: center;
-}
-.flex {
-  display: flex;
-  gap: 0.5em;
-}
-.column {
-  flex-direction: column;
-}
-.row {
-  flex-direction: row;
-}
-.box {
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
 }
 button {
   align-self: flex-start;

@@ -6,7 +6,7 @@ const selectedObjectType = defineModel()
 </script>
 
 <template>
-  <div class="wrapper">
+  <div class="flex row">
     <label for="selectObjectType">Object type</label>
     <select id="selectObjectType" v-model="selectedObjectType">
       <option v-for="oType in props.objectNamesList" :key="oType">
@@ -15,13 +15,3 @@ const selectedObjectType = defineModel()
     </select>
   </div>
 </template>
-
-<style scoped>
-.wrapper {
-  display: flex;
-  flex-direction: row;
-}
-label {
-  margin-right: 1em;
-}
-</style>

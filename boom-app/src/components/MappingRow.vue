@@ -1,29 +1,19 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-
-const props = defineProps({
-  objectTypeName: String,
-  headerNames: Array<string>,
-})
+const props = defineProps<{
+  objectTypeName: string
+  headerNames: string[]
+}>()
 
 const emits = defineEmits(['updateSelectedHeaderName'])
 
-const selectedHeaderName = ref()
-
-// Performs a simple automatic mapping based on string equality between the object type name and header names.
-watch(
-  () => props.objectTypeName,
-  (newValue) => {
-    selectedHeaderName.value =
-      props.headerNames?.find((headerName) => headerName === newValue) ?? ''
-    emits('updateSelectedHeaderName', props.objectTypeName, selectedHeaderName.value)
-  },
-  { immediate: true },
-)
+const selectedHeaderName = defineModel<string>({
+  default: '',
+  type: String,
+})
 </script>
 
 <template>
-  <div class="wrapper">
+  <div class="flex wrapper">
     <label>Object type field:</label>
     <i class="green">{{ props.objectTypeName }}</i>
     <div>
@@ -44,11 +34,7 @@ watch(
 
 <style scoped>
 .wrapper {
-  display: flex;
   flex-grow: 1;
   justify-content: space-between;
-}
-label {
-  margin-right: 1em;
 }
 </style>

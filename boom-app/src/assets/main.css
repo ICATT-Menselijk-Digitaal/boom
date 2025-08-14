@@ -15,6 +15,26 @@ a,
   padding: 3px;
 }
 
+.flex {
+  display: flex;
+  gap: 0.5em;
+}
+.column {
+  flex-direction: column;
+}
+.row {
+  flex-direction: row;
+}
+.box {
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+label {
+  margin-right: 1em;
+}
+
 @media (hover: hover) {
   a:hover {
     background-color: hsla(160, 100%, 37%, 0.2);
