@@ -39,12 +39,12 @@ table {
 }
 
 caption {
-  text-align: left;
+  text-align: start;
 }
 
 th {
   font-weight: bold;
   font-size: large;
-  text-align: left;
+  text-align: start;
 }
 </style>
