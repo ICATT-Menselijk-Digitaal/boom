@@ -32,7 +32,7 @@ const exampleObjects: ObjectType[] = [
 const selectedObjectType = computed(() => {
   return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value || '')
 })
-const selectedObjectTypeName = ref<string>()
+const selectedObjectTypeName = ref<string>('')
 const mapping = ref<Record<string, string>>({}) // key: object type name, value: header name
 const isObjectSelected = computed(() => {
   return selectedObjectTypeName.value !== ''
