@@ -7,7 +7,7 @@ import {
   getObjectTypePropertyNames,
 } from '@/helpers'
 import type { ObjectType } from '@/types'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 // Temporary placeholders for data
 const exampleHeaderNames = ['name', 'address']
@@ -27,9 +27,11 @@ const exampleObjects: ObjectType[] = [
     },
   },
 ]
-const selectedObjectTypeName = ref<string>()
+const selectedObjectTypeName = ref<string>('')
 const mapping = ref<Record<string, string>>({}) // key: object type name, value: header name
-const isObjectSelected = ref(false)
+const isObjectSelected = computed(() => {
+  return selectedObjectTypeName.value !== ''
+})
 const isMapping = ref(true)
 
 // Create an automatic mapping when the selected object type is changed/selected.
@@ -38,7 +40,6 @@ watch(selectedObjectTypeName, (newValue) => {
     getObjectTypeByName(exampleObjects, newValue || ''),
     exampleHeaderNames,
   )
-  isObjectSelected.value = newValue !== ''
 })
 
 /**
@@ -56,7 +57,6 @@ function updateMapping(objectTypeName: string, selectedHeaderName: string) {
 function resetMapping() {
   selectedObjectTypeName.value = ''
   mapping.value = {}
-  isObjectSelected.value = false
   isMapping.value = true
 }
 </script>
