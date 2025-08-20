@@ -11,7 +11,7 @@ function getObjectTypeNames(objectTypes: ObjectType[]): string[] {
 
 /**
  * Get key-names of all properties of an ObjectType object.
- * @param objectType ObjectType object.
+ * @param objectType ObjectType object or undefined.
  * @returns string array of property names.
  */
 function getObjectTypePropertyNames(objectType: ObjectType | undefined): string[] {
@@ -22,7 +22,7 @@ function getObjectTypePropertyNames(objectType: ObjectType | undefined): string[
  * Get an ObjectType by its name from a list of ObjectTypes.
  * @param objectTypes Array of ObjectType objects.
  * @param name Object type name to search for.
- * @returns ObjectType object with the specified name, or a default empty ObjectType if not found.
+ * @returns ObjectType object with the specified name, or undefined if not found.
  */
 function getObjectTypeByName(objectTypes: ObjectType[], name: string): ObjectType | undefined {
   return objectTypes.find((objectType) => objectType.title === name)
@@ -30,7 +30,7 @@ function getObjectTypeByName(objectTypes: ObjectType[], name: string): ObjectTyp
 
 /**
  * Create a mapping of property names to header names.
- * @param objectType ObjectType object to create a mapping on its properties.
+ * @param objectType ObjectType object to create a mapping on its properties or undefined.
  * @param headers string array of header names.
  * @returns A mapping of property names to header names.
  */
