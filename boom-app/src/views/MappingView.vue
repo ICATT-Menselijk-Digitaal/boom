@@ -7,7 +7,7 @@ import {
   getObjectTypePropertyNames,
 } from '@/helpers'
 import type { ObjectType } from '@/types'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 // Temporary placeholders for data
 const exampleHeaderNames = ['name', 'address']
@@ -29,6 +29,9 @@ const exampleObjects: ObjectType[] = [
     required: ['firstname'],
   },
 ]
+const selectedObjectType = computed(() => {
+  return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value || '')
+})
 const selectedObjectTypeName = ref<string>()
 const mapping = ref<Record<string, string>>({}) // key: object type name, value: header name
 const isObjectSelected = ref(false)
@@ -83,17 +86,11 @@ function resetMapping() {
       <p>For each object type property, select the CSV header name that matches it.</p>
       <form class="flex column" @submit.prevent="isMapping = false">
         <MappingRow
-          v-for="objectTypePropertyName in getObjectTypePropertyNames(
-            getObjectTypeByName(exampleObjects, selectedObjectTypeName || ''),
-          )"
+          v-for="objectTypePropertyName in getObjectTypePropertyNames(selectedObjectType)"
           :key="objectTypePropertyName"
           :objectTypePropertyName="objectTypePropertyName"
           :headerNames="exampleHeaderNames"
-          :required="
-            getObjectTypeByName(exampleObjects, selectedObjectTypeName || '').required?.includes(
-              objectTypePropertyName,
-            )
-          "
+          :required="selectedObjectType.required?.includes(objectTypePropertyName)"
           v-model="mapping[objectTypePropertyName]"
           @updateSelectedHeaderName="updateMapping"
         />

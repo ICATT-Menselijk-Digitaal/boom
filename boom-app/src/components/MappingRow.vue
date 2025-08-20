@@ -2,7 +2,7 @@
 const props = defineProps<{
   objectTypePropertyName: string
   headerNames: string[]
-  required?: boolean
+  required?: boolean | undefined
 }>()
 
 const emits = defineEmits(['updateSelectedHeaderName'])
@@ -26,7 +26,7 @@ const selectedHeaderName = defineModel<string>({
       :id="props.objectTypePropertyName"
       :required="props.required || false"
     >
-      <option selected :disabled="props.required" value=""></option>
+      <option :disabled="props.required" value="">-- no mapping --</option>
       <option v-for="name in headerNames" :key="name" :value="name">
         {{ name }}
       </option>
@@ -38,5 +38,6 @@ const selectedHeaderName = defineModel<string>({
 .wrapper {
   flex-grow: 1;
   justify-content: space-between;
+  align-items: center;
 }
 </style>
