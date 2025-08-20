@@ -14,8 +14,8 @@ function getObjectTypeNames(objectTypes: ObjectType[]): string[] {
  * @param objectType ObjectType object.
  * @returns string array of property names.
  */
-function getObjectTypePropertyNames(objectType: ObjectType): string[] {
-  return Object.keys(objectType.properties)
+function getObjectTypePropertyNames(objectType: ObjectType | undefined): string[] {
+  return Object.keys(objectType?.properties || {})
 }
 
 /**
@@ -24,14 +24,8 @@ function getObjectTypePropertyNames(objectType: ObjectType): string[] {
  * @param name Object type name to search for.
  * @returns ObjectType object with the specified name, or a default empty ObjectType if not found.
  */
-function getObjectTypeByName(objectTypes: ObjectType[], name: string): ObjectType {
-  return (
-    objectTypes.find((objectType) => objectType.title === name) || {
-      title: '',
-      type: 'object',
-      properties: {},
-    }
-  )
+function getObjectTypeByName(objectTypes: ObjectType[], name: string): ObjectType | undefined {
+  return objectTypes.find((objectType) => objectType.title === name)
 }
 
 /**
@@ -40,7 +34,10 @@ function getObjectTypeByName(objectTypes: ObjectType[], name: string): ObjectTyp
  * @param headers string array of header names.
  * @returns A mapping of property names to header names.
  */
-function createMapping(objectType: ObjectType, headers: string[]): Record<string, string> {
+function createMapping(
+  objectType: ObjectType | undefined,
+  headers: string[],
+): Record<string, string> {
   const mapping: Record<string, string> = {}
   const propertyNames: string[] = getObjectTypePropertyNames(objectType)
   for (const propertyName of propertyNames) {
