@@ -58,7 +58,7 @@ function resetMapping() {
 </script>
 
 <template>
-  <main>
+  <main class="flex column">
     <h1>Ok let's Map!</h1>
     <div class="flex column box">
       <h2>Select Object Type</h2>

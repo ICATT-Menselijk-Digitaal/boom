@@ -19,10 +19,11 @@ function handleFileParsed(receivedData: CsvOutput) {
 </script>
 
 <template>
-  <main>
+  <main class="flex column">
     <h1>Let's Upload!</h1>
     <CsvUploadForm @fileParsed="handleFileParsed" />
     <CsvOutputTable :csvData="csvData" />
+    <button @click="$router.push('/upload')">Next</button>
   </main>
 </template>
 
