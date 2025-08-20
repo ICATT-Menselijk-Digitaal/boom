@@ -4,8 +4,6 @@ const props = defineProps<{
   headerNames: string[]
 }>()
 
-const emits = defineEmits(['updateSelectedHeaderName'])
-
 const selectedHeaderName = defineModel<string>({
   default: '',
   type: String,
@@ -18,11 +16,7 @@ const selectedHeaderName = defineModel<string>({
     <i class="green">{{ props.objectTypeName }}</i>
     <div>
       <label for="headerSelect">maps to -></label>
-      <select
-        @change="emits('updateSelectedHeaderName', props.objectTypeName, selectedHeaderName)"
-        v-model="selectedHeaderName"
-        id="headerSelect"
-      >
+      <select v-model="selectedHeaderName" id="headerSelect">
         <option selected="true" value="">No mapping</option>
         <option v-for="name in headerNames" :key="name" :value="name">
           {{ name }}

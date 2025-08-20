@@ -43,15 +43,6 @@ watch(selectedObjectTypeName, (newValue) => {
 })
 
 /**
- * Add or update the mapping for the selected object type and header name.
- * @param objectTypeName string representing the object type name
- * @param selectedHeaderName string representing the selected header name
- */
-function updateMapping(objectTypeName: string, selectedHeaderName: string) {
-  mapping.value[objectTypeName] = selectedHeaderName ?? ''
-}
-
-/**
  * Resets the mapping state and starts the view at select object type.
  */
 function resetMapping() {
@@ -87,7 +78,6 @@ function resetMapping() {
         :objectTypeName="objectTypeName"
         :headerNames="exampleHeaderNames"
         v-model="mapping[objectTypeName]"
-        @updateSelectedHeaderName="updateMapping"
       />
       <button @click="isMapping = false">Save Mapping</button>
     </div>
