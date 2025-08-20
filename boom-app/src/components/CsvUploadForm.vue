@@ -82,37 +82,26 @@ function checkUploadedFile() {
 </script>
 
 <template>
-  <h2>Upload a CSV file</h2>
-  <form @submit.prevent="uploadFile">
-    <div class="upload-box">
-      <label for="fileUpload">Select a file to upload</label>
-      <input
-        type="file"
-        id="fileUpload"
-        @change="checkUploadedFile"
-        ref="fileInputRef"
-        accept=".csv"
-      />
-    </div>
-    <button type="submit">Upload</button>
-  </form>
+  <div class="flex column box">
+    <h2>Upload a CSV file</h2>
+    <form @submit.prevent="uploadFile">
+      <div class="flex column">
+        <label for="fileUpload">Select a file to upload</label>
+        <input
+          type="file"
+          id="fileUpload"
+          @change="checkUploadedFile"
+          ref="fileInputRef"
+          accept=".csv"
+        />
+        <button type="submit">Upload</button>
+      </div>
+    </form>
+  </div>
 </template>
 
 <style scoped>
-h2 {
-  text-align: center;
-}
-form {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-.upload-box {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-  margin-top: 10px;
+button {
+  align-self: flex-start;
 }
 </style>
