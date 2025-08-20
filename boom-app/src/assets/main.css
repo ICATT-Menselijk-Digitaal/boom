@@ -41,6 +41,9 @@ button {
   color: var(--vt-c-white-soft);
   font-family: system-ui;
 }
+button:hover {
+  background-color: var(--vt-c-green-dark);
+}
 
 @media (hover: hover) {
   a:hover {

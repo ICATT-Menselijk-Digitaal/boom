@@ -23,7 +23,7 @@ function handleFileParsed(receivedData: CsvOutput) {
     <h1>Let's Upload!</h1>
     <CsvUploadForm @fileParsed="handleFileParsed" />
     <CsvOutputTable :csvData="csvData" />
-    <button @click="$router.push('/upload')">Next</button>
+    <button @click="$router.push('/mapping')">Next</button>
   </main>
 </template>
 
