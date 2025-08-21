@@ -99,9 +99,3 @@ function checkUploadedFile() {
     </form>
   </div>
 </template>
-
-<style scoped>
-button {
-  align-self: flex-start;
-}
-</style>
