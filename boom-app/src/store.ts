@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { type CsvOutput } from './types'
+import { type CsvOutput, type ObjectType } from './types'
 
 // Stored data
 export const csvData = ref<CsvOutput>({
@@ -13,3 +13,22 @@ export const mapping = ref<Record<string, string>>({})
 // Mapping variables
 export const selectedObjectTypeName = ref<string>('')
 export const isMapping = ref<boolean>(true)
+
+// TEMP ObjectType example data
+export const exampleObjects: ObjectType[] = [
+  {
+    title: 'Boom',
+    type: 'object',
+    properties: { name: { type: 'string' }, location: { type: 'string' } },
+    required: ['name', 'location'],
+  },
+  {
+    title: 'Smoel',
+    type: 'object',
+    properties: {
+      firstname: { type: 'string' },
+      lastname: { type: 'string' },
+      address: { type: 'string' },
+    },
+  },
+]

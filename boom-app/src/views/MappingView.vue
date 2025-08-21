@@ -6,30 +6,12 @@ import {
   getObjectTypeNames,
   getObjectTypePropertyNames,
 } from '@/helpers'
-import { isMapping, mapping, selectedObjectTypeName } from '@/store'
-import type { ObjectType } from '@/types'
+import { exampleObjects, isMapping, mapping, selectedObjectTypeName } from '@/store'
 import { computed, watch } from 'vue'
 
 // Temporary placeholders for data
 const exampleHeaderNames = ['name', 'address']
-const exampleObjects: ObjectType[] = [
-  {
-    title: 'Boom',
-    type: 'object',
-    properties: { name: { type: 'string' }, location: { type: 'string' } },
-    required: ['name', 'location'],
-  },
-  {
-    title: 'Smoel',
-    type: 'object',
-    properties: {
-      firstname: { type: 'string' },
-      lastname: { type: 'string' },
-      address: { type: 'string' },
-    },
-    required: ['firstname'],
-  },
-]
+
 const selectedObjectType = computed(() => {
   return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value || '')
 })
