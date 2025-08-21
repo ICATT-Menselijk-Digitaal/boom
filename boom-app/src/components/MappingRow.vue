@@ -5,8 +5,6 @@ const props = defineProps<{
   required?: boolean | undefined
 }>()
 
-const emits = defineEmits(['updateSelectedHeaderName'])
-
 const selectedHeaderName = defineModel<string>({
   default: '',
   type: String,
@@ -21,7 +19,6 @@ const selectedHeaderName = defineModel<string>({
       maps to: <i>{{ required ? '(required)' : '' }}</i>
     </label>
     <select
-      @change="emits('updateSelectedHeaderName', props.objectTypePropertyName, selectedHeaderName)"
       v-model="selectedHeaderName"
       :id="props.objectTypePropertyName"
       :required="props.required || false"

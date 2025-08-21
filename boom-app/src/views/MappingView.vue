@@ -34,7 +34,9 @@ const selectedObjectType = computed(() => {
 })
 const selectedObjectTypeName = ref<string>()
 const mapping = ref<Record<string, string>>({}) // key: object type name, value: header name
-const isObjectSelected = ref(false)
+const isObjectSelected = computed(() => {
+  return selectedObjectTypeName.value !== ''
+})
 const isMapping = ref(true)
 
 // Create an automatic mapping when the selected object type is changed/selected.
@@ -43,17 +45,7 @@ watch(selectedObjectTypeName, (newValue) => {
     getObjectTypeByName(exampleObjects, newValue || ''),
     exampleHeaderNames,
   )
-  isObjectSelected.value = newValue !== ''
 })
-
-/**
- * Add or update the mapping for the selected object type and header name.
- * @param objectTypeName string representing the object type name
- * @param selectedHeaderName string representing the selected header name
- */
-function updateMapping(objectTypeName: string, selectedHeaderName: string) {
-  mapping.value[objectTypeName] = selectedHeaderName ?? ''
-}
 
 /**
  * Resets the mapping state and starts the view at select object type.
@@ -61,7 +53,6 @@ function updateMapping(objectTypeName: string, selectedHeaderName: string) {
 function resetMapping() {
   selectedObjectTypeName.value = ''
   mapping.value = {}
-  isObjectSelected.value = false
   isMapping.value = true
 }
 </script>
@@ -92,7 +83,6 @@ function resetMapping() {
           :headerNames="exampleHeaderNames"
           :required="selectedObjectType.required?.includes(objectTypePropertyName)"
           v-model="mapping[objectTypePropertyName]"
-          @updateSelectedHeaderName="updateMapping"
         />
         <button type="submit">Save Mapping</button>
       </form>
