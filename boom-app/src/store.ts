@@ -1,5 +1,6 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { type CsvOutput, type ObjectType } from './types'
+import { getObjectTypeByName } from './helpers'
 
 // Stored data
 export const csvData = ref<CsvOutput>({
@@ -12,6 +13,9 @@ export const mapping = ref<Record<string, string>>({}) // key: property name, va
 
 // Mapping variables
 export const selectedObjectTypeName = ref<string>('')
+export const selectedObjectType = computed<ObjectType | undefined>(() => {
+  return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value)
+})
 export const isMapping = ref<boolean>(true)
 
 // TEMP ObjectType example data

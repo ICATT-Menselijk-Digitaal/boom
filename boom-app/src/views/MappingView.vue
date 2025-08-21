@@ -6,15 +6,18 @@ import {
   getObjectTypeNames,
   getObjectTypePropertyNames,
 } from '@/helpers'
-import { exampleObjects, isMapping, mapping, selectedObjectTypeName } from '@/store'
+import {
+  exampleObjects,
+  isMapping,
+  mapping,
+  selectedObjectTypeName,
+  selectedObjectType,
+} from '@/store'
 import { computed, watch } from 'vue'
 
 // Temporary placeholders for data
 const exampleHeaderNames = ['name', 'address']
 
-const selectedObjectType = computed(() => {
-  return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value || '')
-})
 const isObjectSelected = computed(() => {
   return selectedObjectTypeName.value !== ''
 })

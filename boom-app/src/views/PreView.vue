@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { csvData, mapping } from '@/store'
+import { csvData, mapping, selectedObjectType } from '@/store'
 </script>
 
 <template>
@@ -9,19 +9,26 @@ import { csvData, mapping } from '@/store'
       <h2>Mapping preview</h2>
       <table>
         <caption>
-          Here you see a preview of the mapping using the data from the uploaded CSV file:
+          Here you see a preview of the mapping using the first row of the data from the uploaded
+          CSV file:
         </caption>
         <thead>
           <tr>
-            <th v-for="(headerName, index) in csvData?.headers" :key="index">
-              {{ headerName }}
+            <th
+              v-for="(propertyName, index) in Object.keys(selectedObjectType?.properties || {})"
+              :key="index"
+            >
+              {{ propertyName }}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td v-for="(headerName, index) in csvData?.headers" :key="index">
-              {{ csvData?.data[0][mapping[index]] }}
+            <td
+              v-for="(propertyName, index) in Object.keys(selectedObjectType?.properties || {})"
+              :key="index"
+            >
+              {{ csvData?.data[0][mapping[propertyName]] }}
             </td>
           </tr>
         </tbody>
