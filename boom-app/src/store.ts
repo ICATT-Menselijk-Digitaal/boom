@@ -8,7 +8,7 @@ export const csvData = ref<CsvOutput>({
 })
 
 // Stored mapping
-export const mapping = ref<Record<string, string>>({})
+export const mapping = ref<Record<string, string>>({}) // key: property name, value: header name
 
 // Mapping variables
 export const selectedObjectTypeName = ref<string>('')

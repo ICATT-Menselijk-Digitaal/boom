@@ -75,7 +75,7 @@ function resetMapping() {
         <button @click="resetMapping">Reset mapping</button>
       </div>
     </div>
-    <button v-if="!isMapping && isObjectSelected" @click="$router.push('/')">Next</button>
+    <button v-if="!isMapping && isObjectSelected" @click="$router.push('/preview')">Next</button>
   </main>
 </template>
 
