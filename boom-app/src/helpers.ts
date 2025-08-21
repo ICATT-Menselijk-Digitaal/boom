@@ -1,11 +1,11 @@
-import type { ObjectType } from './types'
+import { type ObjectType } from './types'
 
 /**
  * Get the titles of object types from an array of ObjectType objects.
  * @param objectTypes Array of ObjectType objects.
  * @returns string array of object type names.
  */
-function getObjectTypeNames(objectTypes: ObjectType[]): string[] {
+export function getObjectTypeNames(objectTypes: ObjectType[]): string[] {
   return objectTypes.map((objectType) => objectType.title)
 }
 
@@ -14,7 +14,7 @@ function getObjectTypeNames(objectTypes: ObjectType[]): string[] {
  * @param objectType ObjectType object or undefined.
  * @returns string array of property names.
  */
-function getObjectTypePropertyNames(objectType: ObjectType | undefined): string[] {
+export function getObjectTypePropertyNames(objectType: ObjectType | undefined): string[] {
   return Object.keys(objectType?.properties || {})
 }
 
@@ -24,7 +24,10 @@ function getObjectTypePropertyNames(objectType: ObjectType | undefined): string[
  * @param name Object type name to search for.
  * @returns ObjectType object with the specified name, or undefined if not found.
  */
-function getObjectTypeByName(objectTypes: ObjectType[], name: string): ObjectType | undefined {
+export function getObjectTypeByName(
+  objectTypes: ObjectType[],
+  name: string,
+): ObjectType | undefined {
   return objectTypes.find((objectType) => objectType.title === name)
 }
 
@@ -34,7 +37,7 @@ function getObjectTypeByName(objectTypes: ObjectType[], name: string): ObjectTyp
  * @param headers string array of header names.
  * @returns A mapping of property names to header names.
  */
-function createMapping(
+export function createMapping(
   objectType: ObjectType | undefined,
   headers: string[],
 ): Record<string, string> {
@@ -48,5 +51,3 @@ function createMapping(
   }
   return mapping
 }
-
-export { getObjectTypeNames, getObjectTypePropertyNames, getObjectTypeByName, createMapping }

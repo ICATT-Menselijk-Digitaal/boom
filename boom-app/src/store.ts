@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { CsvOutput } from './types'
+import { type CsvOutput } from './types'
 
 // Stored data
 export const csvData = ref<CsvOutput>({
@@ -7,7 +7,7 @@ export const csvData = ref<CsvOutput>({
   data: [],
 })
 
-// Strored mapping
+// Stored mapping
 export const mapping = ref<Record<string, string>>({})
 
 // Mapping variables
