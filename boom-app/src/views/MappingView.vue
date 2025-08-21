@@ -16,6 +16,7 @@ const exampleObjects: ObjectType[] = [
     title: 'Boom',
     type: 'object',
     properties: { name: { type: 'string' }, location: { type: 'string' } },
+    required: ['name', 'location'],
   },
   {
     title: 'Smoel',
@@ -25,9 +26,13 @@ const exampleObjects: ObjectType[] = [
       lastname: { type: 'string' },
       address: { type: 'string' },
     },
+    required: ['firstname'],
   },
 ]
-const selectedObjectTypeName = ref<string>('')
+const selectedObjectType = computed(() => {
+  return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value || '')
+})
+const selectedObjectTypeName = ref<string>()
 const mapping = ref<Record<string, string>>({}) // key: object type name, value: header name
 const isObjectSelected = computed(() => {
   return selectedObjectTypeName.value !== ''
@@ -70,16 +75,17 @@ function resetMapping() {
     <div v-if="isMapping && isObjectSelected" class="flex column box">
       <h2>Map properties to header names</h2>
       <p>For each object type property, select the CSV header name that matches it.</p>
-      <MappingRow
-        v-for="objectTypeName in getObjectTypePropertyNames(
-          getObjectTypeByName(exampleObjects, selectedObjectTypeName || ''),
-        )"
-        :key="objectTypeName"
-        :objectTypeName="objectTypeName"
-        :headerNames="exampleHeaderNames"
-        v-model="mapping[objectTypeName]"
-      />
-      <button @click="isMapping = false">Save Mapping</button>
+      <form class="flex column" @submit.prevent="isMapping = false">
+        <MappingRow
+          v-for="objectTypePropertyName in getObjectTypePropertyNames(selectedObjectType)"
+          :key="objectTypePropertyName"
+          :objectTypePropertyName="objectTypePropertyName"
+          :headerNames="exampleHeaderNames"
+          :required="selectedObjectType.required?.includes(objectTypePropertyName)"
+          v-model="mapping[objectTypePropertyName]"
+        />
+        <button type="submit">Save Mapping</button>
+      </form>
     </div>
     <div v-if="!isMapping && isObjectSelected" class="flex column box">
       <h2>Result of Mapping</h2>

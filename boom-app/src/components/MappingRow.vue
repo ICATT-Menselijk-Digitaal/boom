@@ -1,7 +1,8 @@
 <script setup lang="ts">
 const props = defineProps<{
-  objectTypeName: string
+  objectTypePropertyName: string
   headerNames: string[]
+  required?: boolean | undefined
 }>()
 
 const selectedHeaderName = defineModel<string>({
@@ -12,17 +13,21 @@ const selectedHeaderName = defineModel<string>({
 
 <template>
   <div class="flex wrapper">
-    <label>Object type field:</label>
-    <i class="green">{{ props.objectTypeName }}</i>
-    <div>
-      <label for="headerSelect">maps to -></label>
-      <select v-model="selectedHeaderName" id="headerSelect">
-        <option selected="true" value="">No mapping</option>
-        <option v-for="name in headerNames" :key="name" :value="name">
-          {{ name }}
-        </option>
-      </select>
-    </div>
+    <label :for="props.objectTypePropertyName"
+      >Object type property
+      <i class="green">{{ props.objectTypePropertyName }}</i>
+      maps to: <i>{{ required ? '(required)' : '' }}</i>
+    </label>
+    <select
+      v-model="selectedHeaderName"
+      :id="props.objectTypePropertyName"
+      :required="props.required || false"
+    >
+      <option :disabled="props.required" value="">-- no mapping --</option>
+      <option v-for="name in headerNames" :key="name" :value="name">
+        {{ name }}
+      </option>
+    </select>
   </div>
 </template>
 
@@ -30,5 +35,6 @@ const selectedHeaderName = defineModel<string>({
 .wrapper {
   flex-grow: 1;
   justify-content: space-between;
+  align-items: center;
 }
 </style>
