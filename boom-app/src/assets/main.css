@@ -44,6 +44,10 @@ button {
 button:hover {
   background-color: var(--vt-c-green-dark);
 }
+button:disabled {
+  background-color: var(--vt-c-green-disabled);
+  color: var(--vt-c-text-dark-2);
+}
 
 @media (hover: hover) {
   a:hover {

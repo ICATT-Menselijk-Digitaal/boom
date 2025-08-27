@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { csvData, mapping, selectedObjectType } from '@/store'
+import { csvData, mapping, selectedObjectType, selectedObjectTypeName } from '@/store'
 </script>
 
 <template>
@@ -42,7 +42,7 @@ import { csvData, mapping, selectedObjectType } from '@/store'
       </table>
     </div>
     <div class="flex row">
-      <button @click="$router.push('/')">Accept</button>
+      <button :disabled="selectedObjectTypeName === ''" @click="$router.push('/')">Accept</button>
       <button @click="$router.push('/mapping')">Return</button>
     </div>
   </main>
