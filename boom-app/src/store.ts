@@ -16,7 +16,6 @@ export const selectedObjectTypeName = ref<string>('')
 export const selectedObjectType = computed<ObjectType | undefined>(() => {
   return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value)
 })
-export const isMapping = ref<boolean>(true)
 
 // TEMP ObjectType example data
 export const exampleObjects: ObjectType[] = [

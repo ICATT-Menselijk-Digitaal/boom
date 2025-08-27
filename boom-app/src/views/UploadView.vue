@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { CsvOutput } from '@/types'
-import CsvOutputTable from '@/components/CsvOutputTable.vue'
 import CsvUploadForm from '@/components/CsvUploadForm.vue'
 import { csvData } from '@/store'
+import router from '@/router'
 import { computed } from 'vue'
 
 const isNext = computed<boolean>(() => {
@@ -15,6 +15,7 @@ const isNext = computed<boolean>(() => {
  */
 function handleFileParsed(receivedData: CsvOutput) {
   csvData.value = receivedData
+  router.push('/mapping')
 }
 </script>
 
@@ -22,7 +23,6 @@ function handleFileParsed(receivedData: CsvOutput) {
   <main class="flex column">
     <h1>Let's Upload!</h1>
     <CsvUploadForm @fileParsed="handleFileParsed" />
-    <CsvOutputTable v-if="isNext" :csvData="csvData" />
     <button v-if="isNext" @click="$router.push('/mapping')">Next</button>
   </main>
 </template>

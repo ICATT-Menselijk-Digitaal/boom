@@ -55,7 +55,7 @@ function parseFileAsync(file: File) {
  * Returns an error message if the file is invalid, otherwise returns an empty string.
  * @returns {string} - Error message or empty string if valid.
  */
-function isUploadedFileValid() {
+function isUploadedFileValid(): string {
   const file = fileInputRef.value?.files?.[0]
   // Check if the file input exists and has files
   if (file) {

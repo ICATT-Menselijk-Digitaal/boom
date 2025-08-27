@@ -8,7 +8,6 @@ import {
 } from '@/helpers'
 import {
   exampleObjects,
-  isMapping,
   mapping,
   selectedObjectTypeName,
   selectedObjectType,
@@ -22,7 +21,6 @@ const isObjectSelected = computed(() => {
 
 // Create an automatic mapping when the selected object type is changed/selected.
 watch(selectedObjectTypeName, (newValue) => {
-  isMapping.value = true
   mapping.value = createMapping(
     getObjectTypeByName(exampleObjects, newValue || ''),
     csvData.value.headers,
@@ -45,10 +43,10 @@ watch(selectedObjectTypeName, (newValue) => {
         </select>
       </div>
     </div>
-    <div v-if="isMapping && isObjectSelected" class="flex column box">
+    <div v-if="isObjectSelected" class="flex column box">
       <h2>Map properties to header names</h2>
       <p>For each object type property, select the CSV header name that matches it.</p>
-      <form class="flex column" @submit.prevent="isMapping = false">
+      <form id="mapping-form" class="flex column" @submit.prevent="$router.push('/preview')">
         <MappingRow
           v-for="objectTypePropertyName in getObjectTypePropertyNames(selectedObjectType)"
           :key="objectTypePropertyName"
@@ -57,18 +55,9 @@ watch(selectedObjectTypeName, (newValue) => {
           :required="selectedObjectType?.required?.includes(objectTypePropertyName)"
           v-model="mapping[objectTypePropertyName]"
         />
-        <button type="submit">Save Mapping</button>
       </form>
     </div>
-    <div v-if="!isMapping && isObjectSelected" class="flex column box">
-      <h2>Result of Mapping</h2>
-      <pre>{{ mapping }}</pre>
-      <div class="flex row">
-        <button @click="isMapping = true">Edit Mapping</button>
-        <button @click="selectedObjectTypeName = ''">Reset mapping</button>
-      </div>
-    </div>
-    <button v-if="!isMapping && isObjectSelected" @click="$router.push('/preview')">Next</button>
+    <button v-if="isObjectSelected" type="submit" form="mapping-form">Save mapping</button>
   </main>
 </template>
 
