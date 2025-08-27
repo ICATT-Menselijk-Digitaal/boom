@@ -2,6 +2,7 @@
 import Papa from 'papaparse'
 import { ref } from 'vue'
 import type { CsvOutput } from '@/types'
+import { fileName } from '@/store'
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const fileSizeLimit = 5 * 1024 * 1024 // 5MB
@@ -21,6 +22,7 @@ function uploadFile() {
   parseFileAsync(csvFile)
     .then((output) => {
       emit('fileParsed', output)
+      fileName.value = csvFile.name
     })
     .catch((error) => {
       console.error('Error parsing file:', error.message)
@@ -86,6 +88,7 @@ function checkUploadedFile() {
     <h2>Upload a CSV file</h2>
     <form @submit.prevent="uploadFile">
       <div class="flex column">
+        <p :hidden="fileName === ''">Currently uploaded: {{ fileName }}</p>
         <label for="fileUpload">Select a file to upload</label>
         <input
           type="file"

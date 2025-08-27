@@ -14,6 +14,9 @@ export const mapping = computed<Record<string, string>>(() => {
   return createMapping(selectedObjectType.value, csvData.value.headers)
 })
 
+// Upload variables
+export const fileName = ref<string>('')
+
 // Mapping variables
 export const selectedObjectTypeName = ref<string>('')
 export const selectedObjectType = computed<ObjectType | undefined>(() => {
