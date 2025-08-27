@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
-import {
-  createMapping,
-  getObjectTypeByName,
-  getObjectTypeNames,
-  getObjectTypePropertyNames,
-} from '@/helpers'
+import { getObjectTypeNames, getObjectTypePropertyNames } from '@/helpers'
 import {
   exampleObjects,
   mapping,
@@ -13,18 +8,10 @@ import {
   selectedObjectType,
   csvData,
 } from '@/store'
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 
 const isObjectSelected = computed(() => {
   return selectedObjectTypeName.value !== ''
-})
-
-// Create an automatic mapping when the selected object type is changed/selected.
-watch(selectedObjectTypeName, (newValue) => {
-  mapping.value = createMapping(
-    getObjectTypeByName(exampleObjects, newValue || ''),
-    csvData.value.headers,
-  )
 })
 </script>
 
