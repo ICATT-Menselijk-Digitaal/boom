@@ -12,11 +12,9 @@ import {
   mapping,
   selectedObjectTypeName,
   selectedObjectType,
+  csvData,
 } from '@/store'
 import { computed, watch } from 'vue'
-
-// Temporary placeholders for data
-const exampleHeaderNames = ['name', 'address']
 
 const isObjectSelected = computed(() => {
   return selectedObjectTypeName.value !== ''
@@ -24,20 +22,12 @@ const isObjectSelected = computed(() => {
 
 // Create an automatic mapping when the selected object type is changed/selected.
 watch(selectedObjectTypeName, (newValue) => {
+  isMapping.value = true
   mapping.value = createMapping(
     getObjectTypeByName(exampleObjects, newValue || ''),
-    exampleHeaderNames,
+    csvData.value.headers,
   )
 })
-
-/**
- * Resets the mapping state and starts the view at select object type.
- */
-function resetMapping() {
-  selectedObjectTypeName.value = ''
-  mapping.value = {}
-  isMapping.value = true
-}
 </script>
 
 <template>
@@ -63,7 +53,7 @@ function resetMapping() {
           v-for="objectTypePropertyName in getObjectTypePropertyNames(selectedObjectType)"
           :key="objectTypePropertyName"
           :objectTypePropertyName="objectTypePropertyName"
-          :headerNames="exampleHeaderNames"
+          :headerNames="csvData.headers"
           :required="selectedObjectType?.required?.includes(objectTypePropertyName)"
           v-model="mapping[objectTypePropertyName]"
         />
@@ -75,7 +65,7 @@ function resetMapping() {
       <pre>{{ mapping }}</pre>
       <div class="flex row">
         <button @click="isMapping = true">Edit Mapping</button>
-        <button @click="resetMapping">Reset mapping</button>
+        <button @click="selectedObjectTypeName = ''">Reset mapping</button>
       </div>
     </div>
     <button v-if="!isMapping && isObjectSelected" @click="$router.push('/preview')">Next</button>
