@@ -1,3 +1,4 @@
+import { csvData, mapping } from './store'
 import { type ObjectType } from './types'
 
 /**
@@ -52,4 +53,21 @@ export function createMapping(
     }
   }
   return mapping
+}
+
+export function convertRowToJSON(row: Record<string, string>) {
+  const tempObject: Record<string, string> = {}
+  for (const property in mapping.value) {
+    const headerName = mapping.value[property]
+    tempObject[property] = row[headerName]
+  }
+  return tempObject
+}
+
+export function convertDataToJSON() {
+  const results: Record<string, string>[] = []
+  for (const row of csvData.value.data) {
+    results.push(convertRowToJSON(row))
+  }
+  console.log(results)
 }
