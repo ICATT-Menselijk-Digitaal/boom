@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
-import { getObjectTypeNames, getObjectTypePropertyNames } from '@/helpers'
+import { createMapping, getObjectTypeNames, getObjectTypePropertyNames } from '@/helpers'
 import {
   exampleObjects,
   mapping,
@@ -8,10 +8,13 @@ import {
   selectedObjectType,
   csvData,
 } from '@/store'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 
 const isObjectSelected = computed(() => {
   return selectedObjectTypeName.value !== ''
+})
+watch(selectedObjectType, () => {
+  mapping.value = createMapping(selectedObjectType.value, csvData.value.headers)
 })
 </script>
 
