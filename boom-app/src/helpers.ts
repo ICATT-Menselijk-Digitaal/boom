@@ -1,3 +1,4 @@
+import { csvData, mapping } from './store'
 import { type ObjectType } from './types'
 
 /**
@@ -47,7 +48,26 @@ export function createMapping(
     const headerName = headers.find(
       (headerName) => headerName.toLowerCase() === propertyName.toLowerCase(),
     )
-    mapping[propertyName] = headerName || ''
+    if (headerName) {
+      mapping[propertyName] = headerName
+    }
   }
   return mapping
+}
+
+export function convertRowToJSON(row: Record<string, string>) {
+  const tempObject: Record<string, string> = {}
+  for (const property in mapping.value) {
+    const headerName = mapping.value[property]
+    tempObject[property] = row[headerName]
+  }
+  return tempObject
+}
+
+export function convertDataToJSON() {
+  const results: Record<string, string>[] = []
+  for (const row of csvData.value.data) {
+    results.push(convertRowToJSON(row))
+  }
+  console.log(results)
 }
