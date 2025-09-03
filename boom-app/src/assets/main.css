@@ -1,10 +1,8 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+  max-width: 1400px;
+  margin: auto;
 }
 
 a,
@@ -17,7 +15,9 @@ a,
 
 .flex {
   display: flex;
+  align-items: flex-start;
   gap: 0.5em;
+  width: 100%;
 }
 .column {
   flex-direction: column;
@@ -26,7 +26,6 @@ a,
   flex-direction: row;
 }
 .box {
-  margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -34,22 +33,20 @@ a,
 label {
   margin-right: 1em;
 }
+button {
+  padding: 0.5em 1.5em;
+  border-radius: 2em;
+  border-color: transparent;
+  background-color: var(--vt-c-green);
+  color: var(--vt-c-white-soft);
+  font-family: system-ui;
+}
+button:hover {
+  background-color: var(--vt-c-green-dark);
+}
 
 @media (hover: hover) {
   a:hover {
     background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
   }
 }

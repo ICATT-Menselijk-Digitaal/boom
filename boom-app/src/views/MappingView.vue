@@ -6,8 +6,9 @@ import {
   getObjectTypeNames,
   getObjectTypePropertyNames,
 } from '@/helpers'
+import { isMapping, mapping, selectedObjectTypeName } from '@/store'
 import type { ObjectType } from '@/types'
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 
 // Temporary placeholders for data
 const exampleHeaderNames = ['name', 'address']
@@ -32,12 +33,9 @@ const exampleObjects: ObjectType[] = [
 const selectedObjectType = computed(() => {
   return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value || '')
 })
-const selectedObjectTypeName = ref<string>()
-const mapping = ref<Record<string, string>>({}) // key: object type name, value: header name
 const isObjectSelected = computed(() => {
   return selectedObjectTypeName.value !== ''
 })
-const isMapping = ref(true)
 
 // Create an automatic mapping when the selected object type is changed/selected.
 watch(selectedObjectTypeName, (newValue) => {
@@ -58,7 +56,7 @@ function resetMapping() {
 </script>
 
 <template>
-  <main>
+  <main class="flex column">
     <h1>Ok let's Map!</h1>
     <div class="flex column box">
       <h2>Select Object Type</h2>
@@ -81,7 +79,7 @@ function resetMapping() {
           :key="objectTypePropertyName"
           :objectTypePropertyName="objectTypePropertyName"
           :headerNames="exampleHeaderNames"
-          :required="selectedObjectType.required?.includes(objectTypePropertyName)"
+          :required="selectedObjectType?.required?.includes(objectTypePropertyName)"
           v-model="mapping[objectTypePropertyName]"
         />
         <button type="submit">Save Mapping</button>
@@ -95,6 +93,7 @@ function resetMapping() {
         <button @click="resetMapping">Reset mapping</button>
       </div>
     </div>
+    <button v-if="!isMapping && isObjectSelected" @click="$router.push('/')">Next</button>
   </main>
 </template>
 
