@@ -47,7 +47,9 @@ export function createMapping(
     const headerName = headers.find(
       (headerName) => headerName.toLowerCase() === propertyName.toLowerCase(),
     )
-    mapping[propertyName] = headerName || ''
+    if (headerName) {
+      mapping[propertyName] = headerName
+    }
   }
   return mapping
 }
