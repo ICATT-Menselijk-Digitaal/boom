@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { convertDataToJSON } from '@/helpers'
+import { convertDataToObjects } from '@/helpers'
 import { csvData, mapping, selectedObjectType, selectedObjectTypeName } from '@/store'
 </script>
 
@@ -45,7 +45,7 @@ import { csvData, mapping, selectedObjectType, selectedObjectTypeName } from '@/
     <div class="flex row">
       <button :disabled="selectedObjectTypeName === ''" @click="$router.push('/')">Accept</button>
       <button @click="$router.push('/mapping')">Return</button>
-      <button @click="convertDataToJSON">Convert</button>
+      <button @click="convertDataToObjects">Convert</button>
     </div>
   </main>
 </template>

@@ -55,19 +55,27 @@ export function createMapping(
   return mapping
 }
 
-export function convertRowToJSON(row: Record<string, string>) {
-  const tempObject: Record<string, string> = {}
+/**
+ * Converts a CSV record to an object based on the current mapping.
+ * @param record Record<string, string> representing a CSV record.
+ * @returns A mapped object from the CSV record.
+ */
+export function convertRecordToObject(record: Record<string, string>) {
+  const propertiesObject: Record<string, string> = {}
   for (const property in mapping.value) {
     const headerName = mapping.value[property]
-    tempObject[property] = row[headerName]
+    propertiesObject[property] = record[headerName]
   }
-  return tempObject
+  return propertiesObject
 }
 
-export function convertDataToJSON() {
+/**
+ * Convert all CSV data to objects based on the current mapping.
+ */
+export function convertDataToObjects() {
   const results: Record<string, string>[] = []
   for (const row of csvData.value.data) {
-    results.push(convertRowToJSON(row))
+    results.push(convertRecordToObject(row))
   }
   console.log(results)
 }
