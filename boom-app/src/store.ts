@@ -21,6 +21,19 @@ export const selectedObjectType = computed<ObjectType | undefined>(() => {
   return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value)
 })
 
+// Navigation state variables
+const navState = ref<number>(0) // 0=start, 1=upload, 2=mapping, 3=preview
+export const computedNavState = computed<number>({
+  get() {
+    return navState.value
+  },
+  set(newValue) {
+    if (newValue > navState.value) {
+      navState.value = newValue
+    }
+  },
+})
+
 // TEMP ObjectType example data
 export const exampleObjects: ObjectType[] = [
   {
