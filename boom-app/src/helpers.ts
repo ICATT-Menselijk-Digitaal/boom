@@ -52,23 +52,7 @@ export function createMapping(objectType: ObjectType | undefined, headers: strin
   return mapping
 }
 
-/**
- * Validates and converts a CSV record to an object based on the current mapping.
- * @param record Record<string, string> representing a CSV record.
- * @returns A mapped object from the CSV record.
- */
-export function convertRecordToObject(record: CsvRecord) {
-  const propertiesObject: Record<string, string> = {}
-  for (const [property, headerName] of Object.entries(mapping.value)) {
-    try {
-      validateObject(record, headerName)
-      propertiesObject[property] = record[headerName]
-    } catch (error) {
-      console.error(`Error converting record: ${error}`)
-    }
-  }
-  return propertiesObject
-}
+// -- Data conversion functions --
 
 /**
  * Convert all CSV data to objects based on the current mapping.
@@ -79,6 +63,24 @@ export function convertDataToObjects() {
     results.push(convertRecordToObject(row))
   }
   return results
+}
+
+/**
+ * Validates and converts a CSV record to an object based on the current mapping.
+ * @param record Record<string, string> representing a CSV record.
+ * @returns A mapped object from the CSV record.
+ */
+function convertRecordToObject(record: CsvRecord) {
+  const propertiesObject: Record<string, string> = {}
+  for (const [property, headerName] of Object.entries(mapping.value)) {
+    try {
+      validateObject(record, headerName)
+      propertiesObject[property] = record[headerName]
+    } catch (error) {
+      console.error(`Error converting record: ${error}`)
+    }
+  }
+  return propertiesObject
 }
 
 /**
