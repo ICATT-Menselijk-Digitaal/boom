@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { type CsvOutput, type Mapping, type ObjectType } from './types'
-import { createMapping, getObjectTypeByName } from './helpers'
+import { getObjectTypeByName } from './helpers'
 
 // Stored data
 export const csvData = ref<CsvOutput>({
@@ -10,9 +10,7 @@ export const csvData = ref<CsvOutput>({
 
 // Stored mapping
 // key: property name, value: header name
-export const mapping = computed<Mapping>(() => {
-  return createMapping(selectedObjectType.value, csvData.value.headers)
-})
+export const mapping = ref<Mapping>({})
 
 // Upload variables
 export const fileName = ref<string>('')

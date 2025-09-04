@@ -48,10 +48,10 @@ function tempConvertHandler() {
             </td>
           </tr>
         </tbody>
-        <!-- TODO: PLACEHOLDER REMOVE -->
-        <pre>{{ tempResult }}</pre>
-        <!-- TODO: PLACEHOLDER REMOVE -->
       </table>
+      <!-- TODO: PLACEHOLDER REMOVE -->
+      <pre>{{ tempResult }}</pre>
+      <!-- TODO: PLACEHOLDER REMOVE -->
     </div>
     <div class="flex row">
       <button @click="$router.push('/')">Accept</button>
