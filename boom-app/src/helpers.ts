@@ -78,7 +78,7 @@ export function convertDataToObjects() {
   for (const row of csvData.value.data) {
     results.push(convertRecordToObject(row))
   }
-  console.log(results)
+  return results
 }
 
 /**
@@ -88,6 +88,7 @@ export function convertDataToObjects() {
  * @returns boolean indicating if the cell value is valid.
  */
 function validateObject(record: CsvRecord, headerName: string) {
+  // Any future validation checks can be added here.
   if (typeof record[headerName] !== 'string') {
     throw new Error(`Value for header "${headerName}" is not a string.`)
   }

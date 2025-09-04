@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { convertDataToObjects } from '@/helpers'
 import { csvData, mapping, selectedObjectType, selectedObjectTypeName } from '@/store'
+import { ref } from 'vue'
+
+// TODO: REMOVE temp handler function
+const tempResult = ref()
+function tempConvertHandler() {
+  tempResult.value = convertDataToObjects()
+}
+// TODO: REMOVE temp handler function
 </script>
 
 <template>
@@ -40,12 +48,17 @@ import { csvData, mapping, selectedObjectType, selectedObjectTypeName } from '@/
             </td>
           </tr>
         </tbody>
+        <!-- TODO: PLACEHOLDER REMOVE -->
+        <pre>{{ tempResult }}</pre>
+        <!-- TODO: PLACEHOLDER REMOVE -->
       </table>
     </div>
     <div class="flex row">
       <button :disabled="selectedObjectTypeName === ''" @click="$router.push('/')">Accept</button>
       <button @click="$router.push('/mapping')">Return</button>
-      <button @click="convertDataToObjects">Convert</button>
+      <!-- TODO: PLACEHOLDER REMOVE -->
+      <button @click="tempConvertHandler">Convert</button>
+      <!-- TODO: PLACEHOLDER REMOVE -->
     </div>
   </main>
 </template>
