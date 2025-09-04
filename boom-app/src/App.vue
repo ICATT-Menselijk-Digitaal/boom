@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { computedNavState } from './store'
 </script>
 
 <template>
@@ -12,8 +13,8 @@ import { RouterLink, RouterView } from 'vue-router'
     <nav>
       <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/upload">Upload</RouterLink>
-      <RouterLink to="/mapping">Mapping</RouterLink>
-      <RouterLink to="/preview">Preview</RouterLink>
+      <RouterLink v-if="computedNavState > 1" to="/mapping">Mapping</RouterLink>
+      <RouterLink v-if="computedNavState > 2" to="/preview">Preview</RouterLink>
     </nav>
     <RouterView class="view" />
   </div>

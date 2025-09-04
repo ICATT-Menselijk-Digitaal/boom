@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
 import { createMapping, getObjectTypeNames, getObjectTypePropertyNames } from '@/helpers'
+import router from '@/router'
 import {
   exampleObjects,
   mapping,
   selectedObjectTypeName,
   selectedObjectType,
   csvData,
+  computedNavState,
 } from '@/store'
 import { computed, watch } from 'vue'
 
@@ -16,6 +18,11 @@ const isObjectSelected = computed(() => {
 watch(selectedObjectType, () => {
   mapping.value = createMapping(selectedObjectType.value, csvData.value.headers)
 })
+
+function submitHandler() {
+  router.push('/preview')
+  computedNavState.value = 3
+}
 </script>
 
 <template>
@@ -36,7 +43,7 @@ watch(selectedObjectType, () => {
     <div v-if="isObjectSelected" class="flex column box">
       <h2>Map properties to header names</h2>
       <p>For each object type property, select the CSV header name that matches it.</p>
-      <form id="mapping-form" class="flex column" @submit.prevent="$router.push('/preview')">
+      <form id="mapping-form" class="flex column" @submit.prevent="submitHandler">
         <MappingRow
           v-for="objectTypePropertyName in getObjectTypePropertyNames(selectedObjectType)"
           :key="objectTypePropertyName"
