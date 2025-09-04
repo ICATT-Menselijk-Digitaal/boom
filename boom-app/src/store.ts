@@ -28,6 +28,7 @@ export const computedNavState = computed<number>({
     return navState.value
   },
   set(newValue) {
+    // Only allow increasing the nav state, not decreasing, so users can go back to fix things but not skip ahead.
     if (newValue > navState.value) {
       navState.value = newValue
     }

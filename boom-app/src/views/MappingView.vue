@@ -19,6 +19,10 @@ watch(selectedObjectType, () => {
   mapping.value = createMapping(selectedObjectType.value, csvData.value.headers)
 })
 
+/**
+ * Handles the form submission
+ * Navigates to the preview page and updates the navigation state.
+ */
 function submitHandler() {
   router.push('/preview')
   computedNavState.value = 3
