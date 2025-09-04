@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import { type CsvOutput, type ObjectType } from './types'
+import { type CsvOutput, type Mapping, type ObjectType } from './types'
 import { createMapping, getObjectTypeByName } from './helpers'
 
 // Stored data
@@ -9,8 +9,8 @@ export const csvData = ref<CsvOutput>({
 })
 
 // Stored mapping
-// export const mapping = ref<Record<string, string>>({}) // key: property name, value: header name
-export const mapping = computed<Record<string, string>>(() => {
+// key: property name, value: header name
+export const mapping = computed<Mapping>(() => {
   return createMapping(selectedObjectType.value, csvData.value.headers)
 })
 
