@@ -2,6 +2,10 @@
 import router from '@/router'
 import { csvData, isMappingSaved, mapping, selectedObjectType } from '@/store'
 
+/**
+ * Handles the return button click
+ * Navigates back to the mapping page and resets the navigation state.
+ */
 function returnHandler() {
   router.push('/mapping')
   isMappingSaved.value = false
