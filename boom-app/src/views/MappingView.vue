@@ -17,6 +17,7 @@ const isObjectSelected = computed(() => {
 })
 watch(selectedObjectType, () => {
   mapping.value = createMapping(selectedObjectType.value, csvData.value.headers)
+  isMappingSaved.value = false
 })
 
 /**
