@@ -21,19 +21,11 @@ export const selectedObjectType = computed<ObjectType | undefined>(() => {
   return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value)
 })
 
-// Navigation state variables
-const navState = ref<number>(0) // 0=start, 1=upload, 2=mapping, 3=preview
-export const computedNavState = computed<number>({
-  get() {
-    return navState.value
-  },
-  set(newValue) {
-    // Only allow increasing the nav state, not decreasing, so users can go back to fix things but not skip ahead.
-    if (newValue > navState.value) {
-      navState.value = newValue
-    }
-  },
+// Navigation variables
+export const isUploaded = computed<boolean>(() => {
+  return csvData.value.data.length > 0
 })
+export const isMappingSaved = ref<boolean>(false)
 
 // TEMP ObjectType example data
 export const exampleObjects: ObjectType[] = [

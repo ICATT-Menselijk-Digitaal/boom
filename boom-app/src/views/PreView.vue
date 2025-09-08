@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { convertDataToObjects } from '@/helpers'
-import { csvData, mapping, selectedObjectType } from '@/store'
-import { ref } from 'vue'
+import router from '@/router'
+import { csvData, isMappingSaved, mapping, selectedObjectType } from '@/store'
 
-// TODO: REMOVE temp handler function
-const tempResult = ref()
-function tempConvertHandler() {
-  tempResult.value = convertDataToObjects()
+/**
+ * Handles the return button click
+ * Navigates back to the mapping page and resets the navigation state.
+ */
+function returnHandler() {
+  router.push('/mapping')
+  isMappingSaved.value = false
 }
-// TODO: REMOVE temp handler function
 </script>
 
 <template>
@@ -55,10 +56,7 @@ function tempConvertHandler() {
     </div>
     <div class="flex row">
       <button @click="$router.push('/')">Accept</button>
-      <button @click="$router.push('/mapping')">Return</button>
-      <!-- TODO: PLACEHOLDER REMOVE -->
-      <button @click="tempConvertHandler">Convert</button>
-      <!-- TODO: PLACEHOLDER REMOVE -->
+      <button @click="returnHandler">Return</button>
     </div>
   </main>
 </template>
