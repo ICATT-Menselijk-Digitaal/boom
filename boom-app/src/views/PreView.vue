@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { csvData, mapping, selectedObjectType } from '@/store'
+import router from '@/router'
+import { csvData, isMappingSaved, mapping, selectedObjectType } from '@/store'
+
+function returnHandler() {
+  router.push('/mapping')
+  isMappingSaved.value = false
+}
 </script>
 
 <template>
@@ -43,7 +49,7 @@ import { csvData, mapping, selectedObjectType } from '@/store'
     </div>
     <div class="flex row">
       <button @click="$router.push('/')">Accept</button>
-      <button @click="$router.push('/mapping')">Return</button>
+      <button @click="returnHandler">Return</button>
     </div>
   </main>
 </template>

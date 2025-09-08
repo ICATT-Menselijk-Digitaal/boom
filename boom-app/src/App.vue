@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import { computedNavState } from './store'
+import { isMappingSaved, isUploaded } from './store'
 </script>
 
 <template>
@@ -13,8 +13,8 @@ import { computedNavState } from './store'
     <nav>
       <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/upload">Upload</RouterLink>
-      <RouterLink v-if="computedNavState > 1" to="/mapping">Mapping</RouterLink>
-      <RouterLink v-if="computedNavState > 2" to="/preview">Preview</RouterLink>
+      <RouterLink v-if="isUploaded" to="/mapping">Mapping</RouterLink>
+      <RouterLink v-if="isMappingSaved" to="/preview">Preview</RouterLink>
     </nav>
     <RouterView class="view" />
   </div>

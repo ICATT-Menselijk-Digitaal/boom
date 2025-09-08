@@ -3,7 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import UploadView from '../views/UploadView.vue'
 import MappingView from '../views/MappingView.vue'
 import PreView from '@/views/PreView.vue'
-import { computedNavState } from '@/store'
+import { isUploaded } from '@/store'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,7 +34,7 @@ const router = createRouter({
 // Navigation guard to return to home if a page is requested but the nav state is not high enough
 router.beforeEach((to) => {
   const toName = to.name?.toString() || ''
-  if (['mapping', 'preview'].includes(toName) && computedNavState.value < 2) {
+  if (['mapping', 'preview'].includes(toName) && isUploaded.value === false) {
     return { name: 'home' }
   }
 })

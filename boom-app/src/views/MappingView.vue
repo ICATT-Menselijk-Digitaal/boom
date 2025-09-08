@@ -8,7 +8,7 @@ import {
   selectedObjectTypeName,
   selectedObjectType,
   csvData,
-  computedNavState,
+  isMappingSaved,
 } from '@/store'
 import { computed, watch } from 'vue'
 
@@ -25,7 +25,7 @@ watch(selectedObjectType, () => {
  */
 function submitHandler() {
   router.push('/preview')
-  computedNavState.value = 3
+  isMappingSaved.value = true
 }
 </script>
 
