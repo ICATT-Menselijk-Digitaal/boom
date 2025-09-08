@@ -1,57 +1,32 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
+import { createMapping, getObjectTypeNames, getObjectTypePropertyNames } from '@/helpers'
+import router from '@/router'
 import {
-  createMapping,
-  getObjectTypeByName,
-  getObjectTypeNames,
-  getObjectTypePropertyNames,
-} from '@/helpers'
-import { isMapping, mapping, selectedObjectTypeName } from '@/store'
-import type { ObjectType } from '@/types'
+  exampleObjects,
+  mapping,
+  selectedObjectTypeName,
+  selectedObjectType,
+  csvData,
+  isMappingSaved,
+} from '@/store'
 import { computed, watch } from 'vue'
 
-// Temporary placeholders for data
-const exampleHeaderNames = ['name', 'address']
-const exampleObjects: ObjectType[] = [
-  {
-    title: 'Boom',
-    type: 'object',
-    properties: { name: { type: 'string' }, location: { type: 'string' } },
-    required: ['name', 'location'],
-  },
-  {
-    title: 'Smoel',
-    type: 'object',
-    properties: {
-      firstname: { type: 'string' },
-      lastname: { type: 'string' },
-      address: { type: 'string' },
-    },
-    required: ['firstname'],
-  },
-]
-const selectedObjectType = computed(() => {
-  return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value || '')
-})
 const isObjectSelected = computed(() => {
   return selectedObjectTypeName.value !== ''
 })
-
-// Create an automatic mapping when the selected object type is changed/selected.
-watch(selectedObjectTypeName, (newValue) => {
-  mapping.value = createMapping(
-    getObjectTypeByName(exampleObjects, newValue || ''),
-    exampleHeaderNames,
-  )
+watch(selectedObjectType, () => {
+  mapping.value = createMapping(selectedObjectType.value, csvData.value.headers)
+  isMappingSaved.value = false
 })
 
 /**
- * Resets the mapping state and starts the view at select object type.
+ * Handles the form submission
+ * Navigates to the preview page and updates the navigation state.
  */
-function resetMapping() {
-  selectedObjectTypeName.value = ''
-  mapping.value = {}
-  isMapping.value = true
+function submitHandler() {
+  router.push('/preview')
+  isMappingSaved.value = true
 }
 </script>
 
@@ -70,30 +45,21 @@ function resetMapping() {
         </select>
       </div>
     </div>
-    <div v-if="isMapping && isObjectSelected" class="flex column box">
+    <div v-if="isObjectSelected" class="flex column box">
       <h2>Map properties to header names</h2>
       <p>For each object type property, select the CSV header name that matches it.</p>
-      <form class="flex column" @submit.prevent="isMapping = false">
+      <form id="mapping-form" class="flex column" @submit.prevent="submitHandler">
         <MappingRow
           v-for="objectTypePropertyName in getObjectTypePropertyNames(selectedObjectType)"
           :key="objectTypePropertyName"
           :objectTypePropertyName="objectTypePropertyName"
-          :headerNames="exampleHeaderNames"
+          :headerNames="csvData.headers"
           :required="selectedObjectType?.required?.includes(objectTypePropertyName)"
           v-model="mapping[objectTypePropertyName]"
         />
-        <button type="submit">Save Mapping</button>
       </form>
     </div>
-    <div v-if="!isMapping && isObjectSelected" class="flex column box">
-      <h2>Result of Mapping</h2>
-      <pre>{{ mapping }}</pre>
-      <div class="flex row">
-        <button @click="isMapping = true">Edit Mapping</button>
-        <button @click="resetMapping">Reset mapping</button>
-      </div>
-    </div>
-    <button v-if="!isMapping && isObjectSelected" @click="$router.push('/')">Next</button>
+    <button v-if="isObjectSelected" type="submit" form="mapping-form">Save mapping</button>
   </main>
 </template>
 

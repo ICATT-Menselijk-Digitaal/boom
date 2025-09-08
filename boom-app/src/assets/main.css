@@ -39,10 +39,19 @@ button {
   border-color: transparent;
   background-color: var(--vt-c-green);
   color: var(--vt-c-white-soft);
-  font-family: system-ui;
+  font-family: inherit;
+  font-size: inherit;
 }
 button:hover {
   background-color: var(--vt-c-green-dark);
+}
+button:disabled {
+  background-color: var(--vt-c-green-disabled);
+  color: var(--vt-c-text-dark-2);
+}
+input {
+  font-family: inherit;
+  font-size: inherit;
 }
 
 @media (hover: hover) {
