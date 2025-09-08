@@ -32,22 +32,25 @@ function submitHandler() {
 }
 
 async function fetchObjectTypes() {
-  console.log(
-    await fetch('objecttypes-api/objecttypes')
-      .then((response) => response.json())
-      .then((data) => data.results)
-      .then((results: APIObjectType[]) => {
-        objectTypes.value = results.map((obj: APIObjectType) => {
-          return {
-            title: obj.name,
-            uuid: obj.uuid,
-            versionNumber: obj.versions.length,
-            type: 'object',
-            properties: {},
-          }
-        })
-      }),
+  await fetch('objecttypes-api/objecttypes')
+    .then((response) => response.json())
+    .then((data) => data.results)
+    .then((results: APIObjectType[]) => {
+      objectTypes.value = results.map((obj: APIObjectType) => {
+        return {
+          title: obj.name,
+          uuid: obj.uuid,
+          versionNumber: obj.versions.length,
+          type: 'object',
+          properties: {},
+        }
+      })
+    })
+  await fetch(
+    `objecttypes-api/objecttypes/${objectTypes.value.at(0)?.uuid}/versions/${objectTypes.value.at(0)?.versionNumber}`,
   )
+    .then((response) => response.json())
+    .then((data) => console.log(data.jsonSchema.properties))
 }
 </script>
 
