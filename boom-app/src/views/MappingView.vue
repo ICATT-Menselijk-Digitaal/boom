@@ -10,8 +10,10 @@ import {
   csvData,
   isMappingSaved,
 } from '@/store'
-import { computed, watch } from 'vue'
+import type { APIObjectType, ObjectType } from '@/types'
+import { computed, ref, watch } from 'vue'
 
+const objectTypes = ref<ObjectType[]>([])
 const isObjectSelected = computed(() => {
   return selectedObjectTypeName.value !== ''
 })
@@ -27,6 +29,25 @@ watch(selectedObjectType, () => {
 function submitHandler() {
   router.push('/preview')
   isMappingSaved.value = true
+}
+
+async function fetchObjectTypes() {
+  console.log(
+    await fetch('objecttypes-api/objecttypes')
+      .then((response) => response.json())
+      .then((data) => data.results)
+      .then((results: APIObjectType[]) => {
+        objectTypes.value = results.map((obj: APIObjectType) => {
+          return {
+            title: obj.name,
+            uuid: obj.uuid,
+            versionNumber: obj.versions.length,
+            type: 'object',
+            properties: {},
+          }
+        })
+      }),
+  )
 }
 </script>
 
@@ -60,6 +81,7 @@ function submitHandler() {
       </form>
     </div>
     <button v-if="isObjectSelected" type="submit" form="mapping-form">Save mapping</button>
+    <button @click="fetchObjectTypes">Fetch</button>
   </main>
 </template>
 

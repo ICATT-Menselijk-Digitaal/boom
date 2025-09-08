@@ -8,6 +8,8 @@ export type CsvOutput = {
  */
 export type ObjectType = {
   title: string
+  uuid: string
+  versionNumber: number
   type: 'object'
   properties: Record<string, { type: 'string' }>
   required?: string[]
@@ -15,3 +17,8 @@ export type ObjectType = {
 
 export type CsvRecord = Record<string, string>
 export type Mapping = Record<string, string>
+export type APIObjectType = {
+  name: string
+  uuid: string
+  versions: string[]
+}

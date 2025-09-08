@@ -31,12 +31,16 @@ export const isMappingSaved = ref<boolean>(false)
 export const exampleObjects: ObjectType[] = [
   {
     title: 'Boom',
+    uuid: '1',
+    versionNumber: 3,
     type: 'object',
     properties: { name: { type: 'string' }, location: { type: 'string' } },
     required: ['name', 'location'],
   },
   {
     title: 'Smoel',
+    uuid: '2',
+    versionNumber: 1,
     type: 'object',
     properties: {
       firstname: { type: 'string' },
