@@ -3,12 +3,12 @@ import MappingRow from '@/components/MappingRow.vue'
 import { createMapping, getObjectTypeNames, getObjectTypePropertyNames } from '@/helpers'
 import router from '@/router'
 import {
-  exampleObjects,
   mapping,
   selectedObjectTypeName,
   selectedObjectType,
   csvData,
   isMappingSaved,
+  objectTypesList,
 } from '@/store'
 import { computed, watch } from 'vue'
 
@@ -39,7 +39,7 @@ function submitHandler() {
       <div class="flex row">
         <label for="selectObjectType">Object type</label>
         <select id="selectObjectType" v-model="selectedObjectTypeName">
-          <option v-for="objectType in getObjectTypeNames(exampleObjects)" :key="objectType">
+          <option v-for="objectType in getObjectTypeNames(objectTypesList)" :key="objectType">
             {{ objectType }}
           </option>
         </select>

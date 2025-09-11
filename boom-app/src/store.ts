@@ -18,7 +18,7 @@ export const fileName = ref<string>('')
 // Mapping variables
 export const selectedObjectTypeName = ref<string>('')
 export const selectedObjectType = computed<ObjectType | undefined>(() => {
-  return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value)
+  return getObjectTypeByName(objectTypesList.value, selectedObjectTypeName.value)
 })
 
 // Navigation variables
@@ -45,3 +45,5 @@ export const exampleObjects: ObjectType[] = [
     },
   },
 ]
+
+export const objectTypesList = ref<ObjectType[]>([])
