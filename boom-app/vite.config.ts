@@ -12,7 +12,7 @@ export default defineConfig({
         target: 'http://localhost:8000/api/v2/',
         changeOrigin: true,
         headers: {
-          Authorization: `Token ${loadEnv('env', process.cwd(), '').VITE_OBJECTS_API_KEY}`,
+          Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTS_API_KEY}`,
           Cookie: '',
         },
         rewrite: (path) => path.replace(/^\/objects-api/, ''),
@@ -21,7 +21,7 @@ export default defineConfig({
         target: 'http://localhost:8001/api/v2/',
         changeOrigin: true,
         headers: {
-          Authorization: `Token ${loadEnv('env', process.cwd(), '').VITE_OBJECTTYPES_API_KEY}`,
+          Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTTYPES_API_KEY}`,
           Cookie: '',
         },
         rewrite: (path) => path.replace(/^\/objecttypes-api/, ''),
