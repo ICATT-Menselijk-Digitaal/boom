@@ -3,7 +3,7 @@ import {
   type CsvRecord,
   type Mapping,
   type ObjectType,
-  type ObjectVersion,
+  type ObjectTypeVersion,
   type PaginatedObjectTypeList,
 } from './types'
 
@@ -103,15 +103,19 @@ function validateObject(record: CsvRecord, headerName: string) {
   }
 }
 
-// -- Objecttype api functions --
+// -- Objecttype API functions --
+
 /**
- *
+ * Fetches the list of ObjectTypes,
+ * then the latest version of each ObjectType,
+ * and pushes the JSON schema of each ObjectType to the objectTypesList variable in the store.
  */
 export async function fetchObjectTypes() {
-  fetchObjectTypeData<PaginatedObjectTypeList>('/objecttypes-api/objecttypes')
+  fetchObjectTypeData<PaginatedObjectTypeList>(reconstructApiURL('/objecttypes'))
     .then((objectTypeList) => {
       objectTypeList.results.forEach((objectType) => {
-        followRedirectURL<ObjectVersion>(objectType.versions?.at(0) ?? '')
+        const url = reconstructApiURL(objectType.versions?.at(0) ?? '') // Change to read the correct latest and published version
+        fetchObjectTypeData<ObjectTypeVersion>(url)
           .then((objectType) => objectTypesList.value.push(objectType.jsonSchema as ObjectType))
           .catch((error) =>
             console.error(console.error(`Error during individual ObjectTypes${error}`)),
@@ -121,13 +125,21 @@ export async function fetchObjectTypes() {
     .catch((error) => console.error(`Error during fetching of the list of ObjectTypes${error}`))
 }
 
+/**
+ * A generic function to fetch data from the ObjectTypes API.
+ * Returns a promised with the provided type.
+ * @param url string URL to the ObjectTypes API endpoint. The URL will be rewritten to redirect to the backend endpoint.
+ * @returns Promise<T> with the fetched data.
+ */
 export async function fetchObjectTypeData<T>(url: string): Promise<T> {
-  return await fetch(url.replace(/.*(?=\/objecttypes)/, '/objecttypes-api')).then((response) =>
-    response.json(),
-  )
+  return await fetch(url).then((response) => response.json())
 }
 
-async function followRedirectURL<T>(url: string): Promise<T> {
-  url = url.replace(/.*(?=\/objecttypes)/, '/objecttypes-api')
-  return fetchObjectTypeData<T>(url)
+/**
+ * Changes the given URL to redirect to the backend endpoint.
+ * @param url URL to change
+ * @returns A URL that redirects to the backend endpoint.
+ */
+function reconstructApiURL(_url: string): string {
+  return _url.replace(/.*(?=\/objecttypes)/, '/objecttypes-api')
 }
