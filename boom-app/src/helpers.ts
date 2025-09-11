@@ -1,5 +1,11 @@
-import { csvData, mapping } from './store'
-import { type CsvRecord, type Mapping, type ObjectType } from './types'
+import { csvData, mapping, objectTypesList } from './store'
+import {
+  type CsvRecord,
+  type Mapping,
+  type ObjectType,
+  type ObjectVersion,
+  type PaginatedObjectTypeList,
+} from './types'
 
 /**
  * Get the titles of object types from an array of ObjectType objects.
@@ -16,6 +22,7 @@ export function getObjectTypeNames(objectTypes: ObjectType[]): string[] {
  * @returns string array of property names.
  */
 export function getObjectTypePropertyNames(objectType: ObjectType | undefined): string[] {
+  console.log(objectType?.properties)
   return Object.keys(objectType?.properties || {})
 }
 
@@ -94,4 +101,33 @@ function validateObject(record: CsvRecord, headerName: string) {
   if (typeof record[headerName] !== 'string') {
     throw new Error(`Value for header "${headerName}" is not a string.`)
   }
+}
+
+// -- Objecttype api functions --
+/**
+ *
+ */
+export async function fetchObjectTypes() {
+  fetchObjectTypeData<PaginatedObjectTypeList>('/objecttypes-api/objecttypes')
+    .then((objectTypeList) => {
+      objectTypeList.results.forEach((objectType) => {
+        followRedirectURL<ObjectVersion>(objectType.versions?.at(0) ?? '')
+          .then((objectType) => objectTypesList.value.push(objectType.jsonSchema as ObjectType))
+          .catch((error) =>
+            console.error(console.error(`Error during individual ObjectTypes${error}`)),
+          )
+      })
+    })
+    .catch((error) => console.error(`Error during fetching of the list of ObjectTypes${error}`))
+}
+
+export async function fetchObjectTypeData<T>(url: string): Promise<T> {
+  return await fetch(url.replace(/.*(?=\/objecttypes)/, '/objecttypes-api')).then((response) =>
+    response.json(),
+  )
+}
+
+async function followRedirectURL<T>(url: string): Promise<T> {
+  url = url.replace(/.*(?=\/objecttypes)/, '/objecttypes-api')
+  return fetchObjectTypeData<T>(url)
 }
