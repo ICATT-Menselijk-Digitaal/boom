@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
-import { fetchObjectTypeData, getObjectTypePropertyNames } from '@/helpers'
+import { createMapping, fetchObjectTypeData } from '@/helpers'
 import router from '@/router'
 import {
   mapping,
@@ -18,9 +18,11 @@ const isObjectSelected = computed(() => {
   return selectedObjectType.value !== undefined
 })
 watch(selectedObjectType, async () => {
-  // mapping.value = createMapping(selectedObjectType.value, csvData.value.headers)
   isMappingSaved.value = false
   fetchObjectVersions()
+})
+watch(selectedObjectVersion, () => {
+  mapping.value = createMapping(selectedObjectVersion.value?.jsonSchema, csvData.value.headers)
 })
 
 /**

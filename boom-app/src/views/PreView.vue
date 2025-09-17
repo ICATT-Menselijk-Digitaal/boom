@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import router from '@/router'
-import { csvData, isMappingSaved, mapping, selectedObjectType } from '@/store'
+import { csvData, isMappingSaved, mapping, selectedObjectVersion } from '@/store'
 
 /**
  * Handles the return button click
@@ -32,7 +32,9 @@ function returnHandler() {
         <thead>
           <tr>
             <th
-              v-for="(propertyName, index) in Object.keys(selectedObjectType?.properties || {})"
+              v-for="(propertyName, index) in Object.keys(
+                selectedObjectVersion?.jsonSchema?.properties || {},
+              )"
               :key="index"
             >
               {{ propertyName }}
@@ -42,7 +44,9 @@ function returnHandler() {
         <tbody>
           <tr>
             <td
-              v-for="(propertyName, index) in Object.keys(selectedObjectType?.properties || {})"
+              v-for="(propertyName, index) in Object.keys(
+                selectedObjectVersion?.jsonSchema?.properties || {},
+              )"
               :key="index"
             >
               {{ csvData?.data.at(0)?.[mapping[propertyName]] }}
