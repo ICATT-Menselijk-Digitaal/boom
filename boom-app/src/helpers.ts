@@ -111,7 +111,7 @@ function validateObject(record: CsvRecord, headerName: string) {
  * and pushes the JSON schema of each ObjectType to the objectTypesList variable in the store.
  */
 export async function fetchObjectTypes() {
-  fetchObjectTypeData<PaginatedObjectTypeList>(reconstructApiURL('/objecttypes'))
+  fetchObjectTypeData<PaginatedObjectTypeList>('/objecttypes')
     .then((objectTypeList) => {
       objectTypesMetaDataList.value = objectTypeList.results
     })
@@ -125,7 +125,7 @@ export async function fetchObjectTypes() {
  * @returns Promise<T> with the fetched data.
  */
 export async function fetchObjectTypeData<T>(url: string): Promise<T> {
-  return await fetch(url).then((response) => response.json())
+  return fetch(reconstructApiURL(url)).then((response) => response.json() as Promise<T>)
 }
 
 /**

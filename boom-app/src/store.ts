@@ -1,6 +1,11 @@
 import { computed, ref } from 'vue'
-import { type ObjectTypeMetaData, type CsvOutput, type Mapping, type ObjectType } from './types'
-import { getObjectTypeByName } from './helpers'
+import {
+  type ObjectTypeMetaData,
+  type CsvOutput,
+  type Mapping,
+  type ObjectType,
+  type ObjectTypeVersionMetaData,
+} from './types'
 
 // Stored data
 export const csvData = ref<CsvOutput>({
@@ -16,10 +21,8 @@ export const mapping = ref<Mapping>({})
 export const fileName = ref<string>('')
 
 // Mapping variables
-export const selectedObjectTypeName = ref<string>('')
-export const selectedObjectType = computed<ObjectType | undefined>(() => {
-  return getObjectTypeByName(objectTypesList.value, selectedObjectTypeName.value)
-})
+export const selectedObjectType = ref<ObjectTypeMetaData>()
+export const selectedObjectVersion = ref<ObjectTypeVersionMetaData>()
 
 // Navigation variables
 export const isUploaded = computed<boolean>(() => {
@@ -52,3 +55,4 @@ export const exampleObjects: ObjectType[] = [
 
 export const objectTypesList = ref<ObjectType[]>([])
 export const objectTypesMetaDataList = ref<ObjectTypeMetaData[]>([])
+export const objectTypesVersionMetaDataList = ref<ObjectTypeVersionMetaData[]>([])
