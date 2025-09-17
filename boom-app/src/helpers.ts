@@ -57,11 +57,11 @@ export function createMapping(objectType: ObjectType | undefined, headers: strin
  * Convert all CSV data to objects based on the current mapping.
  */
 export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping) {
-  const results: CsvRecord[] = []
-  for (const row of csvData.data) {
-    results.push(convertRecordToObject(row, mapping))
+  const mappedRecord: CsvRecord[] = []
+  for (const dataRecord of csvData.data) {
+    mappedRecord.push(convertRecordToObject(dataRecord, mapping))
   }
-  return results
+  return mappedRecord
 }
 
 /**
