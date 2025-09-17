@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
-import { createMapping, getObjectTypeNames, getObjectTypePropertyNames } from '@/helpers'
+import { createMapping, getObjectTypePropertyNames } from '@/helpers'
 import router from '@/router'
 import {
   mapping,
@@ -8,12 +8,10 @@ import {
   selectedObjectType,
   csvData,
   isMappingSaved,
-  objectTypesList,
+  objectTypesMetaDataList,
 } from '@/store'
-import type { APIObjectType, ObjectType } from '@/types'
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 
-const objectTypes = ref<ObjectType[]>([])
 const isObjectSelected = computed(() => {
   return selectedObjectTypeName.value !== ''
 })
@@ -30,28 +28,6 @@ function submitHandler() {
   router.push('/preview')
   isMappingSaved.value = true
 }
-
-async function fetchObjectTypes() {
-  await fetch('objecttypes-api/objecttypes')
-    .then((response) => response.json())
-    .then((data) => data.results)
-    .then((results: APIObjectType[]) => {
-      objectTypes.value = results.map((obj: APIObjectType) => {
-        return {
-          title: obj.name,
-          uuid: obj.uuid,
-          versionNumber: obj.versions.length,
-          type: 'object',
-          properties: {},
-        }
-      })
-    })
-  await fetch(
-    `objecttypes-api/objecttypes/${objectTypes.value.at(0)?.uuid}/versions/${objectTypes.value.at(0)?.versionNumber}`,
-  )
-    .then((response) => response.json())
-    .then((data) => console.log(data.jsonSchema.properties))
-}
 </script>
 
 <template>
@@ -63,8 +39,8 @@ async function fetchObjectTypes() {
       <div class="flex row">
         <label for="selectObjectType">Object type</label>
         <select id="selectObjectType" v-model="selectedObjectTypeName">
-          <option v-for="objectType in getObjectTypeNames(objectTypesList)" :key="objectType">
-            {{ objectType }}
+          <option v-for="objectType in objectTypesMetaDataList" :key="objectType.name">
+            {{ objectType.name }}
           </option>
         </select>
       </div>
@@ -84,7 +60,6 @@ async function fetchObjectTypes() {
       </form>
     </div>
     <button v-if="isObjectSelected" type="submit" form="mapping-form">Save mapping</button>
-    <button @click="fetchObjectTypes">Fetch</button>
   </main>
 </template>
 

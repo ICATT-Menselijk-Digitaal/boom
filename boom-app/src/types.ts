@@ -22,21 +22,21 @@ export type PaginatedObjectTypeList = {
   count: number
   next?: string | null
   previous?: string | null
-  results: ObjectTypeResponse[]
+  results: ObjectTypeMetaData[]
 }
-export type ObjectTypeResponse = {
+export type ObjectTypeMetaData = {
   readonly url?: string
   uuid?: string
   name: string
   readonly versions?: string[]
 }
 
-export type ObjectTypeVersion = {
+export type ObjectTypeVersionMetaData = {
   readonly url?: string
   readonly version?: number
   readonly objectType?: string
   status?: 'published' | 'draft' | 'deprecated'
-  jsonSchema?: unknown
+  jsonSchema?: ObjectType
   readonly createdAt?: string
   readonly modifiedAt?: string
   readonly publishedAt?: string | null

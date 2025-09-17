@@ -1,10 +1,9 @@
-import { objectTypesList } from './store'
+import { objectTypesMetaDataList } from './store'
 import {
   type CsvOutput,
   type CsvRecord,
   type Mapping,
   type ObjectType,
-  type ObjectTypeVersion,
   type PaginatedObjectTypeList,
 } from './types'
 
@@ -114,14 +113,7 @@ function validateObject(record: CsvRecord, headerName: string) {
 export async function fetchObjectTypes() {
   fetchObjectTypeData<PaginatedObjectTypeList>(reconstructApiURL('/objecttypes'))
     .then((objectTypeList) => {
-      objectTypeList.results.forEach((objectType) => {
-        const url = reconstructApiURL(objectType.versions?.at(0) ?? '') // Change to read the correct latest and published version
-        fetchObjectTypeData<ObjectTypeVersion>(url)
-          .then((objectType) => objectTypesList.value.push(objectType.jsonSchema as ObjectType))
-          .catch((error) =>
-            console.error(console.error(`Error during individual ObjectTypes${error}`)),
-          )
-      })
+      objectTypesMetaDataList.value = objectTypeList.results
     })
     .catch((error) => console.error(`Error during fetching of the list of ObjectTypes${error}`))
 }

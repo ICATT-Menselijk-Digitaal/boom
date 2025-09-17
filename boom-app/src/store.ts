@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import { type CsvOutput, type Mapping, type ObjectType } from './types'
+import { type ObjectTypeMetaData, type CsvOutput, type Mapping, type ObjectType } from './types'
 import { getObjectTypeByName } from './helpers'
 
 // Stored data
@@ -51,3 +51,4 @@ export const exampleObjects: ObjectType[] = [
 ]
 
 export const objectTypesList = ref<ObjectType[]>([])
+export const objectTypesMetaDataList = ref<ObjectTypeMetaData[]>([])
