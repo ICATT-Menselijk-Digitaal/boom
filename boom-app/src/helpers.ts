@@ -1,5 +1,4 @@
-import { csvData, mapping } from './store'
-import { type CsvRecord, type Mapping, type ObjectType } from './types'
+import { type CsvOutput, type CsvRecord, type Mapping, type ObjectType } from './types'
 
 /**
  * Get the titles of object types from an array of ObjectType objects.
@@ -57,12 +56,12 @@ export function createMapping(objectType: ObjectType | undefined, headers: strin
 /**
  * Convert all CSV data to objects based on the current mapping.
  */
-export function convertDataToObjects() {
-  const results: CsvRecord[] = []
-  for (const row of csvData.value.data) {
-    results.push(convertRecordToObject(row))
+export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping) {
+  const mappedRecord: CsvRecord[] = []
+  for (const dataRecord of csvData.data) {
+    mappedRecord.push(convertRecordToObject(dataRecord, mapping))
   }
-  return results
+  return mappedRecord
 }
 
 /**
@@ -70,9 +69,9 @@ export function convertDataToObjects() {
  * @param record Record<string, string> representing a CSV record.
  * @returns A mapped object from the CSV record.
  */
-function convertRecordToObject(record: CsvRecord) {
+function convertRecordToObject(record: CsvRecord, mapping: Mapping) {
   const propertiesObject: Record<string, string> = {}
-  for (const [property, headerName] of Object.entries(mapping.value)) {
+  for (const [property, headerName] of Object.entries(mapping)) {
     try {
       validateObject(record, headerName)
       propertiesObject[property] = record[headerName]
