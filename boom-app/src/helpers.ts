@@ -1,4 +1,12 @@
-import { type CsvOutput, type CsvRecord, type Mapping, type ObjectType } from './types'
+import { objectTypesList } from './store'
+import {
+  type CsvOutput,
+  type CsvRecord,
+  type Mapping,
+  type ObjectType,
+  type ObjectTypeVersion,
+  type PaginatedObjectTypeList,
+} from './types'
 
 /**
  * Get the titles of object types from an array of ObjectType objects.
@@ -15,6 +23,7 @@ export function getObjectTypeNames(objectTypes: ObjectType[]): string[] {
  * @returns string array of property names.
  */
 export function getObjectTypePropertyNames(objectType: ObjectType | undefined): string[] {
+  console.log(objectType?.properties)
   return Object.keys(objectType?.properties || {})
 }
 
@@ -93,4 +102,45 @@ function validateObject(record: CsvRecord, headerName: string) {
   if (typeof record[headerName] !== 'string') {
     throw new Error(`Value for header "${headerName}" is not a string.`)
   }
+}
+
+// -- Objecttype API functions --
+
+/**
+ * Fetches the list of ObjectTypes,
+ * then the latest version of each ObjectType,
+ * and pushes the JSON schema of each ObjectType to the objectTypesList variable in the store.
+ */
+export async function fetchObjectTypes() {
+  fetchObjectTypeData<PaginatedObjectTypeList>(reconstructApiURL('/objecttypes'))
+    .then((objectTypeList) => {
+      objectTypeList.results.forEach((objectType) => {
+        const url = reconstructApiURL(objectType.versions?.at(0) ?? '') // Change to read the correct latest and published version
+        fetchObjectTypeData<ObjectTypeVersion>(url)
+          .then((objectType) => objectTypesList.value.push(objectType.jsonSchema as ObjectType))
+          .catch((error) =>
+            console.error(console.error(`Error during individual ObjectTypes${error}`)),
+          )
+      })
+    })
+    .catch((error) => console.error(`Error during fetching of the list of ObjectTypes${error}`))
+}
+
+/**
+ * A generic function to fetch data from the ObjectTypes API.
+ * Returns a promised with the provided type.
+ * @param url string URL to the ObjectTypes API endpoint. The URL will be rewritten to redirect to the backend endpoint.
+ * @returns Promise<T> with the fetched data.
+ */
+export async function fetchObjectTypeData<T>(url: string): Promise<T> {
+  return await fetch(url).then((response) => response.json())
+}
+
+/**
+ * Changes the given URL to redirect to the backend endpoint.
+ * @param url URL to change
+ * @returns A URL that redirects to the backend endpoint.
+ */
+function reconstructApiURL(_url: string): string {
+  return _url.replace(/.*(?=\/objecttypes)/, '/objecttypes-api')
 }

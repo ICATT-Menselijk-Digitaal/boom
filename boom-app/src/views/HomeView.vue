@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { fetchObjectTypes } from '@/helpers'
 import TheWelcome from '../components/TheWelcome.vue'
+fetchObjectTypes()
 </script>
 
 <template>
