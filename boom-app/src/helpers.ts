@@ -24,8 +24,9 @@ export function createMapping(objectType: ObjectType | undefined, headers: strin
 
 /**
  * Convert all CSV data to objects based on the current mapping.
+ * @returns A list of converted records.
  */
-export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping) {
+export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping): CsvRecord[] {
   const mappedRecord: CsvRecord[] = []
   for (const dataRecord of csvData.data) {
     mappedRecord.push(convertRecordToObject(dataRecord, mapping))
@@ -38,7 +39,7 @@ export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping) {
  * @param record Record<string, string> representing a CSV record.
  * @returns A mapped object from the CSV record.
  */
-function convertRecordToObject(record: CsvRecord, mapping: Mapping) {
+function convertRecordToObject(record: CsvRecord, mapping: Mapping): Record<string, string> {
   const propertiesObject: Record<string, string> = {}
   for (const [property, headerName] of Object.entries(mapping)) {
     try {
@@ -53,9 +54,9 @@ function convertRecordToObject(record: CsvRecord, mapping: Mapping) {
 
 /**
  * Function that validates a cell in a record.
+ * Throws an Error if the validation is not passed.
  * @param record CsvRecord
  * @param headerName String representing the header name of the cell to validate.
- * @returns boolean indicating if the cell value is valid.
  */
 function validateObject(record: CsvRecord, headerName: string) {
   // Any future validation checks can be added here.

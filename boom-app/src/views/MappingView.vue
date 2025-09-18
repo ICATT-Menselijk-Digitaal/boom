@@ -12,7 +12,7 @@ import {
   autoMapping,
   mapping,
 } from '@/store'
-import { type ObjectTypeVersionMetaData } from '@/types'
+import { type Mapping, type ObjectTypeVersionMetaData } from '@/types'
 import { computed, watch } from 'vue'
 
 const isObjectSelected = computed(() => {
@@ -21,7 +21,7 @@ const isObjectSelected = computed(() => {
 watch(selectedObjectType, async () => {
   selectedObjectVersion.value = undefined
   isMappingSaved.value = false
-  fetchObjectVersions()
+  objectTypesVersionMetaDataList.value = await fetchObjectVersions()
 })
 watch(selectedObjectVersion, () => {
   autoMapping.value = createMapping(selectedObjectVersion.value?.jsonSchema, csvData.value.headers)
@@ -33,7 +33,7 @@ watch(selectedObjectVersion, () => {
  * Navigates to the preview page and updates the navigation state.
  */
 function submitHandler(formEvent: Event) {
-  setMappingFromFormData(formEvent)
+  mapping.value = setMappingFromFormData(formEvent)
   router.push('/preview')
   isMappingSaved.value = true
 }
@@ -41,24 +41,27 @@ function submitHandler(formEvent: Event) {
 /**
  * Maps properties to selected header names supplied by the form event.
  * @param formEvent Event formEvent that carries the selected header names.
+ * @returns A mapping from property to header name
  */
-function setMappingFromFormData(formEvent: Event) {
-  mapping.value = {}
+function setMappingFromFormData(formEvent: Event): Mapping {
+  const mapping: Mapping = {}
   if (formEvent.target instanceof HTMLFormElement) {
     const formData = new FormData(formEvent.target)
     for (const [key, value] of formData) {
       if (typeof value === 'string' && value !== '') {
-        mapping.value[key] = value as string
+        mapping[key] = value as string
       }
     }
   }
+  return mapping
 }
 
 /**
  * Fetch all version meta data.
+ * @returns A Promise with a list of ObjectType version meta data
  */
-async function fetchObjectVersions() {
-  objectTypesVersionMetaDataList.value = await Promise.all(
+async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
+  return Promise.all(
     selectedObjectType.value?.versions?.map((url) =>
       fetchObjectTypeData<ObjectTypeVersionMetaData>(url),
     ) ?? [],

@@ -24,6 +24,7 @@ export type PaginatedObjectTypeList = {
   previous?: string | null
   results: ObjectTypeMetaData[]
 }
+
 export type ObjectTypeMetaData = {
   readonly url?: string
   uuid?: string

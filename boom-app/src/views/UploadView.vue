@@ -6,7 +6,10 @@ import router from '@/router'
 import { fetchObjectTypeData } from '@/helpers'
 
 /**
- * Handles the 'fileParsed' event and saves the CsvOutput data to pass that to the DisplayComponent.
+ * Handles the 'fileParsed' event:
+ * - fetches the ObjectTypes meta data
+ * - saves the CsvOutput data to pass that to the DisplayComponent.
+ * - routes to /mapping
  * @param {CsvOutput} receivedData - The parsed CSV data.
  */
 async function handleFileParsed(receivedData: CsvOutput) {
@@ -19,6 +22,7 @@ async function handleFileParsed(receivedData: CsvOutput) {
  * Fetches the list of ObjectTypes,
  * then the latest version of each ObjectType,
  * and pushes the JSON schema of each ObjectType to the objectTypesList variable in the store.
+ * @returns A Promise that is a list of ObjectType meta data
  */
 async function fetchObjectTypes(): Promise<ObjectTypeMetaData[]> {
   let returnList: ObjectTypeMetaData[] = []
