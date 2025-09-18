@@ -12,3 +12,6 @@ export type ObjectType = {
   properties: Record<string, { type: 'string' }>
   required?: string[]
 }
+
+export type CsvRecord = Record<string, string>
+export type Mapping = Record<string, string>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { convertDataToObjects } from '@/helpers'
 import router from '@/router'
-import { csvData, isMappingSaved, mapping, selectedObjectType } from '@/store'
+import { csvData, isMappingSaved, mapping } from '@/store'
 
 /**
  * Handles the return button click
@@ -32,8 +33,8 @@ function returnHandler() {
         <thead>
           <tr>
             <th
-              v-for="(propertyName, index) in Object.keys(selectedObjectType?.properties || {})"
-              :key="index"
+              v-for="(_, propertyName) in convertDataToObjects(csvData, mapping).at(0)"
+              :key="propertyName"
             >
               {{ propertyName }}
             </th>
@@ -41,11 +42,8 @@ function returnHandler() {
         </thead>
         <tbody>
           <tr>
-            <td
-              v-for="(propertyName, index) in Object.keys(selectedObjectType?.properties || {})"
-              :key="index"
-            >
-              {{ csvData?.data.at(0)?.[mapping[propertyName]] }}
+            <td v-for="value in convertDataToObjects(csvData, mapping).at(0)" :key="value">
+              {{ value }}
             </td>
           </tr>
         </tbody>
