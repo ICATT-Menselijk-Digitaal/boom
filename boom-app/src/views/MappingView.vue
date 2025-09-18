@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
-import { createMapping, fetchObjectTypeData } from '@/helpers'
+import { createMapping, fetchObjectTypeData, fetchObjectTypes } from '@/helpers'
 import router from '@/router'
 import {
   selectedObjectType,
@@ -15,10 +15,13 @@ import {
 import { type ObjectTypeVersionMetaData } from '@/types'
 import { computed, watch } from 'vue'
 
+fetchObjectTypes()
+
 const isObjectSelected = computed(() => {
   return selectedObjectType.value !== undefined
 })
 watch(selectedObjectType, async () => {
+  selectedObjectVersion.value = undefined
   isMappingSaved.value = false
   fetchObjectVersions()
 })
