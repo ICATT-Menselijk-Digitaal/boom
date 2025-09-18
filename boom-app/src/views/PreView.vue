@@ -42,8 +42,8 @@ function returnHandler() {
         </thead>
         <tbody>
           <tr>
-            <td v-for="data in convertDataToObjects(csvData, mapping).at(0)" :key="data">
-              {{ data }}
+            <td v-for="value in convertDataToObjects(csvData, mapping).at(0)" :key="value">
+              {{ value }}
             </td>
           </tr>
         </tbody>

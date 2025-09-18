@@ -25,14 +25,6 @@ watch(selectedObjectType, () => {
  * Navigates to the preview page and updates the navigation state.
  */
 function submitHandler() {
-  // function submitHandler(e: Event) {
-  // if (e.target instanceof HTMLFormElement) {
-  //   const formData = new FormData(e.target)
-  //   for (const [key, value] of formData) {
-  //   }
-  //   formData.forEach((value, key) => {})
-  //   const obj = Object.fromEntries(formData)
-  // }
   router.push('/preview')
   isMappingSaved.value = true
 }
