@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
-import { createMapping, fetchObjectTypeData, fetchObjectTypes } from '@/helpers'
+import { createMapping, fetchObjectTypeData } from '@/helpers'
 import router from '@/router'
 import {
   selectedObjectType,
@@ -14,8 +14,6 @@ import {
 } from '@/store'
 import { type ObjectTypeVersionMetaData } from '@/types'
 import { computed, watch } from 'vue'
-
-fetchObjectTypes()
 
 const isObjectSelected = computed(() => {
   return selectedObjectType.value !== undefined
@@ -46,10 +44,12 @@ function submitHandler(formEvent: Event) {
  */
 function setMappingFromFormData(formEvent: Event) {
   mapping.value = {}
-  const formData = new FormData(formEvent.target as HTMLFormElement)
-  for (const [key, value] of formData) {
-    if (typeof value === 'string' && value !== '') {
-      mapping.value[key] = value as string
+  if (formEvent.target instanceof HTMLFormElement) {
+    const formData = new FormData(formEvent.target)
+    for (const [key, value] of formData) {
+      if (typeof value === 'string' && value !== '') {
+        mapping.value[key] = value as string
+      }
     }
   }
 }

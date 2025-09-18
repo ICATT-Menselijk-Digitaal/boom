@@ -1,11 +1,4 @@
-import { objectTypesMetaDataList } from './store'
-import {
-  type CsvOutput,
-  type CsvRecord,
-  type Mapping,
-  type ObjectType,
-  type PaginatedObjectTypeList,
-} from './types'
+import { type CsvOutput, type CsvRecord, type Mapping, type ObjectType } from './types'
 
 /**
  * Create a mapping of property names to header names.
@@ -74,33 +67,24 @@ function validateObject(record: CsvRecord, headerName: string) {
 // -- Objecttype API functions --
 
 /**
- * Fetches the list of ObjectTypes,
- * then the latest version of each ObjectType,
- * and pushes the JSON schema of each ObjectType to the objectTypesList variable in the store.
- */
-export async function fetchObjectTypes() {
-  fetchObjectTypeData<PaginatedObjectTypeList>('/objecttypes')
-    .then((objectTypeList) => {
-      objectTypesMetaDataList.value = objectTypeList.results
-    })
-    .catch((error) => console.error(`Error during fetching of the list of ObjectTypes${error}`))
-}
-
-/**
  * A generic function to fetch data from the ObjectTypes API.
  * Returns a promised with the provided type.
  * @param url string URL to the ObjectTypes API endpoint. The URL will be rewritten to redirect to the backend endpoint.
  * @returns Promise<T> with the fetched data.
  */
 export async function fetchObjectTypeData<T>(url: string): Promise<T> {
-  return fetch(reconstructApiURL(url)).then((response) => response.json() as Promise<T>)
+  return fetch(reconstructApiURL(url, '/objecttypes', '/objecttypes-api')).then(
+    (response) => response.json() as Promise<T>,
+  )
 }
 
 /**
  * Changes the given URL to redirect to the backend endpoint.
- * @param url URL to change
+ * @param url URL to change.
+ * @param replaceKeyword everything up to and including this keyword will be replaced. Example '/objecttypes'
+ * @param localKeyword the local api keyword the replace in the URL. Example '/objecttypes-api'
  * @returns A URL that redirects to the backend endpoint.
  */
-function reconstructApiURL(_url: string): string {
-  return _url.replace(/.*(?=\/objecttypes)/, '/objecttypes-api')
+function reconstructApiURL(_url: string, replaceKeyword: string, localKeyword: string): string {
+  return _url.replace(new RegExp(`.*(?=${replaceKeyword})`), localKeyword)
 }

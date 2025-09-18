@@ -1,16 +1,33 @@
 <script setup lang="ts">
-import type { CsvOutput } from '@/types'
+import type { CsvOutput, ObjectTypeMetaData, PaginatedObjectTypeList } from '@/types'
 import CsvUploadForm from '@/components/CsvUploadForm.vue'
-import { csvData, isUploaded } from '@/store'
+import { csvData, isUploaded, objectTypesMetaDataList } from '@/store'
 import router from '@/router'
+import { fetchObjectTypeData } from '@/helpers'
 
 /**
  * Handles the 'fileParsed' event and saves the CsvOutput data to pass that to the DisplayComponent.
  * @param {CsvOutput} receivedData - The parsed CSV data.
  */
-function handleFileParsed(receivedData: CsvOutput) {
+async function handleFileParsed(receivedData: CsvOutput) {
+  objectTypesMetaDataList.value = await fetchObjectTypes()
   csvData.value = receivedData
   router.push('/mapping')
+}
+
+/**
+ * Fetches the list of ObjectTypes,
+ * then the latest version of each ObjectType,
+ * and pushes the JSON schema of each ObjectType to the objectTypesList variable in the store.
+ */
+async function fetchObjectTypes(): Promise<ObjectTypeMetaData[]> {
+  let returnList: ObjectTypeMetaData[] = []
+  await fetchObjectTypeData<PaginatedObjectTypeList>('/objecttypes')
+    .then((objectTypeList) => {
+      returnList = objectTypeList.results
+    })
+    .catch((error) => console.error(`Error during fetching of the list of ObjectTypes${error}`))
+  return returnList
 }
 </script>
 
