@@ -16,6 +16,7 @@ export const csvData = ref<CsvOutput>({
 // Stored mapping
 // key: property name, value: header name
 export const mapping = ref<Mapping>({})
+export const autoMapping = ref<Mapping>({})
 
 // Upload variables
 export const fileName = ref<string>('')

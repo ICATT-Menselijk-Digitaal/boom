@@ -16,7 +16,6 @@ import {
 export function createMapping(objectType: ObjectType | undefined, headers: string[]): Mapping {
   const mapping: Mapping = {}
   const propertyNames: string[] = Object.keys(objectType?.properties ?? [])
-  console.log(propertyNames)
   for (const propertyName of propertyNames) {
     const headerName = headers.find(
       (headerName) => headerName.toLowerCase() === propertyName.toLowerCase(),

@@ -3,13 +3,14 @@ import MappingRow from '@/components/MappingRow.vue'
 import { createMapping, fetchObjectTypeData } from '@/helpers'
 import router from '@/router'
 import {
-  mapping,
   selectedObjectType,
   csvData,
   isMappingSaved,
   objectTypesMetaDataList,
   selectedObjectVersion,
   objectTypesVersionMetaDataList,
+  autoMapping,
+  mapping,
 } from '@/store'
 import { type ObjectTypeVersionMetaData } from '@/types'
 import { computed, watch } from 'vue'
@@ -22,18 +23,37 @@ watch(selectedObjectType, async () => {
   fetchObjectVersions()
 })
 watch(selectedObjectVersion, () => {
-  mapping.value = createMapping(selectedObjectVersion.value?.jsonSchema, csvData.value.headers)
+  autoMapping.value = createMapping(selectedObjectVersion.value?.jsonSchema, csvData.value.headers)
 })
 
 /**
  * Handles the form submission
+ * Creates the mapping based on the submitted form data.
  * Navigates to the preview page and updates the navigation state.
  */
-function submitHandler() {
+function submitHandler(formEvent: Event) {
+  setMappingFromFormData(formEvent)
   router.push('/preview')
   isMappingSaved.value = true
 }
 
+/**
+ * Maps properties to selected header names supplied by the form event.
+ * @param formEvent Event formEvent that carries the selected header names.
+ */
+function setMappingFromFormData(formEvent: Event) {
+  mapping.value = {}
+  const formData = new FormData(formEvent.target as HTMLFormElement)
+  for (const [key, value] of formData) {
+    if (typeof value === 'string' && value !== '') {
+      mapping.value[key] = value as string
+    }
+  }
+}
+
+/**
+ * Fetch all version meta data.
+ */
 async function fetchObjectVersions() {
   objectTypesVersionMetaDataList.value = await Promise.all(
     selectedObjectType.value?.versions?.map((url) =>
@@ -82,7 +102,7 @@ async function fetchObjectVersions() {
           :objectTypePropertyName="key"
           :headerNames="csvData.headers"
           :required="selectedObjectVersion?.jsonSchema?.required?.includes(key)"
-          v-model="mapping[key]"
+          v-model="autoMapping[key]"
         />
       </form>
     </div>
