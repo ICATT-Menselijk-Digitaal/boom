@@ -82,10 +82,42 @@ export async function fetchObjectTypeData<T>(url: string): Promise<T> {
 /**
  * Changes the given URL to redirect to the backend endpoint.
  * @param url URL to change.
- * @param replaceKeyword everything up to and including this keyword will be replaced. Example '/objecttypes'
+ * @param replaceKeyword everything up to this keyword will be replaced. Example '/objecttypes'
  * @param localKeyword the local api keyword the replace in the URL. Example '/objecttypes-api'
  * @returns A URL that redirects to the backend endpoint.
  */
 function reconstructApiURL(_url: string, replaceKeyword: string, localKeyword: string): string {
   return _url.replace(new RegExp(`.*(?=${replaceKeyword})`), localKeyword)
+}
+
+// function pushNewObjects(typeUri: string, version: string) {
+// Search if object exists based on type and version
+//  --> yes?
+//      is last record NOT the same as new?
+//        a. add record to object
+//        b. set end date over previous (found) record
+//  --> no?
+//      a. create new object
+//      b. POST object
+// }
+
+export async function searchObject(typeUri: string, version: number, properties: CsvRecord) {
+  const headers: Headers = new Headers()
+  headers.set('Content-Crs', 'EPSG:4326')
+  headers.set('Content-Type', 'application/json')
+  const dataAttrs = Object.entries(properties)
+    .map(([key, value]) => `${key}__exact__${value}`)
+    .toString()
+  const request: RequestInfo = new Request('/objects-api/search', {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify({
+      type: typeUri,
+      data_attrs: dataAttrs,
+      typeVersion: version,
+    }),
+  })
+  return fetch(request)
+    .then((response) => response.json())
+    .then((res) => console.log(res.results))
 }

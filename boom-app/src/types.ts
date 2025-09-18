@@ -18,6 +18,8 @@ export type ObjectType = {
 export type CsvRecord = Record<string, string>
 export type Mapping = Record<string, string>
 
+// -- ObjectTypes types --
+
 export type PaginatedObjectTypeList = {
   count: number
   next?: string | null
@@ -41,4 +43,14 @@ export type ObjectTypeVersionMetaData = {
   readonly createdAt?: string
   readonly modifiedAt?: string
   readonly publishedAt?: string | null
+}
+
+// -- Object types --
+export type Object = {
+  type: string
+  record: {
+    typeVersion: number
+    data: Object
+    startAt: string
+  }
 }
