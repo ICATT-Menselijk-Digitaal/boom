@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { searchObject } from '@/helpers'
+import { convertDataToObjects, searchObject } from '@/helpers'
 import TheWelcome from '../components/TheWelcome.vue'
+import { csvData, mapping, selectedObjectVersion } from '@/store'
 </script>
 
 <template>
@@ -11,9 +12,8 @@ import TheWelcome from '../components/TheWelcome.vue'
     <button
       @click="
         searchObject(
-          'http://localhost:8001/api/v1/objecttypes/feeaa795-d212-4fa2-bb38-2c34996e5702',
-          2,
-          { leeftijd: '66859448', kiemjaar: '85674463' },
+          selectedObjectVersion?.version ?? 0,
+          convertDataToObjects(csvData, mapping).at(0) ?? {},
         )
       "
     >

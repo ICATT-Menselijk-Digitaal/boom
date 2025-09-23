@@ -31,29 +31,6 @@ export const isUploaded = computed<boolean>(() => {
 })
 export const isMappingSaved = ref<boolean>(false)
 
-// TEMP ObjectType example data
-export const exampleObjects: ObjectType[] = [
-  {
-    title: 'Boom',
-    uuid: '1',
-    versionNumber: 3,
-    type: 'object',
-    properties: { name: { type: 'string' }, location: { type: 'string' } },
-    required: ['name', 'location'],
-  },
-  {
-    title: 'Smoel',
-    uuid: '2',
-    versionNumber: 1,
-    type: 'object',
-    properties: {
-      firstname: { type: 'string' },
-      lastname: { type: 'string' },
-      address: { type: 'string' },
-    },
-  },
-]
-
 export const objectTypesList = ref<ObjectType[]>([])
 export const objectTypesMetaDataList = ref<ObjectTypeMetaData[]>([])
 export const objectTypesVersionMetaDataList = ref<ObjectTypeVersionMetaData[]>([])

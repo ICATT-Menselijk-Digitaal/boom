@@ -86,7 +86,11 @@ export async function fetchObjectTypeData<T>(url: string): Promise<T> {
  * @param localKeyword the local api keyword the replace in the URL. Example '/objecttypes-api'
  * @returns A URL that redirects to the backend endpoint.
  */
-function reconstructApiURL(_url: string, replaceKeyword: string, localKeyword: string): string {
+export function reconstructApiURL(
+  _url: string,
+  replaceKeyword: string,
+  localKeyword: string,
+): string {
   return _url.replace(new RegExp(`.*(?=${replaceKeyword})`), localKeyword)
 }
 
@@ -101,23 +105,24 @@ function reconstructApiURL(_url: string, replaceKeyword: string, localKeyword: s
 //      b. POST object
 // }
 
-export async function searchObject(typeUri: string, version: number, properties: CsvRecord) {
+export function searchObject(version: number, properties: CsvRecord) {
   const headers: Headers = new Headers()
   headers.set('Content-Crs', 'EPSG:4326')
   headers.set('Content-Type', 'application/json')
+
   const dataAttrs = Object.entries(properties)
     .map(([key, value]) => `${key}__exact__${value}`)
     .toString()
+
   const request: RequestInfo = new Request('/objects-api/search', {
     method: 'POST',
     headers: headers,
     body: JSON.stringify({
-      type: typeUri,
       data_attrs: dataAttrs,
       typeVersion: version,
     }),
   })
   return fetch(request)
     .then((response) => response.json())
-    .then((res) => console.log(res.results))
+    .then((res) => res.results)
 }

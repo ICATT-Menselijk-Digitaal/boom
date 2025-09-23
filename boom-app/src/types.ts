@@ -11,7 +11,7 @@ export type ObjectType = {
   uuid: string
   versionNumber: number
   type: 'object'
-  properties: Record<string, { type: 'string' }>
+  properties: Record<string, string | number>
   required?: string[]
 }
 
