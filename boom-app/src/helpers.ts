@@ -126,3 +126,47 @@ export function searchObject(version: number, properties: CsvRecord) {
     .then((response) => response.json())
     .then((res) => res.results)
 }
+
+/**
+ * Performs a POST request to enter a new object based on the given arguments.
+ * @param typeUri url matching the selected type
+ * @param version version matching the selected type version
+ * @param properties the properties that are needed to create the new object
+ * @returns A promise of the POST request
+ */
+export function createNewObject(typeUrl: string, version: number, properties: CsvRecord) {
+  const headers: Headers = new Headers()
+  headers.set('Content-Crs', 'EPSG:4326')
+  headers.set('Content-Type', 'application/json')
+
+  const dateNow = new Date(Date.now())
+
+  const body = {
+    type: convertToInternalDockerUrl(typeUrl).toString(),
+    record: {
+      typeVersion: version,
+      data: properties,
+      startAt: dateNow.toISOString().split('T')?.at(0) ?? '2025-01-01'
+    }
+  }
+
+  const request:RequestInfo = new Request('/objects-api', {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(body)
+  })
+  return fetch(request)
+}
+
+/**
+ * Converts a given url to the hostname of the objecttypes docker container.
+ * This function is temporary to assist working with the docker test setup of the objects api.
+ * @param _url The objecttypes url that needs to convert
+ * @returns converted URL object
+ */
+function convertToInternalDockerUrl(_url: string):URL {
+  const url:URL = new URL(_url)
+  url.hostname = 'objecttypes-web'
+  url.port = '8000'
+  return url
+}

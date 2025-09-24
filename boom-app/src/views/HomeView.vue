@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { convertDataToObjects, searchObject } from '@/helpers'
+import { convertDataToObjects, createNewObject } from '@/helpers'
 import TheWelcome from '../components/TheWelcome.vue'
 import { csvData, mapping, selectedObjectVersion } from '@/store'
 </script>
@@ -11,10 +11,10 @@ import { csvData, mapping, selectedObjectVersion } from '@/store'
     <button @click="$router.push('/upload')">Next</button>
     <button
       @click="
-        searchObject(
+        createNewObject(selectedObjectVersion?.objectType ?? '',
           selectedObjectVersion?.version ?? 0,
           convertDataToObjects(csvData, mapping).at(0) ?? {},
-        )
+        ).then((res) => console.log(res.json()))
       "
     >
       Test API
