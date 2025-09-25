@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Papa from 'papaparse'
 import { ref } from 'vue'
-import type { CsvOutput } from '@/types'
+import type { CsvOutput, CsvRecord } from '@/types'
 import { fileName } from '@/store'
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -38,11 +38,13 @@ function parseFileAsync(file: File) {
   return new Promise((resolve, reject) => {
     Papa.parse(file, {
       header: true,
+      dynamicTyping: true,
       complete: (results) => {
         const output: CsvOutput = {
           headers: results.meta.fields || [],
-          data: results.data as Record<string, string>[],
+          data: results.data as CsvRecord[],
         }
+        console.log(results.data)
         resolve(output)
       },
       error: (error) => {

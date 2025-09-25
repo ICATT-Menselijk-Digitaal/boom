@@ -1,6 +1,6 @@
 export type CsvOutput = {
   headers: string[]
-  data: Record<string, string>[]
+  data: CsvRecord[]
 }
 
 /**
@@ -15,7 +15,8 @@ export type ObjectType = {
   required?: string[]
 }
 
-export type CsvRecord = Record<string, string>
+export type CsvRecord = Record<string, string | number>
+export type MappedRecord = Record<string, string | number>
 export type Mapping = Record<string, string>
 
 // -- ObjectTypes types --

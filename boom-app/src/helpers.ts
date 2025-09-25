@@ -1,4 +1,10 @@
-import { type CsvOutput, type CsvRecord, type Mapping, type ObjectType } from './types'
+import {
+  type CsvOutput,
+  type CsvRecord,
+  type MappedRecord,
+  type Mapping,
+  type ObjectType,
+} from './types'
 
 /**
  * Create a mapping of property names to header names.
@@ -26,7 +32,7 @@ export function createMapping(objectType: ObjectType | undefined, headers: strin
  * Convert all CSV data to objects based on the current mapping.
  * @returns A list of converted records.
  */
-export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping): CsvRecord[] {
+export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping): MappedRecord[] {
   const mappedRecord: CsvRecord[] = []
   for (const dataRecord of csvData.data) {
     mappedRecord.push(convertRecordToObject(dataRecord, mapping))
@@ -39,12 +45,12 @@ export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping): CsvR
  * @param record Record<string, string> representing a CSV record.
  * @returns A mapped object from the CSV record.
  */
-function convertRecordToObject(record: CsvRecord, mapping: Mapping): Record<string, string> {
-  const propertiesObject: Record<string, string> = {}
-  for (const [property, headerName] of Object.entries(mapping)) {
+function convertRecordToObject(record: CsvRecord, mapping: Mapping): MappedRecord {
+  const propertiesObject: MappedRecord = {}
+  for (const [propertyName, headerName] of Object.entries(mapping)) {
     try {
       validateObject(record, headerName)
-      propertiesObject[property] = record[headerName]
+      propertiesObject[propertyName] = record[headerName]
     } catch (error) {
       console.error(`Error converting record: ${error}`)
     }
@@ -60,8 +66,8 @@ function convertRecordToObject(record: CsvRecord, mapping: Mapping): Record<stri
  */
 function validateObject(record: CsvRecord, headerName: string) {
   // Any future validation checks can be added here.
-  if (typeof record[headerName] !== 'string') {
-    throw new Error(`Value for header "${headerName}" is not a string.`)
+  if (!['string', 'number'].includes(typeof record[headerName])) {
+    throw new Error(`Value for header "${headerName}" is not a string or number.`)
   }
 }
 
@@ -105,24 +111,24 @@ export function reconstructApiURL(
 //      b. POST object
 // }
 
-export function searchObject(version: number, properties: CsvRecord) {
-  const headers: Headers = new Headers()
-  headers.set('Content-Crs', 'EPSG:4326')
-  headers.set('Content-Type', 'application/json')
-
+/**
+ * Search if a similar object already exists
+ * @param typeUrl The url of the type as specified in the objecttype
+ * @param version The version number as an integer
+ * @param properties The properties specified as a Record of strings or numbers
+ * @returns A Promise with the search results as a Response
+ */
+export function searchObject(typeUrl: string, version: number, properties: CsvRecord) {
   const dataAttrs = Object.entries(properties)
     .map(([key, value]) => `${key}__exact__${value}`)
     .toString()
 
-  const request: RequestInfo = new Request('/objects-api/search', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify({
-      data_attrs: dataAttrs,
-      typeVersion: version,
-    }),
-  })
-  return fetch(request)
+  const body = {
+    type: convertToInternalDockerUrl(typeUrl).toString(),
+    data_attrs: dataAttrs,
+    typeVersion: version,
+  }
+  return postRequest(body, '/search')
     .then((response) => response.json())
     .then((res) => res.results)
 }
@@ -135,25 +141,34 @@ export function searchObject(version: number, properties: CsvRecord) {
  * @returns A promise of the POST request
  */
 export function createNewObject(typeUrl: string, version: number, properties: CsvRecord) {
-  const headers: Headers = new Headers()
-  headers.set('Content-Crs', 'EPSG:4326')
-  headers.set('Content-Type', 'application/json')
-
-  const dateNow = new Date(Date.now())
+  const dateNow = new Date(Date.now()).toISOString().split('T')?.at(0) ?? '2025-01-01'
 
   const body = {
     type: convertToInternalDockerUrl(typeUrl).toString(),
     record: {
       typeVersion: version,
       data: properties,
-      startAt: dateNow.toISOString().split('T')?.at(0) ?? '2025-01-01'
-    }
+      startAt: dateNow,
+    },
   }
 
-  const request:RequestInfo = new Request('/objects-api', {
+  return postRequest(body)
+}
+
+/**
+ * Performs a POST request with standard headers used in many of the API POST requests
+ * @param headers Headers object
+ * @param body request body as a JSON object
+ */
+function postRequest(body: object, urlExtension = ''): Promise<Response> {
+  const headers: Headers = new Headers()
+  headers.set('Content-Crs', 'EPSG:4326')
+  headers.set('Content-Type', 'application/json')
+
+  const request: RequestInfo = new Request(`/objects-api${urlExtension}`, {
     method: 'POST',
     headers: headers,
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   })
   return fetch(request)
 }
@@ -164,8 +179,8 @@ export function createNewObject(typeUrl: string, version: number, properties: Cs
  * @param _url The objecttypes url that needs to convert
  * @returns converted URL object
  */
-function convertToInternalDockerUrl(_url: string):URL {
-  const url:URL = new URL(_url)
+function convertToInternalDockerUrl(_url: string): URL {
+  const url: URL = new URL(_url)
   url.hostname = 'objecttypes-web'
   url.port = '8000'
   return url
