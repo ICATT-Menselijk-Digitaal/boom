@@ -35,7 +35,7 @@ async function acceptHandler() {
 
 /**
  * Handles the return button click
- * Navigates back to the mapping page and resets states so the mapping can be changed
+ * Navigates back to the mapping page and resets states so the mapping can be changed.
  */
 function returnHandler() {
   router.push('/mapping')
@@ -67,7 +67,7 @@ function returnHandler() {
           <tbody>
             <tr v-for="(propertyName, headerName) in mapping" :key="headerName">
               <td>{{ headerName }}</td>
-              <td></td>
+              <td>-</td>
               <td>{{ propertyName }}</td>
             </tr>
           </tbody>
@@ -127,7 +127,6 @@ caption {
 }
 
 th {
-  font-weight: bold;
   font-size: large;
   text-align: start;
 }

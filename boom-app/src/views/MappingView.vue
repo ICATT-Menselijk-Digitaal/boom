@@ -18,11 +18,13 @@ import { computed, watch } from 'vue'
 const isObjectSelected = computed(() => {
   return selectedObjectType.value !== undefined
 })
+// Fetch the verions as soon as an objecttype is selected.
 watch(selectedObjectType, async () => {
   selectedObjectVersion.value = undefined
   isMappingSaved.value = false
   objectTypesVersionMetaDataList.value = await fetchObjectVersions()
 })
+// Create an automapping as soon as a version is selected
 watch(selectedObjectVersion, () => {
   autoMapping.value = createMapping(selectedObjectVersion.value?.jsonSchema, csvData.value.headers)
 })
