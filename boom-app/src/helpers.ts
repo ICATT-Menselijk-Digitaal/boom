@@ -1,3 +1,4 @@
+import { selectedObjectVersion } from './store'
 import {
   type CsvOutput,
   type CsvRecord,
@@ -100,17 +101,6 @@ export function reconstructApiURL(
   return _url.replace(new RegExp(`.*(?=${replaceKeyword})`), localKeyword)
 }
 
-// function pushNewObjects(typeUri: string, version: string) {
-// Search if object exists based on type and version
-//  --> yes?
-//      is last record NOT the same as new?
-//        a. add record to object
-//        b. set end date over previous (found) record
-//  --> no?
-//      a. create new object
-//      b. POST object
-// }
-
 /**
  * Search if a similar object already exists
  * @param typeUrl The url of the type as specified in the objecttype
@@ -118,8 +108,10 @@ export function reconstructApiURL(
  * @param properties The properties specified as a Record of strings or numbers
  * @returns A Promise with the search results as a Response
  */
-export function searchObject(typeUrl: string, version: number, properties: CsvRecord) {
-  const dataAttrs = Object.entries(properties)
+export function searchObject(mappedObject: MappedRecord): Promise<boolean> {
+  const typeUrl = selectedObjectVersion.value?.objectType ?? ''
+  const version = selectedObjectVersion.value?.version ?? 0
+  const dataAttrs = Object.entries(mappedObject)
     .map(([key, value]) => `${key}__exact__${value}`)
     .toString()
 
@@ -128,9 +120,12 @@ export function searchObject(typeUrl: string, version: number, properties: CsvRe
     data_attrs: dataAttrs,
     typeVersion: version,
   }
-  return postRequest(body, '/search')
-    .then((response) => response.json())
-    .then((res) => res.results)
+  return (
+    postRequest(body, '/search')
+      .then((response) => response.json())
+      // .then((res) => res.results > 0) // If there are results than a similar object is found.
+      .then((res) => res.results.length > 0)
+  )
 }
 
 /**
@@ -140,7 +135,7 @@ export function searchObject(typeUrl: string, version: number, properties: CsvRe
  * @param properties the properties that are needed to create the new object
  * @returns A promise of the POST request
  */
-export function createNewObject(typeUrl: string, version: number, properties: CsvRecord) {
+export function createNewObject(typeUrl: string, version: number, properties: MappedRecord) {
   const dateNow = new Date(Date.now()).toISOString().split('T')?.at(0) ?? '2025-01-01'
 
   const body = {

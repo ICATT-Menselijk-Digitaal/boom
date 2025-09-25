@@ -5,6 +5,7 @@ import {
   type Mapping,
   type ObjectType,
   type ObjectTypeVersionMetaData,
+  type MappedRecord,
 } from './types'
 
 // Stored data
@@ -30,6 +31,11 @@ export const isUploaded = computed<boolean>(() => {
   return csvData.value.data.length > 0
 })
 export const isMappingSaved = ref<boolean>(false)
+
+// Preview variables
+export const isEntryDone = ref<boolean>(false)
+export const errors = ref<MappedRecord[]>([])
+export const entries = ref<MappedRecord[]>([])
 
 export const objectTypesList = ref<ObjectType[]>([])
 export const objectTypesMetaDataList = ref<ObjectTypeMetaData[]>([])

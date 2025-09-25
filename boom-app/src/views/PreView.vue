@@ -1,15 +1,49 @@
 <script setup lang="ts">
-import { convertDataToObjects } from '@/helpers'
+import { convertDataToObjects, createNewObject, searchObject } from '@/helpers'
 import router from '@/router'
-import { csvData, isMappingSaved, mapping } from '@/store'
+import {
+  csvData,
+  isMappingSaved,
+  isEntryDone,
+  mapping,
+  selectedObjectVersion,
+  errors,
+  entries,
+} from '@/store'
+import type { MappedRecord } from '@/types'
+
+/**
+ * Handles the accept button click.
+ * Enters all the data into the database.
+ * Changes the preview to show any errors.
+ */
+async function acceptHandler() {
+  const newObjects: MappedRecord[] = convertDataToObjects(csvData.value, mapping.value)
+  for (const newObject of newObjects) {
+    const isDuplicate = await searchObject(newObject)
+    if (!isDuplicate) {
+      await createNewObject(
+        selectedObjectVersion.value?.objectType ?? '',
+        selectedObjectVersion.value?.version ?? 0,
+        newObject,
+      ).catch((error) => errors.value.push(error))
+      entries.value.push(newObject)
+    }
+  }
+  isEntryDone.value = true
+}
 
 /**
  * Handles the return button click
- * Navigates back to the mapping page and resets the navigation state.
+ * Navigates back to the mapping page and resets states so the mapping can be changed
  */
 function returnHandler() {
   router.push('/mapping')
   isMappingSaved.value = false
+  mapping.value = {}
+  isEntryDone.value = false
+  errors.value = []
+  entries.value = []
 }
 </script>
 
@@ -22,9 +56,24 @@ function returnHandler() {
         <p>
           Here you see the result of mapping the Object-type properties to the CSV header names:
         </p>
-        <pre>{{ mapping }}</pre>
+        <table>
+          <thead>
+            <tr>
+              <th>Header name</th>
+              <th>maps to</th>
+              <th>Property name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(propertyName, headerName) in mapping" :key="headerName">
+              <td>{{ headerName }}</td>
+              <td></td>
+              <td>{{ propertyName }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <h2>Mapping preview</h2>
+      <h2>Entry preview</h2>
 
       <table>
         <caption>
@@ -48,9 +97,20 @@ function returnHandler() {
           </tr>
         </tbody>
       </table>
+      <h2>Satisfied?</h2>
+      <p>
+        If you are satisfied with the mapping, press accept to enter all the new objects into the
+        database.
+      </p>
+    </div>
+    <div v-if="isEntryDone" class="flex column box">
+      <h2>Done!</h2>
+      <p>{{ entries.length }} new entries have been succesfully completed!</p>
+      <h2>Errors</h2>
+      <p>{{ errors.length }} entries have run into an error</p>
     </div>
     <div class="flex row">
-      <button @click="$router.push('/')">Accept</button>
+      <button v-if="!isEntryDone" @click="acceptHandler">Accept</button>
       <button @click="returnHandler">Return</button>
     </div>
   </main>

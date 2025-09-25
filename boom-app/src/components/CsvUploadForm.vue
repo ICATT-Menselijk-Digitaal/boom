@@ -44,7 +44,6 @@ function parseFileAsync(file: File) {
           headers: results.meta.fields || [],
           data: results.data as CsvRecord[],
         }
-        console.log(results.data)
         resolve(output)
       },
       error: (error) => {

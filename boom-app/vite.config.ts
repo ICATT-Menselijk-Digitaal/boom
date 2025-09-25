@@ -26,15 +26,6 @@ export default defineConfig({
         },
         rewrite: (path) => path.replace(/^\/objecttypes-api/, ''),
       },
-      '/objects-api/search': {
-        target: 'http://localhost:8000/api/v2/',
-        changeOrigin: true,
-        headers: {
-          Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTS_API_KEY}`,
-          Cookie: '',
-        },
-        rewrite: (path) => path.replace(/^\/objects-api/, '/objects'),
-      },
     },
   },
   plugins: [vue(), vueDevTools()],
