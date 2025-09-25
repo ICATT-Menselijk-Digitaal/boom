@@ -28,9 +28,7 @@ async function handleFileParsed(receivedData: CsvOutput) {
 }
 
 /**
- * Fetches the list of ObjectTypes,
- * then the latest version of each ObjectType,
- * and pushes the JSON schema of each ObjectType to the objectTypesList variable in the store.
+ * Fetches the list of ObjectTypes
  * @returns A Promise that is a list of ObjectType meta data
  */
 async function fetchObjectTypes(): Promise<ObjectTypeMetaData[]> {

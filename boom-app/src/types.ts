@@ -47,11 +47,12 @@ export type ObjectTypeVersionMetaData = {
 }
 
 // -- Object types --
-export type Object = {
+export type ObjectData = {
+  uuid?: string
   type: string
   record: {
     typeVersion: number
-    data: Object
+    data: object
     startAt: string
   }
 }

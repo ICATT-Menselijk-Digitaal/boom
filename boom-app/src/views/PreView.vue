@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { convertDataToObjects, createNewObject, searchObject } from '@/helpers'
+import { createNewObject } from '@/helpers'
 import router from '@/router'
 import {
   csvData,
@@ -10,7 +10,7 @@ import {
   errors,
   entries,
 } from '@/store'
-import type { MappedRecord } from '@/types'
+import type { CsvOutput, CsvRecord, MappedRecord, Mapping, ObjectData } from '@/types'
 
 /**
  * Handles the accept button click.
@@ -19,8 +19,9 @@ import type { MappedRecord } from '@/types'
  */
 async function acceptHandler() {
   const newObjects: MappedRecord[] = convertDataToObjects(csvData.value, mapping.value)
+  const searchResults: ObjectData[] = await searchObjectsByTypeVersion()
   for (const newObject of newObjects) {
-    const isDuplicate = await searchObject(newObject)
+    const isDuplicate = hasObject(newObject, searchResults)
     if (!isDuplicate) {
       await createNewObject(
         selectedObjectVersion.value?.objectType ?? '',
@@ -44,6 +45,116 @@ function returnHandler() {
   isEntryDone.value = false
   errors.value = []
   entries.value = []
+}
+
+/**
+ * Convert all CSV data to objects based on the current mapping.
+ * @returns A list of converted records.
+ */
+function convertDataToObjects(csvData: CsvOutput, mapping: Mapping): MappedRecord[] {
+  const mappedRecord: CsvRecord[] = []
+  for (const dataRecord of csvData.data) {
+    mappedRecord.push(convertRecordToObject(dataRecord, mapping))
+  }
+  return mappedRecord
+}
+
+/**
+ * Validates and converts a CSV record to an object based on the current mapping.
+ * @param record Record<string, string> representing a CSV record.
+ * @returns A mapped object from the CSV record.
+ */
+function convertRecordToObject(record: CsvRecord, mapping: Mapping): MappedRecord {
+  const propertiesObject: MappedRecord = {}
+  for (const [propertyName, headerName] of Object.entries(mapping)) {
+    try {
+      validateObject(record, headerName)
+      propertiesObject[propertyName] = record[headerName]
+    } catch (error) {
+      console.error(`Error converting record: ${error}`)
+    }
+  }
+  return propertiesObject
+}
+
+/**
+ * Function that validates a cell in a record.
+ * Throws an Error if the validation is not passed.
+ * @param record CsvRecord
+ * @param headerName String representing the header name of the cell to validate.
+ */
+function validateObject(record: CsvRecord, headerName: string) {
+  // Any future validation checks can be added here.
+  if (!['string', 'number'].includes(typeof record[headerName])) {
+    throw new Error(`Value for header "${headerName}" is not a string or number.`)
+  }
+}
+
+/**
+ * Determines if the provided search results has any object that matches the provided mapped object.
+ * @param mappedObject An object based on the mapping
+ * @param searchResults Search results returned from the server
+ */
+function hasObject(mappedObject: MappedRecord, searchResults: ObjectData[]): boolean {
+  for (const existingObject of searchResults) {
+    let hasObject: boolean = true
+    for (const [property, value] of Object.entries(existingObject.record.data)) {
+      hasObject = value === mappedObject[property]
+    }
+    if (hasObject) {
+      return true
+    }
+  }
+  return false
+}
+
+/**
+ * Do a search POST request that searches for all objects that match the selected objecttype and version.
+ */
+function searchObjectsByTypeVersion() {
+  const typeUrl = selectedObjectVersion.value?.objectType ?? ''
+  const version = selectedObjectVersion.value?.version ?? 0
+  const body = {
+    type: convertToInternalDockerUrl(typeUrl).toString(),
+    typeVersion: version,
+  }
+  return (
+    postRequest(body, '/search')
+      .then((response) => response.json())
+      // .then((res) => res.results > 0) // If there are results than a similar object is found.
+      .then((res) => res.results)
+  )
+}
+
+/**
+ * Performs a POST request with standard headers used in many of the API POST requests
+ * @param headers Headers object
+ * @param body request body as a JSON object
+ */
+function postRequest(body: object, urlExtension = ''): Promise<Response> {
+  const headers: Headers = new Headers()
+  headers.set('Content-Crs', 'EPSG:4326')
+  headers.set('Content-Type', 'application/json')
+
+  const request: RequestInfo = new Request(`/objects-api${urlExtension}`, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(body),
+  })
+  return fetch(request)
+}
+
+/**
+ * Converts a given url to the hostname of the objecttypes docker container.
+ * This function is temporary to assist working with the docker test setup of the objects api.
+ * @param _url The objecttypes url that needs to convert
+ * @returns converted URL object
+ */
+function convertToInternalDockerUrl(_url: string): URL {
+  const url: URL = new URL(_url)
+  url.hostname = 'objecttypes-web'
+  url.port = '8000'
+  return url
 }
 </script>
 

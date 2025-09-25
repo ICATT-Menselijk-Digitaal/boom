@@ -1,11 +1,5 @@
 import { selectedObjectVersion } from './store'
-import {
-  type CsvOutput,
-  type CsvRecord,
-  type MappedRecord,
-  type Mapping,
-  type ObjectType,
-} from './types'
+import { type MappedRecord, type Mapping, type ObjectType } from './types'
 
 /**
  * Create a mapping of property names to header names.
@@ -25,51 +19,6 @@ export function createMapping(objectType: ObjectType | undefined, headers: strin
     }
   }
   return mapping
-}
-
-// -- Data conversion functions --
-
-/**
- * Convert all CSV data to objects based on the current mapping.
- * @returns A list of converted records.
- */
-export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping): MappedRecord[] {
-  const mappedRecord: CsvRecord[] = []
-  for (const dataRecord of csvData.data) {
-    mappedRecord.push(convertRecordToObject(dataRecord, mapping))
-  }
-  return mappedRecord
-}
-
-/**
- * Validates and converts a CSV record to an object based on the current mapping.
- * @param record Record<string, string> representing a CSV record.
- * @returns A mapped object from the CSV record.
- */
-function convertRecordToObject(record: CsvRecord, mapping: Mapping): MappedRecord {
-  const propertiesObject: MappedRecord = {}
-  for (const [propertyName, headerName] of Object.entries(mapping)) {
-    try {
-      validateObject(record, headerName)
-      propertiesObject[propertyName] = record[headerName]
-    } catch (error) {
-      console.error(`Error converting record: ${error}`)
-    }
-  }
-  return propertiesObject
-}
-
-/**
- * Function that validates a cell in a record.
- * Throws an Error if the validation is not passed.
- * @param record CsvRecord
- * @param headerName String representing the header name of the cell to validate.
- */
-function validateObject(record: CsvRecord, headerName: string) {
-  // Any future validation checks can be added here.
-  if (!['string', 'number'].includes(typeof record[headerName])) {
-    throw new Error(`Value for header "${headerName}" is not a string or number.`)
-  }
 }
 
 // -- Objecttype API functions --
