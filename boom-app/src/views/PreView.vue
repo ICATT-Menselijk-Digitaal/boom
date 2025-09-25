@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { createNewObject } from '@/helpers'
 import router from '@/router'
 import {
   csvData,
@@ -88,6 +87,28 @@ function validateObject(record: CsvRecord, headerName: string) {
   if (!['string', 'number'].includes(typeof record[headerName])) {
     throw new Error(`Value for header "${headerName}" is not a string or number.`)
   }
+}
+
+/**
+ * Performs a POST request to enter a new object based on the given arguments.
+ * @param typeUri url matching the selected type
+ * @param version version matching the selected type version
+ * @param properties the properties that are needed to create the new object
+ * @returns A promise of the POST request
+ */
+function createNewObject(typeUrl: string, version: number, properties: MappedRecord) {
+  const dateNow = new Date(Date.now()).toISOString().split('T')?.at(0) ?? '2025-01-01'
+
+  const body = {
+    type: convertToInternalDockerUrl(typeUrl).toString(),
+    record: {
+      typeVersion: version,
+      data: properties,
+      startAt: dateNow,
+    },
+  }
+
+  return postRequest(body)
 }
 
 /**
