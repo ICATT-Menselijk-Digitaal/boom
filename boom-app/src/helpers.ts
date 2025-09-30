@@ -1,25 +1,3 @@
-import { type Mapping, type ObjectType } from './types'
-
-/**
- * Create a mapping of property names to header names.
- * @param objectType ObjectType object to create a mapping on its properties or undefined.
- * @param headers string array of header names.
- * @returns A mapping of property names to header names.
- */
-export function createMapping(objectType: ObjectType | undefined, headers: string[]): Mapping {
-  const mapping: Mapping = {}
-  const propertyNames: string[] = Object.keys(objectType?.properties ?? [])
-  for (const propertyName of propertyNames) {
-    const headerName = headers.find(
-      (headerName) => headerName.toLowerCase() === propertyName.toLowerCase(),
-    )
-    if (headerName) {
-      mapping[propertyName] = headerName
-    }
-  }
-  return mapping
-}
-
 // -- Objecttype API functions --
 
 /**

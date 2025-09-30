@@ -46,6 +46,8 @@ function returnHandler() {
   entries.value = []
 }
 
+/* ------------- CONVERSION FUNCTIONS ---------------
+
 /**
  * Convert all CSV data to objects based on the current mapping.
  * @returns A list of converted records.
@@ -89,6 +91,8 @@ function validateObject(record: CsvRecord, headerName: string) {
   }
 }
 
+/* ------------- OBJECT CREATION FUNCTIONS ---------------
+
 /**
  * Performs a POST request to enter a new object based on the given arguments.
  * @param typeUri url matching the selected type
@@ -130,29 +134,26 @@ function hasObject(mappedObject: MappedRecord, searchResults: ObjectData[]): boo
 }
 
 /**
- * Do a search POST request that searches for all objects that match the selected objecttype and version.
+ * Do a POST request that searches for all objects that match the selected objecttype and version.
  */
-function searchObjectsByTypeVersion() {
+function searchObjectsByTypeVersion(): Promise<ObjectData[]> {
   const typeUrl = selectedObjectVersion.value?.objectType ?? ''
   const version = selectedObjectVersion.value?.version ?? 0
   const body = {
     type: convertToInternalDockerUrl(typeUrl).toString(),
     typeVersion: version,
   }
-  return (
-    postRequest(body, '/search')
-      .then((response) => response.json())
-      // .then((res) => res.results > 0) // If there are results than a similar object is found.
-      .then((res) => res.results)
-  )
+  return postRequest(body, '/search')
+    .then((res) => res?.json())
+    .then((res) => res.results)
 }
 
 /**
- * Performs a POST request with standard headers used in many of the API POST requests
+ * Performs a POST request with standard headers used in all of the api POST requests used.
  * @param headers Headers object
  * @param body request body as a JSON object
  */
-function postRequest(body: object, urlExtension = ''): Promise<Response> {
+async function postRequest(body: object, urlExtension = '') {
   const headers: Headers = new Headers()
   headers.set('Content-Crs', 'EPSG:4326')
   headers.set('Content-Type', 'application/json')
@@ -162,7 +163,16 @@ function postRequest(body: object, urlExtension = ''): Promise<Response> {
     headers: headers,
     body: JSON.stringify(body),
   })
-  return fetch(request)
+
+  try {
+    const response = await fetch(request)
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`)
+    }
+    return response
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 /**

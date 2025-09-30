@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
-import { createMapping, fetchObjectTypeData } from '@/helpers'
+import { fetchObjectTypeData } from '@/helpers'
 import router from '@/router'
 import {
   selectedObjectType,
@@ -12,7 +12,7 @@ import {
   autoMapping,
   mapping,
 } from '@/store'
-import { type Mapping, type ObjectTypeVersionMetaData } from '@/types'
+import { type Mapping, type ObjectType, type ObjectTypeVersionMetaData } from '@/types'
 import { computed, watch } from 'vue'
 
 const isObjectSelected = computed(() => {
@@ -28,6 +28,26 @@ watch(selectedObjectType, async () => {
 watch(selectedObjectVersion, () => {
   autoMapping.value = createMapping(selectedObjectVersion.value?.jsonSchema, csvData.value.headers)
 })
+
+/**
+ * Create a mapping of property names to header names.
+ * @param objectType ObjectType object to create a mapping on its properties or undefined.
+ * @param headers string array of header names.
+ * @returns A mapping of property names to header names.
+ */
+function createMapping(objectType: ObjectType | undefined, headers: string[]): Mapping {
+  const mapping: Mapping = {}
+  const propertyNames: string[] = Object.keys(objectType?.properties ?? [])
+  for (const propertyName of propertyNames) {
+    const headerName = headers.find(
+      (headerName) => headerName.toLowerCase() === propertyName.toLowerCase(),
+    )
+    if (headerName) {
+      mapping[propertyName] = headerName
+    }
+  }
+  return mapping
+}
 
 /**
  * Handles the form submission
