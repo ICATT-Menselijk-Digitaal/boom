@@ -15,7 +15,7 @@ export default defineConfig({
           Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTS_API_KEY}`,
           Cookie: '',
         },
-        rewrite: (path) => path.replace(/^\/objects-api/, ''),
+        rewrite: (path) => path.replace(/^\/objects-api/, '/objects'),
       },
       '/objecttypes-api': {
         target: 'http://localhost:8001/api/v2/',

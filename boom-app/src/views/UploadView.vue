@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import type { CsvOutput, ObjectTypeMetaData, PaginatedObjectTypeList } from '@/types'
 import CsvUploadForm from '@/components/CsvUploadForm.vue'
-import { csvData, isUploaded, objectTypesMetaDataList } from '@/store'
+import {
+  csvData,
+  isUploaded,
+  objectTypesMetaDataList,
+  selectedObjectType,
+  selectedObjectVersion,
+} from '@/store'
 import router from '@/router'
 import { fetchObjectTypeData } from '@/helpers'
 
@@ -15,13 +21,14 @@ import { fetchObjectTypeData } from '@/helpers'
 async function handleFileParsed(receivedData: CsvOutput) {
   objectTypesMetaDataList.value = await fetchObjectTypes()
   csvData.value = receivedData
+  // Required for a reset when a new file is uploaded mid mapping.
+  selectedObjectType.value = undefined
+  selectedObjectVersion.value = undefined
   router.push('/mapping')
 }
 
 /**
- * Fetches the list of ObjectTypes,
- * then the latest version of each ObjectType,
- * and pushes the JSON schema of each ObjectType to the objectTypesList variable in the store.
+ * Fetches the list of ObjectTypes
  * @returns A Promise that is a list of ObjectType meta data
  */
 async function fetchObjectTypes(): Promise<ObjectTypeMetaData[]> {
