@@ -9,7 +9,17 @@ import {
   errors,
   entries,
 } from '@/store'
-import type { CsvOutput, CsvRecord, MappedRecord, Mapping, ObjectData } from '@/types'
+import type {
+  PaginatedSearchResponse,
+  CsvOutput,
+  CsvRecord,
+  MappedRecord,
+  Mapping,
+  ObjectData,
+  ObjectCreateResponse,
+} from '@/types'
+
+/* ------------- HANDLER FUNCTIONS ---------------
 
 /**
  * Handles the accept button click.
@@ -17,20 +27,32 @@ import type { CsvOutput, CsvRecord, MappedRecord, Mapping, ObjectData } from '@/
  * Changes the preview to show any errors.
  */
 async function acceptHandler() {
-  const newObjects: MappedRecord[] = convertDataToObjects(csvData.value, mapping.value)
-  const searchResults: ObjectData[] = await searchObjectsByTypeVersion()
-  for (const newObject of newObjects) {
-    const isDuplicate = hasObject(newObject, searchResults)
-    if (!isDuplicate) {
-      await createNewObject(
-        selectedObjectVersion.value?.objectType ?? '',
-        selectedObjectVersion.value?.version ?? 0,
-        newObject,
-      ).catch((error) => errors.value.push(error))
-      entries.value.push(newObject)
+  try {
+    const newObjects: MappedRecord[] = convertDataToObjects(csvData.value, mapping.value)
+    const searchResults: ObjectData[] | undefined = await searchObjectsByTypeVersion()
+
+    if (!searchResults) {
+      throw new Error('Search results could not be retrieved')
     }
+
+    for (const newObject of newObjects) {
+      const isDuplicate = hasObject(newObject, searchResults)
+      if (!isDuplicate) {
+        await postNewObject(
+          selectedObjectVersion.value?.objectType ?? '',
+          selectedObjectVersion.value?.version ?? 0,
+          newObject,
+        ).catch((error) => {
+          errors.value.push(newObject)
+          console.log(`Error encountered during POST request of new object: ${error}`)
+        })
+        entries.value.push(newObject)
+      }
+    }
+    isEntryDone.value = true
+  } catch (error) {
+    console.log(error)
   }
-  isEntryDone.value = true
 }
 
 /**
@@ -98,9 +120,9 @@ function validateObject(record: CsvRecord, headerName: string) {
  * @param typeUri url matching the selected type
  * @param version version matching the selected type version
  * @param properties the properties that are needed to create the new object
- * @returns A promise of the POST request
+ * @returns A promise of the POST response
  */
-function createNewObject(typeUrl: string, version: number, properties: MappedRecord) {
+function postNewObject(typeUrl: string, version: number, properties: MappedRecord) {
   const dateNow = new Date(Date.now()).toISOString().split('T')?.at(0) ?? '2025-01-01'
 
   const body = {
@@ -111,12 +133,12 @@ function createNewObject(typeUrl: string, version: number, properties: MappedRec
       startAt: dateNow,
     },
   }
-
-  return postRequest(body)
+  return postRequest<ObjectCreateResponse>(body).then((res) => res.uuid)
 }
 
 /**
  * Determines if the provided search results has any object that matches the provided mapped object.
+ * All properties have to be the same for the function to return true.
  * @param mappedObject An object based on the mapping
  * @param searchResults Search results returned from the server
  */
@@ -136,16 +158,16 @@ function hasObject(mappedObject: MappedRecord, searchResults: ObjectData[]): boo
 /**
  * Do a POST request that searches for all objects that match the selected objecttype and version.
  */
-function searchObjectsByTypeVersion(): Promise<ObjectData[]> {
+function searchObjectsByTypeVersion(): Promise<ObjectData[] | undefined> {
   const typeUrl = selectedObjectVersion.value?.objectType ?? ''
   const version = selectedObjectVersion.value?.version ?? 0
   const body = {
     type: convertToInternalDockerUrl(typeUrl).toString(),
     typeVersion: version,
   }
-  return postRequest(body, '/search')
-    .then((res) => res?.json())
+  return postRequest<PaginatedSearchResponse>(body, '/search')
     .then((res) => res.results)
+    .catch(() => undefined)
 }
 
 /**
@@ -153,7 +175,7 @@ function searchObjectsByTypeVersion(): Promise<ObjectData[]> {
  * @param headers Headers object
  * @param body request body as a JSON object
  */
-async function postRequest(body: object, urlExtension = '') {
+async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
   const headers: Headers = new Headers()
   headers.set('Content-Crs', 'EPSG:4326')
   headers.set('Content-Type', 'application/json')
@@ -163,16 +185,12 @@ async function postRequest(body: object, urlExtension = '') {
     headers: headers,
     body: JSON.stringify(body),
   })
-
-  try {
-    const response = await fetch(request)
+  return fetch(request).then((response) => {
     if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`)
+      return Promise.reject(new Error(`Error occured in the POST request ${response.statusText}`))
     }
-    return response
-  } catch (error) {
-    console.log(error)
-  }
+    return response.json()
+  })
 }
 
 /**

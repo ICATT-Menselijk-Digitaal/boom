@@ -21,11 +21,18 @@ export type Mapping = Record<string, string>
 
 // -- ObjectTypes types --
 
-export type PaginatedObjectTypeList = {
+export type PaginatedSearchResponse = {
   count: number
   next?: string | null
   previous?: string | null
-  results: ObjectTypeMetaData[]
+  results: ObjectData[]
+}
+
+export type ObjectCreateResponse = {
+  url?: string
+  uuid?: string
+  type: string
+  record: object
 }
 
 export type ObjectTypeMetaData = {
