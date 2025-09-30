@@ -150,7 +150,7 @@ function hasObject(mappedObject: MappedRecord, searchResults: ObjectData[]): boo
   for (const existingObject of searchResults) {
     let hasObject: boolean = true
     for (const [property, value] of Object.entries(existingObject.record.data)) {
-      hasObject = value === mappedObject[property]
+      hasObject = mappedObject[property] !== undefined && value === mappedObject[property]
     }
     if (hasObject) {
       return true
