@@ -19,7 +19,7 @@ import type {
   ObjectCreateResponse,
 } from '@/types'
 
-/* ------------- HANDLER FUNCTIONS ---------------
+/* ------------- HANDLER FUNCTIONS --------------- */
 
 /**
  * Handles the accept button click.
@@ -27,31 +27,11 @@ import type {
  * Changes the preview to show any errors.
  */
 async function acceptHandler() {
-  try {
-    const newObjects: MappedRecord[] = convertDataToObjects(csvData.value, mapping.value)
-    const searchResults: ObjectData[] | undefined = await searchObjectsByTypeVersion()
+  const newObjects: MappedRecord[] = convertDataToObjects(csvData.value, mapping.value)
+  const searchResults: ObjectData[] | undefined = await searchObjectsByTypeVersion()
 
-    if (!searchResults) {
-      throw new Error('Search results could not be retrieved')
-    }
-
-    for (const newObject of newObjects) {
-      const isDuplicate = hasObject(newObject, searchResults)
-      if (!isDuplicate) {
-        postNewObject(
-          selectedObjectVersion.value?.objectType ?? '',
-          selectedObjectVersion.value?.version ?? 0,
-          newObject,
-        )
-          .then(() => entries.value.push(newObject))
-          .catch(() => {
-            errors.value.push(newObject)
-          })
-      }
-    }
-    isEntryDone.value = true
-  } catch (error) {
-    console.log(error)
+  if (searchResults) {
+    postObjects(newObjects, searchResults)
   }
 }
 
@@ -68,7 +48,7 @@ function returnHandler() {
   entries.value = []
 }
 
-/* ------------- CONVERSION FUNCTIONS ---------------
+/* ------------- CONVERSION FUNCTIONS --------------- */
 
 /**
  * Convert all CSV data to objects based on the current mapping.
@@ -113,7 +93,31 @@ function validateObject(record: CsvRecord, headerName: string) {
   }
 }
 
-/* ------------- OBJECT CREATION FUNCTIONS ---------------
+/* ------------- OBJECT CREATION FUNCTIONS --------------- */
+
+/**
+ * Posts all objects to the objects-api.
+ * Checks if object already exists before entry.
+ * @param newObjects The objects to be posted
+ * @param searchResults The objects that are already in the database that have the same type/version
+ */
+function postObjects(newObjects: MappedRecord[], searchResults: ObjectData[]) {
+  for (const newObject of newObjects) {
+    const isDuplicate = hasObject(newObject, searchResults)
+    if (!isDuplicate) {
+      postSingleObject(
+        selectedObjectVersion.value?.objectType ?? '',
+        selectedObjectVersion.value?.version ?? 0,
+        newObject,
+      )
+        .then(() => entries.value.push(newObject))
+        .catch(() => {
+          errors.value.push(newObject)
+        })
+    }
+  }
+  isEntryDone.value = true
+}
 
 /**
  * Performs a POST request to enter a new object based on the given arguments.
@@ -122,7 +126,7 @@ function validateObject(record: CsvRecord, headerName: string) {
  * @param properties the properties that are needed to create the new object
  * @returns A promise of the POST response
  */
-function postNewObject(typeUrl: string, version: number, properties: MappedRecord) {
+function postSingleObject(typeUrl: string, version: number, properties: MappedRecord) {
   const dateNow = new Date(Date.now()).toISOString().split('T')?.at(0) ?? '2025-01-01'
 
   const body = {
