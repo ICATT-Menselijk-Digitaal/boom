@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CsvOutput, ObjectTypeMetaData, PaginatedObjectTypeList } from '@/types'
+import type { CsvOutput, ObjectTypeMetaData, PaginateObjectTypeResponse } from '@/types'
 import CsvUploadForm from '@/components/CsvUploadForm.vue'
 import {
   csvData,
@@ -33,7 +33,7 @@ async function handleFileParsed(receivedData: CsvOutput) {
  */
 async function fetchObjectTypes(): Promise<ObjectTypeMetaData[]> {
   let returnList: ObjectTypeMetaData[] = []
-  await fetchObjectTypeData<PaginatedObjectTypeList>('/objecttypes')
+  await fetchObjectTypeData<PaginateObjectTypeResponse>('/objecttypes')
     .then((objectTypeList) => {
       returnList = objectTypeList.results
     })

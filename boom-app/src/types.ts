@@ -28,6 +28,13 @@ export type PaginatedSearchResponse = {
   results: ObjectData[]
 }
 
+export type PaginateObjectTypeResponse = {
+  count: number
+  next?: string | null
+  previous?: string | null
+  results: ObjectTypeMetaData[]
+}
+
 export type ObjectCreateResponse = {
   url?: string
   uuid?: string
