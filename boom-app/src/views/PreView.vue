@@ -38,15 +38,15 @@ async function acceptHandler() {
     for (const newObject of newObjects) {
       const isDuplicate = hasObject(newObject, searchResults)
       if (!isDuplicate) {
-        await postNewObject(
+        postNewObject(
           selectedObjectVersion.value?.objectType ?? '',
           selectedObjectVersion.value?.version ?? 0,
           newObject,
-        ).catch((error) => {
-          errors.value.push(newObject)
-          console.log(`Error encountered during POST request of new object: ${error}`)
-        })
-        entries.value.push(newObject)
+        )
+          .then(() => entries.value.push(newObject))
+          .catch(() => {
+            errors.value.push(newObject)
+          })
       }
     }
     isEntryDone.value = true
