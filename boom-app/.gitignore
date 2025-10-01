@@ -17,8 +17,9 @@ coverage
 /cypress/videos/
 /cypress/screenshots/
 
-# Editor directories and files
+# Editor files
 .vscode/*
+.vs/*
 !.vscode/extensions.json
 .idea
 *.suo
@@ -27,5 +28,11 @@ coverage
 *.sln
 *.sw?
 *.http
-
 *.tsbuildinfo
+*.user
+
+# Editor directories
+obj/*
+boom.bff/.vs
+boom.bff/bin
+boom.bff/obj

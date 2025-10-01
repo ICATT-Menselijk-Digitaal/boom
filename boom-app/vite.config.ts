@@ -1,37 +1,39 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, ProxyOptions } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
-// https://vite.dev/config/
-export default defineConfig({
-  server: {
-    proxy: {
-      '/objects-api': {
-        target: 'http://localhost:8000/api/v2/',
-        changeOrigin: true,
-        headers: {
-          Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTS_API_KEY}`,
-          Cookie: '',
-        },
-        rewrite: (path) => path.replace(/^\/objects-api/, '/objects'),
-      },
-      '/objecttypes-api': {
-        target: 'http://localhost:8001/api/v2/',
-        changeOrigin: true,
-        headers: {
-          Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTTYPES_API_KEY}`,
-          Cookie: '',
-        },
-        rewrite: (path) => path.replace(/^\/objecttypes-api/, ''),
+
+const proxyCalls = [
+  "/objecttypes",
+  "/objects"
+]
+
+const getProxy = (env?: Record<string, string>,): Record<string, ProxyOptions> | undefined => {
+  const targetPort = env?.BFF_PORT;
+  if (!targetPort) return undefined
+
+  const redirectOptions: ProxyOptions = {
+    target: `http://localhost:${targetPort}`,
+    secure: false
+  };
+  return Object.fromEntries(proxyCalls.map((key) => [key, redirectOptions]));
+}
+
+export default defineConfig(({ mode }) => {
+  const env =
+    mode === "development" ? loadEnv(mode, process.cwd(), "") : undefined;
+  const proxy = env && getProxy(env);
+  return {
+    server: {
+      proxy
+    },
+    plugins: [vue(), vueDevTools()],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
-  },
-  plugins: [vue(), vueDevTools()],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
-  },
-})
+  }
+});

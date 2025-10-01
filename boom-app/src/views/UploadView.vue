@@ -33,7 +33,7 @@ async function handleFileParsed(receivedData: CsvOutput) {
  */
 async function fetchObjectTypes(): Promise<ObjectTypeMetaData[]> {
   let returnList: ObjectTypeMetaData[] = []
-  await fetchObjectTypeData<PaginateObjectTypeResponse>('/objecttypes')
+  await fetchObjectTypeData('/objecttypes')
     .then((objectTypeList) => {
       returnList = objectTypeList.results
     })

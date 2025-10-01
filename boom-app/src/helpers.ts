@@ -7,7 +7,7 @@
  * @returns Promise<T> with the fetched data.
  */
 export async function fetchObjectTypeData<T>(url: string): Promise<T> {
-  return fetch(reconstructApiURL(url, '/objecttypes', '/objecttypes-api')).then(
+  return fetch(reconstructApiURL(url, '/objecttypes', '')).then(
     (response) => response.json() as Promise<T>,
   )
 }
