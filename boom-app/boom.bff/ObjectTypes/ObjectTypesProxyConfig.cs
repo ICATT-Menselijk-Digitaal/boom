@@ -29,7 +29,7 @@ namespace boom.bff
             _authHeaderProvider = new AuthenticationHeaderProvider(token);
         }
 
-        public string Route => "objecttypes";
+        public string Route => "objecttypes/{**remainder}";
 
         public string Destination { get; }
 

@@ -205,8 +205,8 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
  */
 function convertToInternalDockerUrl(_url: string): URL {
   const url: URL = new URL(_url)
-  url.hostname = 'objecttypes-web'
-  url.port = '8000'
+  url.hostname = process.env.OBJECTTYPES_CONTAINER_URL
+  url.port = process.env.OBJECTTYPES_CONTAINER_PORT
   return url
 }
 </script>

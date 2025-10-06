@@ -16,6 +16,7 @@ builder.Services.AddReverseProxy();
 builder.Services.AddSingleton<IProxyConfigProvider, ProxyConfigProvider>();
 builder.Services.AddSingleton<ITransformProvider, ObjectsTransformProvider>();
 builder.Services.AddObjectTypesProxy(builder.Configuration["ObjectTypes:Base_URL"], builder.Configuration["ObjectTypes:API_Key"]);
+builder.Services.AddObjectsProxy(builder.Configuration["Objects:Base_URL"], builder.Configuration["Objects:API_Key"]);
 
 var app = builder.Build();
 
