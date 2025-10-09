@@ -17,14 +17,13 @@ export default defineConfig({
         },
         rewrite: (path) => path.replace(/^\/objects-api/, ''),
       },
-      '/objecttypes-api': {
+      '/objecttypes': {
         target: 'http://localhost:8001/api/v2/',
         changeOrigin: true,
         headers: {
           Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTTYPES_API_KEY}`,
           Cookie: '',
-        },
-        rewrite: (path) => path.replace(/^\/objecttypes-api/, ''),
+        }
       },
     },
   },

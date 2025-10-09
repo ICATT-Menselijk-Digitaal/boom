@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
-import { createMapping, fetchObjectTypeData } from '@/helpers'
+import { createMapping, removeAllBefore } from '@/helpers'
 import router from '@/router'
 import {
   selectedObjectType,
@@ -62,9 +62,10 @@ function setMappingFromFormData(formEvent: Event): Mapping {
  */
 async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
   return Promise.all(
-    selectedObjectType.value?.versions?.map((url) =>
-      fetchObjectTypeData<ObjectTypeVersionMetaData>(url),
-    ) ?? [],
+    selectedObjectType.value?.versions?.map((url) => {
+      const apiURL = removeAllBefore('objecttypes', url)
+      return fetch(apiURL).then((response) => response.json() as ObjectTypeVersionMetaData)
+    }) ?? [],
   )
 }
 </script>
