@@ -22,7 +22,7 @@ namespace boom.bff
             _authHeaderProvider = new AuthenticationHeaderProvider(token);
         }
 
-        public string Route => "objects";
+        public string Route => "objects/{**remainder}";
 
         public string Destination { get; }
 
@@ -31,9 +31,9 @@ namespace boom.bff
         {
             ApplyAuthHeaders(context.ProxyRequest.Headers);
             if (context.ProxyRequest.Method == HttpMethod.Post) {
+                // In case of a post request, some extra content headers are needed.
                 ApplyPostHeaders(context.ProxyRequest.Content.Headers);
             }
-            Console.WriteLine(context.ProxyRequest.Headers);
             return new();
         }
 
@@ -44,8 +44,8 @@ namespace boom.bff
 
         public void ApplyPostHeaders(HttpContentHeaders headers)
         {
+            headers.ContentType = new MediaTypeHeaderValue("application/json");
             headers.Add("Content-Crs", "EPSG:4326");
-            headers.Add("Content-Type", "application/json");
         }
     }
 }

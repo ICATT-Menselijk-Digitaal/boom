@@ -180,13 +180,8 @@ function searchObjectsByTypeVersion(): Promise<ObjectData[] | undefined> {
  * @param body request body as a JSON object
  */
 async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
-  const headers: Headers = new Headers()
-  headers.set('Content-Crs', 'EPSG:4326')
-  headers.set('Content-Type', 'application/json')
-
-  const request: RequestInfo = new Request(`/objects-api${urlExtension}`, {
+  const request: RequestInfo = new Request(`/objects${urlExtension}`, {
     method: 'POST',
-    headers: headers,
     body: JSON.stringify(body),
   })
   return fetch(request).then((response) => {
@@ -205,8 +200,8 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
  */
 function convertToInternalDockerUrl(_url: string): URL {
   const url: URL = new URL(_url)
-  url.hostname = process.env.OBJECTTYPES_CONTAINER_URL
-  url.port = process.env.OBJECTTYPES_CONTAINER_PORT
+  url.hostname = import.meta.env.VITE_OBJECTTYPES_CONTAINER_URL
+  url.port = import.meta.env.VITE_OBJECTTYPES_CONTAINER_PORT
   return url
 }
 </script>
