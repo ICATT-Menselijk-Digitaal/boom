@@ -43,7 +43,6 @@ namespace boom.bff
         public void ApplyHeaders(HttpRequestHeaders headers)
         {
             _authHeaderProvider.ApplyAuthorizationHeader(headers);
-            //headers.Add("Content-Crs", "EPSG:4326");
         }
     }
 

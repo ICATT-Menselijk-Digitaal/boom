@@ -7,7 +7,7 @@
  * @returns The end of the string from the given keyword onward
  */
 export function removeAllBefore(trimUntilKeyword: string, _url: string): string {
-  return _url.substring(_url.search(trimUntilKeyword))
+  return _url.substring(_url.lastIndexOf(trimUntilKeyword))
 }
 
 /**

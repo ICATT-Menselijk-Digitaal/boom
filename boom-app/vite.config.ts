@@ -9,20 +9,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/objects': {
-        target: 'http://localhost:5007',
+        target: `http://localhost:${loadEnv('env', process.cwd()).BFF_PORT}`,
         changeOrigin: true,
-        headers: {
-          Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTS_API_KEY}`,
-          Cookie: '',
-        },
       },
       '/objecttypes': {
-        target: 'http://localhost:5007',
+        target: `http://localhost:${loadEnv('env', process.cwd()).BFF_PORT}`,
         changeOrigin: true,
-        headers: {
-          Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTTYPES_API_KEY}`,
-          Cookie: '',
-        }
       },
     },
   },

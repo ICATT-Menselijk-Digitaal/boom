@@ -5,9 +5,6 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>boom.bff</RootNamespace>
-    <SpaRoot>..\</SpaRoot>
-    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-    <SpaProxyServerUrl>https://localhost:49878</SpaProxyServerUrl>
     <UserSecretsId>e41a4139-c503-4eca-8701-ff5b01e2a9b4</UserSecretsId>
   </PropertyGroup>
 
@@ -17,12 +14,6 @@
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\boom-app.esproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
 
 </Project>
