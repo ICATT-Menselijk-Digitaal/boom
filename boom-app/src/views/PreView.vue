@@ -140,6 +140,8 @@ function postSingleObject(typeUrl: string, version: number, properties: MappedRe
   return postRequest<ObjectCreateResponse>(body).then((res) => res.uuid)
 }
 
+/* ------------- OBJECT SEARCH FUNCTIONS --------------- */
+
 /**
  * Determines if the provided search results has any object that matches the provided mapped object.
  * All properties have to be the same for the function to return true.
@@ -184,12 +186,19 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
     method: 'POST',
     body: JSON.stringify(body),
   })
-  return fetch(request).then((response) => {
+  try {
+    const response = await fetch(request)
     if (!response.ok) {
-      return Promise.reject(new Error(`Error occured in the POST request ${response.statusText}`))
+      throw new Error(`Response status: ${response.status}`)
+    }
+    const contentType = response.headers.get('content-type')
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new TypeError('Response is not in the right JSON format')
     }
     return response.json()
-  })
+  } catch (error) {
+    throw error
+  }
 }
 
 /**
