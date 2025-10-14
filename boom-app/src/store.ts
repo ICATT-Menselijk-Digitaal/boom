@@ -1,6 +1,11 @@
 import { computed, ref } from 'vue'
-import { type CsvOutput, type Mapping, type ObjectType } from './types'
-import { getObjectTypeByName } from './helpers'
+import {
+  type ObjectTypeMetaData,
+  type CsvOutput,
+  type Mapping,
+  type ObjectType,
+  type ObjectTypeVersionMetaData,
+} from './types'
 
 // Stored data
 export const csvData = ref<CsvOutput>({
@@ -11,15 +16,14 @@ export const csvData = ref<CsvOutput>({
 // Stored mapping
 // key: property name, value: header name
 export const mapping = ref<Mapping>({})
+export const autoMapping = ref<Mapping>({})
 
 // Upload variables
 export const fileName = ref<string>('')
 
 // Mapping variables
-export const selectedObjectTypeName = ref<string>('')
-export const selectedObjectType = computed<ObjectType | undefined>(() => {
-  return getObjectTypeByName(exampleObjects, selectedObjectTypeName.value)
-})
+export const selectedObjectType = ref<ObjectTypeMetaData>()
+export const selectedObjectVersion = ref<ObjectTypeVersionMetaData>()
 
 // Navigation variables
 export const isUploaded = computed<boolean>(() => {
@@ -31,12 +35,16 @@ export const isMappingSaved = ref<boolean>(false)
 export const exampleObjects: ObjectType[] = [
   {
     title: 'Boom',
+    uuid: '1',
+    versionNumber: 3,
     type: 'object',
     properties: { name: { type: 'string' }, location: { type: 'string' } },
     required: ['name', 'location'],
   },
   {
     title: 'Smoel',
+    uuid: '2',
+    versionNumber: 1,
     type: 'object',
     properties: {
       firstname: { type: 'string' },
@@ -45,3 +53,7 @@ export const exampleObjects: ObjectType[] = [
     },
   },
 ]
+
+export const objectTypesList = ref<ObjectType[]>([])
+export const objectTypesMetaDataList = ref<ObjectTypeMetaData[]>([])
+export const objectTypesVersionMetaDataList = ref<ObjectTypeVersionMetaData[]>([])

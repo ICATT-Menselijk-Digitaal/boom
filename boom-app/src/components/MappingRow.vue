@@ -22,6 +22,7 @@ const selectedHeaderName = defineModel<string>({
       v-model="selectedHeaderName"
       :id="props.objectTypePropertyName"
       :required="props.required || false"
+      :name="objectTypePropertyName"
     >
       <option :disabled="props.required" value="">-- no mapping --</option>
       <option v-for="name in headerNames" :key="name" :value="name">

@@ -1,37 +1,6 @@
 import { type CsvOutput, type CsvRecord, type Mapping, type ObjectType } from './types'
 
 /**
- * Get the titles of object types from an array of ObjectType objects.
- * @param objectTypes Array of ObjectType objects.
- * @returns string array of object type names.
- */
-export function getObjectTypeNames(objectTypes: ObjectType[]): string[] {
-  return objectTypes.map((objectType) => objectType.title)
-}
-
-/**
- * Get key-names of all properties of an ObjectType object.
- * @param objectType ObjectType object or undefined.
- * @returns string array of property names.
- */
-export function getObjectTypePropertyNames(objectType: ObjectType | undefined): string[] {
-  return Object.keys(objectType?.properties || {})
-}
-
-/**
- * Get an ObjectType by its name from a list of ObjectTypes.
- * @param objectTypes Array of ObjectType objects.
- * @param name Object type name to search for.
- * @returns ObjectType object with the specified name, or undefined if not found.
- */
-export function getObjectTypeByName(
-  objectTypes: ObjectType[],
-  name: string,
-): ObjectType | undefined {
-  return objectTypes.find((objectType) => objectType.title === name)
-}
-
-/**
  * Create a mapping of property names to header names.
  * @param objectType ObjectType object to create a mapping on its properties or undefined.
  * @param headers string array of header names.
@@ -39,7 +8,7 @@ export function getObjectTypeByName(
  */
 export function createMapping(objectType: ObjectType | undefined, headers: string[]): Mapping {
   const mapping: Mapping = {}
-  const propertyNames: string[] = getObjectTypePropertyNames(objectType)
+  const propertyNames: string[] = Object.keys(objectType?.properties ?? [])
   for (const propertyName of propertyNames) {
     const headerName = headers.find(
       (headerName) => headerName.toLowerCase() === propertyName.toLowerCase(),
@@ -55,8 +24,9 @@ export function createMapping(objectType: ObjectType | undefined, headers: strin
 
 /**
  * Convert all CSV data to objects based on the current mapping.
+ * @returns A list of converted records.
  */
-export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping) {
+export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping): CsvRecord[] {
   const mappedRecord: CsvRecord[] = []
   for (const dataRecord of csvData.data) {
     mappedRecord.push(convertRecordToObject(dataRecord, mapping))
@@ -69,7 +39,7 @@ export function convertDataToObjects(csvData: CsvOutput, mapping: Mapping) {
  * @param record Record<string, string> representing a CSV record.
  * @returns A mapped object from the CSV record.
  */
-function convertRecordToObject(record: CsvRecord, mapping: Mapping) {
+function convertRecordToObject(record: CsvRecord, mapping: Mapping): Record<string, string> {
   const propertiesObject: Record<string, string> = {}
   for (const [property, headerName] of Object.entries(mapping)) {
     try {
@@ -84,13 +54,47 @@ function convertRecordToObject(record: CsvRecord, mapping: Mapping) {
 
 /**
  * Function that validates a cell in a record.
+ * Throws an Error if the validation is not passed.
  * @param record CsvRecord
  * @param headerName String representing the header name of the cell to validate.
- * @returns boolean indicating if the cell value is valid.
  */
 function validateObject(record: CsvRecord, headerName: string) {
   // Any future validation checks can be added here.
   if (typeof record[headerName] !== 'string') {
     throw new Error(`Value for header "${headerName}" is not a string.`)
+  }
+}
+
+// -- API functions --
+
+/**
+ * Removes everything in the given url-string before the given keyword.
+ * @param trimUntilKeyword The keyword that determines where to split the string. The keyword will remain in the result.
+ * @param _url The URL that needs to be split
+ * @returns The end of the string from the given keyword onward
+ */
+export function removeAllBefore(trimUntilKeyword: string, _url: string): string {
+  return _url.substring(_url.search(trimUntilKeyword))
+}
+
+/**
+ * Performs a fetch on the given url and returns the result as JSON if succesfull.
+ * Throws errors if status other than 200-299 and content-type is other than json.
+ * @param url fetch url
+ * @returns Promise of type T.
+ */
+export async function fetchJSON<T>(url: string): Promise<T> {
+  try {
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`)
+    }
+    const contentType = response.headers.get('content-type')
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new TypeError('Response is not in the right JSON format')
+    }
+    return response.json() as T
+  } catch (error) {
+    throw error
   }
 }
