@@ -184,7 +184,7 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
   headers.set('Content-Crs', 'EPSG:4326')
   headers.set('Content-Type', 'application/json')
 
-  const request: RequestInfo = new Request(`/objects-api${urlExtension}`, {
+  const request: RequestInfo = new Request(`/objects${urlExtension}`, {
     method: 'POST',
     headers: headers,
     body: JSON.stringify(body),
