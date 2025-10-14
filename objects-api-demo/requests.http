@@ -1,0 +1,121 @@
+### get objects
+
+GET http://localhost:8000/api/v2/objects
+Authorization: Token ba9d233e95e04c4a8a661a27daffe7c9bd019067
+
+
+### get specific object by uuid
+GET http://localhost:8000/api/v2/objects/9a55665b-b2d2-4297-9f46-ef97164e8096
+Authorization: Token ba9d233e95e04c4a8a661a27daffe7c9bd019067
+
+
+### create new object
+POST http://localhost:8000/api/v2/objects
+Authorization: Token ba9d233e95e04c4a8a661a27daffe7c9bd019067
+Content-Crs: EPSG:4326
+Content-Type: application/json
+
+{
+    "type": "http://objecttypes-web:8000/api/v2/objecttypes/9a55665b-b2d2-4297-9f46-ef97164e8096",
+    "record": {    
+        "typeVersion": 1,
+        "data": {
+            "diameter":35
+        },    
+        "startAt": "2025-09-03"
+    }   
+}
+
+### search objects
+
+POST http://localhost:8000/api/v2/objects/search
+Authorization: Token ba9d233e95e04c4a8a661a27daffe7c9bd019067
+Content-Crs: EPSG:4326
+Content-Type: application/json
+
+{
+    "type": "http://objecttypes-web:8000/api/v2/objecttypes/9a55665b-b2d2-4297-9f46-ef97164e8096",
+    "typeVersion": 1
+}
+
+### ------------- OBJECTTYPES ------------------
+
+### get all objecttypes
+GET http://localhost:8001/api/v2/objecttypes
+Authorization: Token ba9d233e95e04c4a8a661a27daffe7c9bd019067
+
+### specific objecttype version
+
+GET http://localhost:8001/api/v2/objecttypes/9a55665b-b2d2-4297-9f46-ef97164e8096/versions/1
+Authorization: Token ba9d233e95e04c4a8a661a27daffe7c9bd019067
+
+
+### create new objecttype
+
+POST http://localhost:8001/api/v2/objecttypes
+Authorization: Token ba9d233e95e04c4a8a661a27daffe7c9bd019067
+Content-Type: application/json
+
+{
+    "name": "beeldscherm",
+    "namePlural": "beeldschermen"
+}
+
+### create new objectversion
+
+POST http://localhost:8001/api/v2/objecttypes/c2ad2ea6-f1d5-400b-b8fd-3004ea900d9c/versions
+Authorization: Token ba9d233e95e04c4a8a661a27daffe7c9bd019067
+Content-Type: application/json
+
+{
+    "status": "published",
+    "jsonSchema": {
+        "type": "object",
+        "title": "Beeldscherm",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "required": [
+            "screensize"
+        ],
+        "properties": {
+            "screensize": {
+                "type": "integer",
+                "description": "Size in cm."
+            }
+        }
+    }
+}
+
+### PROXY
+
+### get all objecttypes
+GET http://localhost:5007/objecttypes
+
+### specific objecttype version 
+
+GET http://localhost:5007/objecttypes/9a55665b-b2d2-4297-9f46-ef97164e8096/versions/1
+
+###
+GET http://localhost:5007/objects
+
+### Search object
+POST http://localhost:5007/objects/search
+
+{
+    "type": "http://objecttypes-web:8000/api/v2/objecttypes/9a55665b-b2d2-4297-9f46-ef97164e8096",
+    "typeVersion": 1
+}
+
+
+### create new object
+POST http://localhost:5007/objects
+
+{
+    "type": "http://objecttypes-web:8000/api/v2/objecttypes/9a55665b-b2d2-4297-9f46-ef97164e8096",
+    "record": {    
+        "typeVersion": 1,
+        "data": {
+            "diameter":35
+        },    
+        "startAt": "2025-09-03"
+    }   
+}

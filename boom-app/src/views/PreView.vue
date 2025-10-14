@@ -130,7 +130,7 @@ function postSingleObject(typeUrl: string, version: number, properties: MappedRe
   const dateNow = new Date(Date.now()).toISOString().split('T')?.at(0) ?? '2025-01-01'
 
   const body = {
-    type: convertToInternalDockerUrl(typeUrl).toString(),
+    type: typeUrl,
     record: {
       typeVersion: version,
       data: properties,
@@ -168,7 +168,7 @@ function searchObjectsByTypeVersion(): Promise<ObjectData[] | undefined> {
   const typeUrl = selectedObjectVersion.value?.objectType ?? ''
   const version = selectedObjectVersion.value?.version ?? 0
   const body = {
-    type: convertToInternalDockerUrl(typeUrl).toString(),
+    type: typeUrl,
     typeVersion: version,
   }
   return postRequest<PaginatedSearchResponse>(body, '/search')
@@ -199,19 +199,6 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
   } catch (error) {
     throw error
   }
-}
-
-/**
- * Converts a given url to the hostname of the objecttypes docker container.
- * This function is temporary to assist working with the docker test setup of the objects api.
- * @param _url The objecttypes url that needs to convert
- * @returns converted URL object
- */
-function convertToInternalDockerUrl(_url: string): URL {
-  const url: URL = new URL(_url)
-  url.hostname = import.meta.env.VITE_OBJECTTYPES_CONTAINER_URL
-  url.port = import.meta.env.VITE_OBJECTTYPES_CONTAINER_PORT
-  return url
 }
 </script>
 
