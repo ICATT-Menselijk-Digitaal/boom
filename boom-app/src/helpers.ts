@@ -1,28 +1,33 @@
 // -- Objecttype API functions --
 
 /**
- * A generic function to fetch data from the ObjectTypes API.
- * Returns a promised with the provided type.
- * @param url string URL to the ObjectTypes API endpoint. The URL will be rewritten to redirect to the backend endpoint.
- * @returns Promise<T> with the fetched data.
+ * Removes everything in the given url-string before the given keyword.
+ * @param trimUntilKeyword The keyword that determines where to split the string. The keyword will remain in the result.
+ * @param _url The URL that needs to be split
+ * @returns The end of the string from the given keyword onward
  */
-export async function fetchObjectTypeData<T>(url: string): Promise<T> {
-  return fetch(reconstructApiURL(url, '/objecttypes', '')).then(
-    (response) => response.json() as Promise<T>,
-  )
+export function removeAllBefore(trimUntilKeyword: string, _url: string): string {
+  return _url.substring(_url.search(trimUntilKeyword))
 }
 
 /**
- * Changes the given URL to redirect to the backend endpoint.
- * @param url URL to change.
- * @param replaceKeyword everything up to this keyword will be replaced. Example '/objecttypes'
- * @param localKeyword the local api keyword the replace in the URL. Example '/objecttypes-api'
- * @returns A URL that redirects to the backend endpoint.
+ * Performs a fetch on the given url and returns the result as JSON if succesfull.
+ * Throws errors if status other than 200-299 and content-type is other than json.
+ * @param url fetch url
+ * @returns Promise of type T.
  */
-export function reconstructApiURL(
-  _url: string,
-  replaceKeyword: string,
-  localKeyword: string,
-): string {
-  return _url.replace(new RegExp(`.*(?=${replaceKeyword})`), localKeyword)
+export async function fetchJSON<T>(url: string): Promise<T> {
+  try {
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`)
+    }
+    const contentType = response.headers.get('content-type')
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new TypeError('Response is not in the right JSON format')
+    }
+    return response.json() as T
+  } catch (error) {
+    throw error
+  }
 }
