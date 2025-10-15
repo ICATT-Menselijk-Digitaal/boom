@@ -1,62 +1,42 @@
-# boom-app 
-
-BOOM stands for Bulk Overige Objecten Mapping.
-It is a tool that can be used to upload a CSV file with Overige Objecten data and map the columns to the corresponding Objecttype fields.
+# boom README
 
 ## Installation
 
-To install the BOOM-app you need:
-node.js
-npm
 docker
-
-### Installing the BOOM-app dev environment
-
-1. Clone the BOOM repository
-2. run `npm install` from the boom-app folder
-3. Create an `.env.local` file in the `boom-app/` folder and add the environment variables mentioned below.
-4. run `npm run dev`
-
-### Install Objects-API demo environment
-
-1. Create an objects-api folder
-2. Clone the `docker-compose.yml` from https://github.com/maykinmedia/objects-api into the `objects-api` folder
-3. Inside the objects-api folder, create the folder structure: `docker/setup_configuration`
-4. Clone the two files from https://github.com/maykinmedia/objects-api/tree/master/docker/setup_configuration inside the `setup_configuration` folder
-5. Run the following commands:
-   - `docker compose up -d`
-   - `docker compose exec web ./src/manage.py loaddata demodata`
-   - `docker compose exec objecttypes-web ./src/manage.py loaddata demodata`
-   - `docker compose exec web ./src/manage.py createsuperuser`
-6. Go to http://localhost:8000/admin and login
-7. Go to `Configuration -> services` and click on `Objecttypen API` to edit the entry.
-   change the following fields to hold the supplied information:
-
-   - api root url: http://objecttypes-web:8000/api/v2
-   - Header value: Token ba9d233e95e04c4a8a661a27daffe7c9bd019067
+npm
+dotnet
 
 ## Environment variables
 
-### Authorization
+The following environment variables need to be set in the `.env.local` file:
+`BFF_PORT`: needs to be set to the port number the BFF uses. Default value is 5007.
+`OBJECTTYPES_BASE_URL`: needs to direct to the base URL of the Object Types API. Example: "http://object.types.nl/api/v2".
+For the demo setup it needs to be the same as the objecttypes container: "http://objecttypes-web:8000/api/v2"
+`OBJECTTYPES_API_KEY`: The API key that is setup in the Object Types API dashboard.
+For the demo setup the following token is pre-loaded: ba9d233e95e04c4a8a661a27daffe7c9bd019067
+`OBJECTS_BASE_URL`: needs to direct to the base URL of the Objects API. Example: "http://objects.nl/api/v2".
+For the demo setup it needs to be the same as the objecttypes container: "http://web:8000/api/v2"
+`OBJECTS_API_KEY`: The API key that is setup in the Objects API dashboard.
+For the demo setup the following token is pre-loaded: ba9d233e95e04c4a8a661a27daffe7c9bd019067
 
-An authorization token and base url for the Objects(types) API needs to be located in user secretse of the boom.bff environment.
-The key names are:
+## Demo setup
 
-{
-  "ObjectTypes": {
-    "Base_URL": "<ObjectTypes base URL> (example http://localhost:8001/api/v2)",
-    "API_Key": "<TOKEN>>"
-  },
-  "Objects": {
-    "Base_URL": "<Objects base URL> (example http://localhost:8000/api/v2)",
-    "API_Key": "<TOKEN>>"
-  }
-}
+Clone this repository and follow the steps below.
 
-### Vite environment variables
+### Setup objects-api
 
-For vite the following environment variables need to be located in the .env.local file for a development environment to work:
+A demo version with the objects-api is available in the `objects-api-demo` folder.
+To run do the following:
 
-VITE_OBJECTTYPES_CONTAINER_URL=<internal objecttypes docker ip or hostname> (example: objecttypes-web)
-VITE_OBJECTTYPES_CONTAINER_PORT=<internal objecttypes docker port> (example: 8000)
-BFF_PORT=<port that BFF exposes> (example: 5007)
+1. Open a command prompt and navigate to the `objects-api-demo` folder
+2. run `docker compose up`
+3. Open a browser. Navigate to "http://localhost:8000/admin". Login using: username: daan | password: icatt
+
+### Setup boom-app
+
+The boom-app can be run in a docker container by doing the following:
+
+1. Open a command prompt and navigate to the `boom-app` folder
+2. Run `docker compose build`
+3. Run `docker compose up`
+4. Open a NEW web browser window and navigate to "http://localhost:8080"

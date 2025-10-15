@@ -31,8 +31,6 @@ To run do the following:
 1. Open a command prompt and navigate to the `objects-api-demo` folder
 2. run `docker compose up`
 3. Open a browser. Navigate to "http://localhost:8000/admin". Login using: username: daan | password: icatt
-4. Goto Token Authorizations via `API Authorizations -> Token authorizations` and click on "token-1"
-5. Click on `Is superuser` and `SAVE`
 
 ### Setup boom-app
 
@@ -42,9 +40,3 @@ The boom-app can be run in a docker container by doing the following:
 2. Run `docker compose build`
 3. Run `docker compose up`
 4. Open a NEW web browser window and navigate to "http://localhost:8080"
-
-## Troubleshooting
-
-### Unable to enter object due to code 500 error
-
-Remove all cookies for the http://localhost domain.

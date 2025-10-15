@@ -112,7 +112,7 @@ services:
       RUN_SETUP_CONFIG: ${RUN_SETUP_CONFIG:-true}
     command: /setup_configuration.sh
     volumes:
-      - ./docker/setup_configuration/:/app/setup_configuration/
+      - ./docker/setup_configuration_objecttypes/:/app/setup_configuration/
     depends_on:
       - db
       - redis

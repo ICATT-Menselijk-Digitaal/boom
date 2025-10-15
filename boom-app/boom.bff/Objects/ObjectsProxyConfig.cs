@@ -1,8 +1,5 @@
-﻿using Microsoft.Extensions.Primitives;
-using System.Net.Http.Headers;
-using Yarp.ReverseProxy.Configuration;
+﻿using System.Net.Http.Headers;
 using Yarp.ReverseProxy.Transforms;
-using Yarp.ReverseProxy.Transforms.Builder;
 
 namespace boom.bff
 {
@@ -30,9 +27,13 @@ namespace boom.bff
         public ValueTask ApplyRequestTransform(RequestTransformContext context)
         {
             ApplyAuthHeaders(context.ProxyRequest.Headers);
-            if (context.ProxyRequest.Method == HttpMethod.Post) {
+            if (context.ProxyRequest.Method == HttpMethod.Post)
+            {
                 // In case of a post request, some extra content headers are needed.
-                ApplyPostHeaders(context.ProxyRequest.Content.Headers);
+                if (context.ProxyRequest.Content != null)
+                {
+                    ApplyPostHeaders(context.ProxyRequest.Content.Headers);
+                }
             }
             return new();
         }
@@ -40,6 +41,7 @@ namespace boom.bff
         public void ApplyAuthHeaders(HttpRequestHeaders headers)
         {
             _authHeaderProvider.ApplyAuthorizationHeader(headers);
+            headers.Remove("Cookie");
         }
 
         public void ApplyPostHeaders(HttpContentHeaders headers)

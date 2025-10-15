@@ -43,6 +43,7 @@ namespace boom.bff
         public void ApplyHeaders(HttpRequestHeaders headers)
         {
             _authHeaderProvider.ApplyAuthorizationHeader(headers);
+            headers.Remove("Cookie");
         }
     }
 

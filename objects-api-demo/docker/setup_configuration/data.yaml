@@ -49,6 +49,7 @@ tokenauth:
       organization: Organization 1
       application: Application 1
       administration: Administration 1
+      is_superuser: true
       # permissions:
       #   - object_type: b0e8553f-8b1a-4d55-ab90-6d02f1bcf2c2
       #     mode: read_only
