@@ -36,7 +36,10 @@ objecttypes_config_enable: true
 objecttypes:
   items:
     - uuid: 9a55665b-b2d2-4297-9f46-ef97164e8096
-      name: boom
+      name: Boom
+      service_identifier: objecttypes-api
+    - uuid: c2ad2ea6-f1d5-400b-b8fd-3004ea900d9d
+      name: Beeldscherm
       service_identifier: objecttypes-api
 
 tokenauth_config_enable: true
