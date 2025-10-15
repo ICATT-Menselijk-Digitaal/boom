@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import UploadView from '../views/UploadView.vue'
 import MappingView from '../views/MappingView.vue'
@@ -6,7 +6,7 @@ import PreView from '@/views/PreView.vue'
 import { isUploaded } from '@/store'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
