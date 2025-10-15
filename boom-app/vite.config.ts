@@ -9,11 +9,11 @@ export default defineConfig({
   server: {
     proxy: {
       '/objects': {
-        target: `http://localhost:${loadEnv('env', process.cwd()).BFF_PORT}`,
+        target: `http://localhost:${loadEnv('env', process.cwd()).VITE_BFF_PORT}`,
         changeOrigin: true,
       },
       '/objecttypes': {
-        target: `http://localhost:${loadEnv('env', process.cwd()).BFF_PORT}`,
+        target: `http://localhost:${loadEnv('env', process.cwd()).VITE_BFF_PORT}`,
         changeOrigin: true,
       },
     },

@@ -5,6 +5,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>boom.bff</RootNamespace>
+    <SpaRoot>..\</SpaRoot>
+    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+    <SpaProxyServerUrl>https://localhost:49878</SpaProxyServerUrl>
     <UserSecretsId>e41a4139-c503-4eca-8701-ff5b01e2a9b4</UserSecretsId>
   </PropertyGroup>
 
