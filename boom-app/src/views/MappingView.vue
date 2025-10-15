@@ -85,6 +85,7 @@ function setMappingFromFormData(formEvent: Event): Mapping {
 async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
   const versionURLs = selectedObjectType.value?.versions ?? []
   const fetchResponses = []
+  // fetch the data for all versions
   for (const url of versionURLs) {
     try {
       const response = await fetchJSON<ObjectTypeVersionMetaData>(

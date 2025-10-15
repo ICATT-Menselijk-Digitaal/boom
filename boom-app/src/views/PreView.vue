@@ -137,7 +137,9 @@ function postSingleObject(typeUrl: string, version: number, properties: MappedRe
       startAt: dateNow,
     },
   }
-  return postRequest<ObjectCreateResponse>(body).then((res) => res.uuid)
+  return postRequest<ObjectCreateResponse>(body)
+    .then((res) => res.uuid)
+    .catch((error) => console.log(error))
 }
 
 /* ------------- OBJECT SEARCH FUNCTIONS --------------- */
