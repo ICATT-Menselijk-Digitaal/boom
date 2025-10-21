@@ -6,6 +6,7 @@ import { fileName } from '@/store'
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const fileSizeLimit = 5 * 1024 * 1024 // 5MB
+const isSubmitted = ref<boolean>(false)
 
 /**
  * Emits events to the parent component.
@@ -18,9 +19,9 @@ const emit = defineEmits(['fileParsed'])
  */
 function submitHandler() {
   const csvFile = fileInputRef.value?.files?.[0]
-  fileInputRef.value?.setCustomValidity(isUploadedFileValid(csvFile))
   if (fileInputRef.value?.reportValidity() && csvFile instanceof File) {
     try {
+      isSubmitted.value = true
       uploadFile(csvFile)
     } catch (error) {
       if (error instanceof Error) {
@@ -30,6 +31,16 @@ function submitHandler() {
       }
     }
   }
+}
+
+/**
+ * Set custom validity for input element.
+ * Enable the submit button.
+ */
+function changeHandler() {
+  const csvFile = fileInputRef.value?.files?.[0]
+  fileInputRef.value?.setCustomValidity(fileValidationMessage(csvFile))
+  isSubmitted.value = false
 }
 
 /**
@@ -76,7 +87,7 @@ function parseFileAsync(file: File) {
  * Returns an error message if the file is invalid, otherwise returns an empty string.
  * @returns {string} - Error message or empty string if valid.
  */
-function isUploadedFileValid(file: File | undefined): string {
+function fileValidationMessage(file: File | undefined): string {
   // Check if the file input exists and has files
   if (file) {
     // Check if the file is a CSV
@@ -101,8 +112,15 @@ function isUploadedFileValid(file: File | undefined): string {
       <div class="flex column">
         <p :hidden="fileName === ''">Currently uploaded: {{ fileName }}</p>
         <label for="fileUpload">Select a file to upload</label>
-        <input type="file" id="fileUpload" ref="fileInputRef" accept=".csv" />
-        <button type="submit">Upload</button>
+        <input
+          type="file"
+          id="fileUpload"
+          ref="fileInputRef"
+          accept=".csv"
+          required="true"
+          @change="changeHandler"
+        />
+        <button :disabled="isSubmitted" type="submit">Upload</button>
       </div>
     </form>
   </div>
