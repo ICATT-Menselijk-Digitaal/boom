@@ -32,6 +32,10 @@ For the demo setup the following token is pre-loaded: ba9d233e95e04c4a8a661a27da
 
 To work in the Development environment setup all the environment variables as **user secrets** for the dotnet project.
 
+NOTE
+Working with the docker objects-api environment can run into problems because of the use of the internal docker network.
+If you run the boom-app outside of the objects-api docker network, there will be problems when searching and adding new objects.
+
 ## Demo setup
 
 Clone this repository and follow the steps below.
@@ -60,3 +64,7 @@ The boom-app can be run in a docker container by doing the following:
 2. Run `docker compose build`
 3. Run `docker compose up`
 4. Open a NEW web browser window and navigate to "http://localhost:8080"
+
+### Demo file
+
+A test CSV file is provided to create 2 bomen.
