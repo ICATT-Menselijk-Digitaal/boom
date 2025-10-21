@@ -1,13 +1,7 @@
 <script setup lang="ts">
-import type { CsvOutput, ObjectTypeMetaData, PaginateObjectTypeResponse } from '@/types'
+import type { CsvOutput } from '@/types'
 import CsvUploadForm from '@/components/CsvUploadForm.vue'
-import {
-  csvData,
-  isUploaded,
-  objectTypesMetaDataList,
-  selectedObjectType,
-  selectedObjectVersion,
-} from '@/store'
+import { csvData, isUploaded, selectedObjectType, selectedObjectVersion } from '@/store'
 import router from '@/router'
 
 /**
@@ -19,7 +13,6 @@ import router from '@/router'
  */
 async function handleFileParsed(receivedData: CsvOutput) {
   try {
-    objectTypesMetaDataList.value = await fetchObjectTypes()
     csvData.value = receivedData
     // Required for a reset when a new file is uploaded mid mapping.
     selectedObjectType.value = undefined
@@ -28,27 +21,6 @@ async function handleFileParsed(receivedData: CsvOutput) {
   } catch (error) {
     // temporary console error logging. Replace with presenting error to user
     console.log(error)
-  }
-}
-
-/**
- * Fetches the list of ObjectTypes
- * @returns A Promise that is a list of ObjectType meta data
- */
-async function fetchObjectTypes(): Promise<ObjectTypeMetaData[]> {
-  try {
-    const response = await fetch('/objecttypes')
-    if (!response.ok) {
-      throw new Error(`Request failed with status: ${response.status}`)
-    }
-    const contentType = response.headers.get('content-type')
-    if (!contentType?.includes('application/json')) {
-      throw new Error('Incorrect content type in response of ObjectTypes API call')
-    }
-    const responseContent = (await response.json()) as PaginateObjectTypeResponse
-    return responseContent.results
-  } catch (error) {
-    throw error
   }
 }
 </script>

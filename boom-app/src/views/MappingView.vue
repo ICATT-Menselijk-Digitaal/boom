@@ -12,12 +12,19 @@ import {
   autoMapping,
   mapping,
 } from '@/store'
-import { type Mapping, type ObjectType, type ObjectTypeVersionMetaData } from '@/types'
+import {
+  type Mapping,
+  type ObjectType,
+  type ObjectTypeVersionMetaData,
+  type PaginateObjectTypeResponse,
+} from '@/types'
 import { computed, watch } from 'vue'
 
 const isObjectSelected = computed(() => {
   return selectedObjectType.value !== undefined
 })
+// Fetch the list of objects types whe page is loaded.
+watch(router.currentRoute.value, fetchObjectTypes, { immediate: true })
 // Fetch the verions as soon as an objecttype is selected.
 watch(selectedObjectType, async () => {
   selectedObjectVersion.value = undefined
@@ -76,6 +83,26 @@ function setMappingFromFormData(formEvent: Event): Mapping {
     }
   }
   return mapping
+}
+
+/**
+ * Fetches the list of ObjectTypes
+ */
+async function fetchObjectTypes() {
+  try {
+    const response = await fetch('/objecttypes')
+    if (!response.ok) {
+      throw new Error(`Request failed with status: ${response.status}`)
+    }
+    const contentType = response.headers.get('content-type')
+    if (!contentType?.includes('application/json')) {
+      throw new Error('Incorrect content type in response of ObjectTypes API call')
+    }
+    const responseContent = (await response.json()) as PaginateObjectTypeResponse
+    objectTypesMetaDataList.value = responseContent.results
+  } catch (error) {
+    throw error
+  }
 }
 
 /**
@@ -144,7 +171,7 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
         />
       </form>
     </div>
-    <button v-if="isObjectSelected" type="submit" form="mapping-form">Save mapping</button>
+    <button v-if="isObjectSelected" type="submit" form="mapping-form">Confirm mapping</button>
   </main>
 </template>
 
