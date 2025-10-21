@@ -18,13 +18,18 @@ import {
   type ObjectTypeVersionMetaData,
   type PaginateObjectTypeResponse,
 } from '@/types'
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
+const isLoading = ref<boolean>(false)
+const userMessage = ref<string>('Getting objecttypes from the server...')
 const isObjectSelected = computed(() => {
   return selectedObjectType.value !== undefined
 })
+const isVersionSelected = computed(() => {
+  return selectedObjectVersion.value !== undefined
+})
 // Fetch the list of objects types whe page is loaded.
-watch(router.currentRoute.value, fetchObjectTypes, { immediate: true })
+watch(router.currentRoute, fetchObjectTypes, { immediate: true })
 // Fetch the verions as soon as an objecttype is selected.
 watch(selectedObjectType, async () => {
   selectedObjectVersion.value = undefined
@@ -89,6 +94,7 @@ function setMappingFromFormData(formEvent: Event): Mapping {
  * Fetches the list of ObjectTypes
  */
 async function fetchObjectTypes() {
+  isLoading.value = true
   try {
     const response = await fetch('/objecttypes')
     if (!response.ok) {
@@ -101,7 +107,11 @@ async function fetchObjectTypes() {
     const responseContent = (await response.json()) as PaginateObjectTypeResponse
     objectTypesMetaDataList.value = responseContent.results
   } catch (error) {
-    throw error
+    if (error instanceof Error) {
+      userMessage.value = 'test' // TODO get this working!!!
+    }
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -131,7 +141,8 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
 <template>
   <main class="flex column">
     <h1>Ok let's Map!</h1>
-    <div class="flex column box">
+    <h2 v-if="isLoading">{{ userMessage }}</h2>
+    <div v-if="objectTypesMetaDataList.length > 0" class="flex column box">
       <h2>Select Object Type</h2>
       <p>Select an object type from the list below that you want to use.</p>
       <div class="flex row">
@@ -171,7 +182,7 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
         />
       </form>
     </div>
-    <button v-if="isObjectSelected" type="submit" form="mapping-form">Confirm mapping</button>
+    <button v-if="isVersionSelected" type="submit" form="mapping-form">Confirm mapping</button>
   </main>
 </template>
 
