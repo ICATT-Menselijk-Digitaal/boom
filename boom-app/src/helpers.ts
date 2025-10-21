@@ -1,7 +1,7 @@
 // -- Objecttype API functions --
 
 /**
- * Removes everything in the given url-string before the given keyword.
+ * Removes everything in the given url-string before the LAST occurence of the given keyword.
  * @param trimUntilKeyword The keyword that determines where to split the string. The keyword will remain in the result.
  * @param _url The URL that needs to be split
  * @returns The end of the string from the given keyword onward
