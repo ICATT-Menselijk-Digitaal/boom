@@ -37,9 +37,6 @@ a,
 .error {
   color: var(--vt-c-text-red)
 }
-label {
-  margin-right: 1em;
-}
 button {
   padding: 0.5em 1.5em;
   border-radius: 2em;

@@ -182,7 +182,9 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
     <!-- Selection box -->
     <div v-if="!errorMessage" class="flex column box">
       <h2>Select Object Type</h2>
-      <p>Select an object type from the list below that you want to use.</p>
+      <p>
+        Select an <b>object type</b> and <b>version</b> that you want to use from the lists below:
+      </p>
       <div class="flex row">
         <label for="selectObjectType">Object type:</label>
         <select id="selectObjectType" v-model="selectedObjectType">
@@ -209,7 +211,9 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
     <!-- Mapping box -->
     <div v-if="isVersionSelected && !errorMessage" class="flex column box">
       <h2>Map properties to header names</h2>
-      <p>For each object type property, select the CSV header name that matches it.</p>
+      <p>
+        For each <b>object type property</b>, select the <b>CSV header name</b> that matches it.
+      </p>
       <form id="mapping-form" class="flex column" @submit.prevent="submitHandler">
         <MappingRow
           v-for="(val, key) in selectedObjectVersion?.jsonSchema?.properties"
