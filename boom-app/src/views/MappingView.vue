@@ -83,6 +83,10 @@ function submitHandler(formEvent: Event) {
   isMappingSaved.value = true
 }
 
+/**
+ * Handles the return button click
+ * Navigates back to the upload page and resets objecttype and version data.
+ */
 function returnHandler() {
   objectTypesMetaDataList.value = []
   objectTypesVersionMetaDataList.value = []
@@ -149,9 +153,9 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
       )
       fetchResponses.push(response)
     } catch (error) {
-      errorMessage.value = 'Fetching the objecttypes from the server failed.'
+      errorMessage.value = 'Fetching the object versions from the server failed'
       if (error instanceof Error) {
-        errorMessage.value = errorMessage.value.concat(error.message)
+        errorMessage.value = errorMessage.value.concat(' with the message: ', error.message)
       }
     } finally {
       isLoading.value = false
@@ -163,7 +167,11 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
 
 <template>
   <main class="flex column">
-    <h1>Ok let's Map!</h1>
+    <div class="flex row space-between">
+      <h1>Ok let's Map!</h1>
+      <SimpleSpinner v-if="isLoading" class="spinner" />
+    </div>
+    <!-- Error feedback box -->
     <div v-if="errorMessage" class="flex column">
       <div class="flex column box">
         <h2 class="error">An error occured</h2>
@@ -171,11 +179,9 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
       </div>
       <button @click="returnHandler">Return</button>
     </div>
+    <!-- Selection box -->
     <div v-if="!errorMessage" class="flex column box">
-      <div class="flex row space-between">
-        <h2>Select Object Type</h2>
-        <SimpleSpinner v-if="isLoading" class="spinner" />
-      </div>
+      <h2>Select Object Type</h2>
       <p>Select an object type from the list below that you want to use.</p>
       <div class="flex row">
         <label for="selectObjectType">Object type:</label>
@@ -200,6 +206,7 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
         </select>
       </div>
     </div>
+    <!-- Mapping box -->
     <div v-if="isVersionSelected && !errorMessage" class="flex column box">
       <h2>Map properties to header names</h2>
       <p>For each object type property, select the CSV header name that matches it.</p>
