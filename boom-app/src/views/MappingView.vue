@@ -154,15 +154,15 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
 <template>
   <main class="flex column">
     <h1>Ok let's Map!</h1>
-    <!-- <div v-if="isLoading && !errorMessage" class="flex column box">
-      <OverlayMessage :text="'Loading objecttype data. Please wait...'" :useSpinner="true" />
-    </div> -->
     <div v-if="!isLoading && errorMessage" class="flex column box">
       <h2 class="error">An error occured</h2>
       <p>{{ errorMessage }}</p>
     </div>
     <div v-if="!errorMessage" class="flex column box">
-      <h2>Select Object Type</h2>
+      <div class="flex row space-between">
+        <h2>Select Object Type</h2>
+        <SimpleSpinner v-if="isLoading" class="small" />
+      </div>
       <p>Select an object type from the list below that you want to use.</p>
       <div class="flex row">
         <label for="selectObjectType">Object type:</label>
@@ -185,7 +185,6 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
             {{ version.version }}
           </option>
         </select>
-        <SimpleSpinner v-if="isLoading" class="small" />
       </div>
     </div>
     <div v-if="isVersionSelected" class="flex column box">
