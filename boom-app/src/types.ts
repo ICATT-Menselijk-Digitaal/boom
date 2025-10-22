@@ -1,6 +1,6 @@
 export type CsvOutput = {
   headers: string[]
-  data: Record<string, string>[]
+  data: CsvRecord[]
 }
 
 /**
@@ -11,18 +11,35 @@ export type ObjectType = {
   uuid: string
   versionNumber: number
   type: 'object'
-  properties: Record<string, { type: 'string' }>
+  properties: Record<string, string | number>
   required?: string[]
 }
 
-export type CsvRecord = Record<string, string>
+export type CsvRecord = Record<string, string | number>
+export type MappedRecord = Record<string, string | number>
 export type Mapping = Record<string, string>
 
-export type PaginatedObjectTypeList = {
+// -- ObjectTypes types --
+
+export type PaginatedSearchResponse = {
+  count: number
+  next?: string | null
+  previous?: string | null
+  results: ObjectData[]
+}
+
+export type PaginateObjectTypeResponse = {
   count: number
   next?: string | null
   previous?: string | null
   results: ObjectTypeMetaData[]
+}
+
+export type ObjectCreateResponse = {
+  url?: string
+  uuid?: string
+  type: string
+  record: object
 }
 
 export type ObjectTypeMetaData = {
@@ -41,4 +58,15 @@ export type ObjectTypeVersionMetaData = {
   readonly createdAt?: string
   readonly modifiedAt?: string
   readonly publishedAt?: string | null
+}
+
+// -- Object types --
+export type ObjectData = {
+  uuid?: string
+  type: string
+  record: {
+    typeVersion: number
+    data: object
+    startAt: string
+  }
 }
