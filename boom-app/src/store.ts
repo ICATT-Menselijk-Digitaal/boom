@@ -5,6 +5,7 @@ import {
   type Mapping,
   type ObjectType,
   type ObjectTypeVersionMetaData,
+  type MappedRecord,
 } from './types'
 
 // Stored data
@@ -31,28 +32,10 @@ export const isUploaded = computed<boolean>(() => {
 })
 export const isMappingSaved = ref<boolean>(false)
 
-// TEMP ObjectType example data
-export const exampleObjects: ObjectType[] = [
-  {
-    title: 'Boom',
-    uuid: '1',
-    versionNumber: 3,
-    type: 'object',
-    properties: { name: { type: 'string' }, location: { type: 'string' } },
-    required: ['name', 'location'],
-  },
-  {
-    title: 'Smoel',
-    uuid: '2',
-    versionNumber: 1,
-    type: 'object',
-    properties: {
-      firstname: { type: 'string' },
-      lastname: { type: 'string' },
-      address: { type: 'string' },
-    },
-  },
-]
+// Preview variables
+export const isEntryDone = ref<boolean>(false)
+export const errors = ref<MappedRecord[]>([])
+export const entries = ref<MappedRecord[]>([])
 
 export const objectTypesList = ref<ObjectType[]>([])
 export const objectTypesMetaDataList = ref<ObjectTypeMetaData[]>([])

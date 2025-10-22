@@ -8,14 +8,13 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig({
   server: {
     proxy: {
-      '/objects-api': {
+      '/objects': {
         target: 'http://localhost:8000/api/v2/',
         changeOrigin: true,
         headers: {
           Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTS_API_KEY}`,
           Cookie: '',
         },
-        rewrite: (path) => path.replace(/^\/objects-api/, ''),
       },
       '/objecttypes': {
         target: 'http://localhost:8001/api/v2/',
