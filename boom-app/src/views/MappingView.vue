@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
-import OverlayMessage from '@/components/OverlayMessage.vue'
+import SimpleSpinner from '@/components/SimpleSpinner.vue'
 import { fetchJSON, removeAllBefore } from '@/helpers'
 import router from '@/router'
 import {
@@ -129,6 +129,7 @@ async function fetchObjectTypes(): Promise<ObjectTypeMetaData[]> {
  * @returns A Promise with a list of ObjectType version meta data
  */
 async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
+  isLoading.value = true
   const versionURLs = selectedObjectType.value?.versions ?? []
   const fetchResponses = []
   // fetch the data for all versions
@@ -142,6 +143,8 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
       if (error instanceof Error) {
         errorMessage.value = `Fetching the objecttypes from the server failed with the message: ${error.message}`
       }
+    } finally {
+      isLoading.value = false
     }
   }
   return Promise.resolve(fetchResponses)
@@ -151,17 +154,14 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
 <template>
   <main class="flex column">
     <h1>Ok let's Map!</h1>
-    <div v-if="isLoading && !errorMessage" class="flex column box">
+    <!-- <div v-if="isLoading && !errorMessage" class="flex column box">
       <OverlayMessage :text="'Loading objecttype data. Please wait...'" :useSpinner="true" />
-    </div>
+    </div> -->
     <div v-if="!isLoading && errorMessage" class="flex column box">
       <h2 class="error">An error occured</h2>
       <p>{{ errorMessage }}</p>
     </div>
-    <div
-      v-if="!isLoading && !errorMessage && objectTypesMetaDataList.length > 0"
-      class="flex column box"
-    >
+    <div v-if="!errorMessage" class="flex column box">
       <h2>Select Object Type</h2>
       <p>Select an object type from the list below that you want to use.</p>
       <div class="flex row">
@@ -185,6 +185,7 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
             {{ version.version }}
           </option>
         </select>
+        <SimpleSpinner v-if="isLoading" class="small" />
       </div>
     </div>
     <div v-if="isVersionSelected" class="flex column box">
@@ -211,5 +212,9 @@ h1 {
 }
 button {
   align-self: flex-start;
+}
+.small {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 </style>

@@ -3,8 +3,6 @@
 </template>
 <style scoped>
 .loader {
-  width: 90px;
-  height: 90px;
   border: 5px solid #fff;
   border-bottom-color: #ff3d00;
   border-radius: 50%;
