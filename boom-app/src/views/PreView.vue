@@ -222,9 +222,10 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
 <template>
   <main class="flex column">
     <div class="flex row space-between">
-      <h1>Now let's preview!</h1>
+      <h1>Check your mapping</h1>
       <SimpleSpinner v-if="isLoading" class="spinner" />
     </div>
+    <!-- Error feedback box -->
     <div v-if="errorMessage" class="flex column">
       <div class="flex column box">
         <h2 class="error">An error occured</h2>
@@ -232,9 +233,10 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
       </div>
       <button @click="returnHandler">Return</button>
     </div>
-    <div v-if="!errorMessage" class="flex column box">
-      <div class="flex column">
-        <h2>Result of Mapping</h2>
+    <div v-if="!errorMessage" class="flex column">
+      <!-- Result box -->
+      <div class="flex column box">
+        <h2>Result of your Mapping</h2>
         <p>
           Here you see the result of mapping the Object-type properties to the CSV header names:
         </p>
@@ -255,33 +257,37 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
           </tbody>
         </table>
       </div>
-      <h2>Entry preview</h2>
-      <table>
-        <caption>
-          Here you see a preview of the mapping using the first row of the CSV data:
-        </caption>
-        <thead>
-          <tr>
-            <th
-              v-for="(_, propertyName) in convertDataToObjects(csvData, mapping).at(0)"
-              :key="propertyName"
-            >
-              {{ propertyName }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td v-for="value in convertDataToObjects(csvData, mapping).at(0)" :key="value">
-              {{ value }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Preview box -->
+      <div class="flex column box">
+        <h2>Preview of a new object</h2>
+        <table>
+          <caption>
+            Here you see a preview of how the first row of the CSV data will be inserted as a new
+            object:
+          </caption>
+          <thead>
+            <tr>
+              <th
+                v-for="(_, propertyName) in convertDataToObjects(csvData, mapping).at(0)"
+                :key="propertyName"
+              >
+                {{ propertyName }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td v-for="value in convertDataToObjects(csvData, mapping).at(0)" :key="value">
+                {{ value }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <h2>Satisfied?</h2>
       <p>
-        If you are satisfied with the mapping, press accept to enter all the new objects into the
-        database.
+        If you are satisfied with the mapping, press <b>Accept</b> below to insert all the data as
+        new objects into the database.
       </p>
     </div>
     <div v-if="isEntryDone && !errorMessage" class="flex column box">

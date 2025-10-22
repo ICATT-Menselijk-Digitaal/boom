@@ -63,6 +63,9 @@ h1, h2{
 b {
   font-weight: bold;
 }
+th {
+  font-size: medium;
+}
 
 @media (hover: hover) {
   a:hover {
