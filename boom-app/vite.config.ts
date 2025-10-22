@@ -4,25 +4,19 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+const port = loadEnv('env', process.cwd()).VITE_BFF_PORT
+
 // https://vite.dev/config/
 export default defineConfig({
   server: {
     proxy: {
       '/objects': {
-        target: 'http://localhost:8000/api/v2/',
+        target: `http://localhost:${port}`,
         changeOrigin: true,
-        headers: {
-          Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTS_API_KEY}`,
-          Cookie: '',
-        },
       },
       '/objecttypes': {
-        target: 'http://localhost:8001/api/v2/',
+        target: `http://localhost:${port}`,
         changeOrigin: true,
-        headers: {
-          Authorization: `Token ${loadEnv('env', process.cwd()).VITE_OBJECTTYPES_API_KEY}`,
-          Cookie: '',
-        }
       },
     },
   },

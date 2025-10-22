@@ -1,44 +1,70 @@
 # boom README
 
-## Authorization
-
-An authorization token needs to be located in the .env.local file for de dev environment to work.
-The key names are:
-
-- VITE_OBJECTS_API_KEY=<token>
-- VITE_OBJECTTYPES_API_KEY=<token>
-
 ## Installation
 
-To install the BOOM-app you need:
-node.js
-npm
+For installation the following is required:
+
 docker
 
-### Installing the BOOM-app dev environment
+npm
 
-1. Clone this repository
-2. run `npm install` from the boom-app folder
-3. Create an `.env.local` file in the `boom-app/` folder and add the following:
-   - VITE_OBJECTS_API_KEY=cd63e158f3aca276ef284e3033d020a22899c728
-   - VITE_OBJECTTYPES_API_KEY=ba9d233e95e04c4a8a661a27daffe7c9bd019067
-     These token values are corresponding with the preloaded demo tokens for the Objects-api demo
-4. run `npm run dev`
+dotnet
 
-### Install Objects-API demo environment
+## Environment variables
 
-1. Create an objects-api folder
-2. Clone the `docker-compose.yml` from https://github.com/maykinmedia/objects-api into the `objects-api` folder
-3. Inside the objects-api folder, create the folder structure: `docker/setup_configuration`
-4. Clone the two files from https://github.com/maykinmedia/objects-api/tree/master/docker/setup_configuration inside the `setup_configuration` folder
-5. Run the following commands:
-   - `docker compose up -d`
-   - `docker compose exec web ./src/manage.py loaddata demodata`
-   - `docker compose exec objecttypes-web ./src/manage.py loaddata demodata`
-   - `docker compose exec web ./src/manage.py createsuperuser`
-6. Go to http://localhost:8000/admin and login
-7. Go to `Configuration -> services` and click on `Objecttypen API` to edit the entry.
-   change the following fields to hold the supplied information:
+The following environment variables need to be set in the `.env.local` file:
 
-   - api root url: http://objecttypes-web:8000/api/v2
-   - Header value: Token ba9d233e95e04c4a8a661a27daffe7c9bd019067
+`VITE_BFF_PORT`: needs to be set to the port number the BFF uses. Default value is 5007.
+
+`OBJECTTYPES_BASE_URL`: needs to direct to the base URL of the Object Types API. Example: "http://object.types.nl/api/v2".
+For the demo setup it needs to be the same as the objecttypes container: "http://objecttypes-web:8000/api/v2"
+
+`OBJECTTYPES_API_KEY`: The API key that is setup in the Object Types API dashboard.
+For the demo setup the following token is pre-loaded: ba9d233e95e04c4a8a661a27daffe7c9bd019067
+
+`OBJECTS_BASE_URL`: needs to direct to the base URL of the Objects API. Example: "http://objects.nl/api/v2".
+For the demo setup it needs to be the same as the objecttypes container: "http://web:8000/api/v2"
+
+`OBJECTS_API_KEY`: The API key that is setup in the Objects API dashboard.
+For the demo setup the following token is pre-loaded: ba9d233e95e04c4a8a661a27daffe7c9bd019067
+
+### Dev environment
+
+To work in the Development environment setup all the environment variables as **user secrets** for the dotnet project.
+
+NOTE
+Working with the docker objects-api environment can run into problems because of the use of the internal docker network.
+If you run the boom-app outside of the objects-api docker network, there will be problems when searching and adding new objects.
+
+## Demo setup
+
+Clone this repository and follow the steps below.
+
+### Setup objects-api
+
+A demo version with the objects-api is available in the `objects-api-demo` folder.
+
+To run do the following:
+
+1. Open a command prompt and navigate to the `objects-api-demo` folder
+2. run `docker compose up`
+3. Open a browser. Navigate to "http://localhost:8000/admin".
+
+   Login using:
+
+   username: daan
+
+   password: icatt
+
+### Setup boom-app
+
+The boom-app can be run in a docker container by doing the following:
+
+1. Open a command prompt and navigate to the `boom-app` folder
+2. Run `docker compose build`
+3. Run `docker compose up`
+4. Open a NEW web browser window and navigate to "http://localhost:8080"
+
+### Demo file
+
+A test CSV file is provided to create 2 bomen.

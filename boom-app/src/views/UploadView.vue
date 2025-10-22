@@ -9,7 +9,6 @@ import {
   selectedObjectVersion,
 } from '@/store'
 import router from '@/router'
-// import { fetchObjectTypeData } from '@/helpers'
 
 /**
  * Handles the 'fileParsed' event:

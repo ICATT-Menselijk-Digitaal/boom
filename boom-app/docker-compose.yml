@@ -1,0 +1,17 @@
+services:
+  boom.bff:
+    env_file:
+      - .env.local
+    image: boom.bff
+    build:
+      context: .
+      dockerfile: boom.bff/Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - objects-dev
+
+networks:
+    objects-dev:
+      name: objects-dev
+      external: true

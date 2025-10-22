@@ -28,10 +28,17 @@ import type {
  */
 async function acceptHandler() {
   const newObjects: MappedRecord[] = convertDataToObjects(csvData.value, mapping.value)
-  const searchResults: ObjectData[] | undefined = await searchObjectsByTypeVersion()
+  try {
+    const searchResults: ObjectData[] = await searchObjectsByTypeVersion()
 
-  if (searchResults) {
-    postObjects(newObjects, searchResults)
+    if (searchResults) {
+      postObjects(newObjects, searchResults)
+    } else {
+      throw new Error('Unable to search objects')
+    }
+  } catch (error) {
+    // TEMP replace with display to the user
+    console.log(error)
   }
 }
 
@@ -74,6 +81,7 @@ function convertRecordToObject(record: CsvRecord, mapping: Mapping): MappedRecor
       validateObject(record, headerName)
       propertiesObject[propertyName] = record[headerName]
     } catch (error) {
+      // TEMP replace with display to the user (maybe?)
       console.error(`Error converting record: ${error}`)
     }
   }
@@ -130,14 +138,14 @@ function postSingleObject(typeUrl: string, version: number, properties: MappedRe
   const dateNow = new Date(Date.now()).toISOString().split('T')?.at(0) ?? '2025-01-01'
 
   const body = {
-    type: convertToInternalDockerUrl(typeUrl).toString(),
+    type: typeUrl,
     record: {
       typeVersion: version,
       data: properties,
       startAt: dateNow,
     },
   }
-  return postRequest<ObjectCreateResponse>(body).then((res) => res.uuid)
+  return postRequest<ObjectCreateResponse>(body)
 }
 
 /* ------------- OBJECT SEARCH FUNCTIONS --------------- */
@@ -164,16 +172,14 @@ function hasObject(mappedObject: MappedRecord, searchResults: ObjectData[]): boo
 /**
  * Do a POST request that searches for all objects that match the selected objecttype and version.
  */
-function searchObjectsByTypeVersion(): Promise<ObjectData[] | undefined> {
+function searchObjectsByTypeVersion(): Promise<ObjectData[]> {
   const typeUrl = selectedObjectVersion.value?.objectType ?? ''
   const version = selectedObjectVersion.value?.version ?? 0
   const body = {
-    type: convertToInternalDockerUrl(typeUrl).toString(),
+    type: typeUrl,
     typeVersion: version,
   }
-  return postRequest<PaginatedSearchResponse>(body, '/search')
-    .then((res) => res.results)
-    .catch(() => undefined)
+  return postRequest<PaginatedSearchResponse>(body, '/search').then((res) => res.results)
 }
 
 /**
@@ -182,13 +188,8 @@ function searchObjectsByTypeVersion(): Promise<ObjectData[] | undefined> {
  * @param body request body as a JSON object
  */
 async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
-  const headers: Headers = new Headers()
-  headers.set('Content-Crs', 'EPSG:4326')
-  headers.set('Content-Type', 'application/json')
-
   const request: RequestInfo = new Request(`/objects${urlExtension}`, {
     method: 'POST',
-    headers: headers,
     body: JSON.stringify(body),
   })
   try {
@@ -204,19 +205,6 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
   } catch (error) {
     throw error
   }
-}
-
-/**
- * Converts a given url to the hostname of the objecttypes docker container.
- * This function is temporary to assist working with the docker test setup of the objects api.
- * @param _url The objecttypes url that needs to convert
- * @returns converted URL object
- */
-function convertToInternalDockerUrl(_url: string): URL {
-  const url: URL = new URL(_url)
-  url.hostname = 'objecttypes-web'
-  url.port = '8000'
-  return url
 }
 </script>
 
