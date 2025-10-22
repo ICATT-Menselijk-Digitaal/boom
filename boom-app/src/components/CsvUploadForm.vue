@@ -107,11 +107,12 @@ function fileValidationMessage(file: File | undefined): string {
 
 <template>
   <div class="flex column box">
-    <h2>Upload a CSV file</h2>
-    <form @submit.prevent="submitHandler">
-      <div class="flex column">
-        <p :hidden="fileName === ''">Currently uploaded: {{ fileName }}</p>
-        <label for="fileUpload">Select a file to upload</label>
+    <b :hidden="fileName === ''">
+      Currently uploaded: <strong class="green">{{ fileName }}</strong>
+    </b>
+    <form class="flex column" @submit.prevent="submitHandler">
+      <div class="flex row">
+        <label for="fileUpload">Select a file to upload:</label>
         <input
           type="file"
           id="fileUpload"
@@ -120,8 +121,8 @@ function fileValidationMessage(file: File | undefined): string {
           required="true"
           @change="changeHandler"
         />
-        <button :disabled="isSubmitted" type="submit">Upload</button>
       </div>
+      <button :disabled="isSubmitted" type="submit">Upload</button>
     </form>
   </div>
 </template>
