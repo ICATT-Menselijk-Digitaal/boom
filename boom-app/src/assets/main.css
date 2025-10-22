@@ -31,6 +31,9 @@ a,
   border: 1px solid #ccc;
   border-radius: 8px;
 }
+.error {
+  color: var(--vt-c-text-red)
+}
 label {
   margin-right: 1em;
 }

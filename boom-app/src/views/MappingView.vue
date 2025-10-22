@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
+import OverlayMessage from '@/components/OverlayMessage.vue'
 import { fetchJSON, removeAllBefore } from '@/helpers'
 import router from '@/router'
 import {
@@ -15,21 +16,28 @@ import {
 import {
   type Mapping,
   type ObjectType,
+  type ObjectTypeMetaData,
   type ObjectTypeVersionMetaData,
   type PaginateObjectTypeResponse,
 } from '@/types'
 import { computed, ref, watch } from 'vue'
 
 const isLoading = ref<boolean>(false)
-const userMessage = ref<string>('Getting objecttypes from the server...')
+const errorMessage = ref<string>('')
 const isObjectSelected = computed(() => {
   return selectedObjectType.value !== undefined
 })
 const isVersionSelected = computed(() => {
   return selectedObjectVersion.value !== undefined
 })
-// Fetch the list of objects types whe page is loaded.
-watch(router.currentRoute, fetchObjectTypes, { immediate: true })
+// Fetch the list of objects types when page is loaded.
+watch(
+  router.currentRoute,
+  async () => {
+    objectTypesMetaDataList.value = await fetchObjectTypes()
+  },
+  { immediate: true },
+)
 // Fetch the verions as soon as an objecttype is selected.
 watch(selectedObjectType, async () => {
   selectedObjectVersion.value = undefined
@@ -93,7 +101,7 @@ function setMappingFromFormData(formEvent: Event): Mapping {
 /**
  * Fetches the list of ObjectTypes
  */
-async function fetchObjectTypes() {
+async function fetchObjectTypes(): Promise<ObjectTypeMetaData[]> {
   isLoading.value = true
   try {
     const response = await fetch('/objecttypes')
@@ -105,14 +113,15 @@ async function fetchObjectTypes() {
       throw new Error('Incorrect content type in response of ObjectTypes API call')
     }
     const responseContent = (await response.json()) as PaginateObjectTypeResponse
-    objectTypesMetaDataList.value = responseContent.results
+    return responseContent.results
   } catch (error) {
     if (error instanceof Error) {
-      userMessage.value = 'test' // TODO get this working!!!
+      errorMessage.value = `Fetching the objecttypes from the server failed with the message: ${error.message}`
     }
   } finally {
     isLoading.value = false
   }
+  return []
 }
 
 /**
@@ -130,8 +139,9 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
       )
       fetchResponses.push(response)
     } catch (error) {
-      // Temporary log the error until a more user friendely option is available.
-      console.log(error)
+      if (error instanceof Error) {
+        errorMessage.value = `Fetching the objecttypes from the server failed with the message: ${error.message}`
+      }
     }
   }
   return Promise.resolve(fetchResponses)
@@ -141,12 +151,21 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
 <template>
   <main class="flex column">
     <h1>Ok let's Map!</h1>
-    <h2 v-if="isLoading">{{ userMessage }}</h2>
-    <div v-if="objectTypesMetaDataList.length > 0" class="flex column box">
+    <div v-if="isLoading && !errorMessage" class="flex column box">
+      <OverlayMessage :text="'Loading objecttype data. Please wait...'" :useSpinner="true" />
+    </div>
+    <div v-if="!isLoading && errorMessage" class="flex column box">
+      <h2 class="error">An error occured</h2>
+      <p>{{ errorMessage }}</p>
+    </div>
+    <div
+      v-if="!isLoading && !errorMessage && objectTypesMetaDataList.length > 0"
+      class="flex column box"
+    >
       <h2>Select Object Type</h2>
       <p>Select an object type from the list below that you want to use.</p>
       <div class="flex row">
-        <label for="selectObjectType">Object type</label>
+        <label for="selectObjectType">Object type:</label>
         <select id="selectObjectType" v-model="selectedObjectType">
           <option
             v-for="objectType in objectTypesMetaDataList"
@@ -156,8 +175,8 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
             {{ objectType.name }}
           </option>
         </select>
-        <label for="selectVersion">Version</label>
-        <select id="selectVersion" v-model="selectedObjectVersion">
+        <label for="selectVersion">Version:</label>
+        <select :disabled="!isObjectSelected" id="selectVersion" v-model="selectedObjectVersion">
           <option
             v-for="version in objectTypesVersionMetaDataList"
             :key="version.version"
@@ -168,7 +187,7 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
         </select>
       </div>
     </div>
-    <div v-if="isObjectSelected" class="flex column box">
+    <div v-if="isVersionSelected" class="flex column box">
       <h2>Map properties to header names</h2>
       <p>For each object type property, select the CSV header name that matches it.</p>
       <form id="mapping-form" class="flex column" @submit.prevent="submitHandler">
