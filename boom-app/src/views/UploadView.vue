@@ -3,6 +3,9 @@ import type { CsvOutput } from '@/types'
 import CsvUploadForm from '@/components/CsvUploadForm.vue'
 import { csvData, isUploaded, selectedObjectType, selectedObjectVersion } from '@/store'
 import router from '@/router'
+import { ref } from 'vue'
+
+const errorMessage = ref<string>()
 
 /**
  * Handles the 'fileParsed' event:
@@ -19,8 +22,10 @@ async function handleFileParsed(receivedData: CsvOutput) {
     selectedObjectVersion.value = undefined
     router.push('/mapping')
   } catch (error) {
-    // temporary console error logging. Replace with presenting error to user
-    console.log(error)
+    errorMessage.value = 'An error occured during parsing of the uploaded file.'
+    if (error instanceof Error) {
+      errorMessage.value = errorMessage.value.concat(error.message)
+    }
   }
 }
 </script>
@@ -28,8 +33,12 @@ async function handleFileParsed(receivedData: CsvOutput) {
 <template>
   <main class="flex column">
     <h1>Let's Upload!</h1>
-    <CsvUploadForm @fileParsed="handleFileParsed" />
-    <button v-if="isUploaded" @click="$router.push('/mapping')">Next</button>
+    <div v-if="errorMessage" class="flex column box">
+      <h2 class="error">An error occured</h2>
+      <p>{{ errorMessage }}</p>
+    </div>
+    <CsvUploadForm v-if="!errorMessage" @fileParsed="handleFileParsed" />
+    <button v-if="isUploaded && !errorMessage" @click="$router.push('/mapping')">Next</button>
   </main>
 </template>
 

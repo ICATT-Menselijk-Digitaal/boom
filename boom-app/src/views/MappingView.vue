@@ -76,6 +76,16 @@ function submitHandler(formEvent: Event) {
 }
 
 /**
+ * Handles the return button click
+ * Navigates back to the upload page and resets objecttype and version data.
+ */
+function returnHandler() {
+  objectTypesMetaDataList.value = []
+  objectTypesVersionMetaDataList.value = []
+  router.push('/upload')
+}
+
+/**
  * Maps properties to selected header names supplied by the form event.
  * @param formEvent Event formEvent that carries the selected header names.
  * @returns A mapping from property to header name
@@ -135,8 +145,9 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
       )
       fetchResponses.push(response)
     } catch (error) {
+      errorMessage.value = 'Fetching the object versions from the server failed'
       if (error instanceof Error) {
-        errorMessage.value = `Fetching the objecttypes from the server failed with the message: ${error.message}`
+        errorMessage.value = errorMessage.value.concat(' with the message: ', error.message)
       }
     } finally {
       isLoading.value = false
@@ -148,16 +159,21 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
 
 <template>
   <main class="flex column">
-    <h1>Ok let's Map!</h1>
-    <div v-if="!isLoading && errorMessage" class="flex column box">
-      <h2 class="error">An error occured</h2>
-      <p>{{ errorMessage }}</p>
+    <div class="flex row space-between">
+      <h1>Ok let's Map!</h1>
+      <SimpleSpinner v-if="isLoading" class="spinner" />
     </div>
-    <div v-if="!errorMessage" class="flex column box">
-      <div class="flex row space-between">
-        <h2>Select Object Type</h2>
-        <SimpleSpinner v-if="isLoading" class="small" />
+    <!-- Error feedback box -->
+    <div v-if="errorMessage" class="flex column">
+      <div class="flex column box">
+        <h2 class="error">An error occured</h2>
+        <p>{{ errorMessage }}</p>
       </div>
+      <button @click="returnHandler">Return</button>
+    </div>
+    <!-- Selection box -->
+    <div v-if="!errorMessage" class="flex column box">
+      <h2>Select Object Type</h2>
       <p>Select an object type from the list below that you want to use.</p>
       <div class="flex row">
         <label for="selectObjectType">Object type:</label>
@@ -182,7 +198,8 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
         </select>
       </div>
     </div>
-    <div v-if="isVersionSelected" class="flex column box">
+    <!-- Mapping box -->
+    <div v-if="isVersionSelected && !errorMessage" class="flex column box">
       <h2>Map properties to header names</h2>
       <p>For each object type property, select the CSV header name that matches it.</p>
       <form id="mapping-form" class="flex column" @submit.prevent="submitHandler">
@@ -196,7 +213,9 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
         />
       </form>
     </div>
-    <button v-if="isVersionSelected" type="submit" form="mapping-form">Confirm mapping</button>
+    <button v-if="isVersionSelected && !errorMessage" type="submit" form="mapping-form">
+      Confirm mapping
+    </button>
   </main>
 </template>
 
@@ -207,7 +226,7 @@ h1 {
 button {
   align-self: flex-start;
 }
-.small {
+.spinner {
   width: 1.5rem;
   height: 1.5rem;
 }

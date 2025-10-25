@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SimpleSpinner from '@/components/SimpleSpinner.vue'
 import router from '@/router'
 import {
   csvData,
@@ -18,6 +19,10 @@ import type {
   ObjectData,
   ObjectCreateResponse,
 } from '@/types'
+import { ref } from 'vue'
+
+const isLoading = ref<boolean>(false)
+const errorMessage = ref<string>()
 
 /* ------------- HANDLER FUNCTIONS --------------- */
 
@@ -27,18 +32,22 @@ import type {
  * Changes the preview to show any errors.
  */
 async function acceptHandler() {
+  isLoading.value = true
   const newObjects: MappedRecord[] = convertDataToObjects(csvData.value, mapping.value)
   try {
     const searchResults: ObjectData[] = await searchObjectsByTypeVersion()
-
     if (searchResults) {
       postObjects(newObjects, searchResults)
     } else {
-      throw new Error('Unable to search objects')
+      throw new Error('Unable to search through objects.')
     }
   } catch (error) {
-    // TEMP replace with display to the user
-    console.log(error)
+    errorMessage.value = 'Entering objects into the registry failed with the following message: '
+    if (error instanceof Error) {
+      errorMessage.value = errorMessage.value.concat(error.message)
+    }
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -81,8 +90,10 @@ function convertRecordToObject(record: CsvRecord, mapping: Mapping): MappedRecor
       validateObject(record, headerName)
       propertiesObject[propertyName] = record[headerName]
     } catch (error) {
-      // TEMP replace with display to the user (maybe?)
-      console.error(`Error converting record: ${error}`)
+      errorMessage.value = 'Error converting record.'
+      if (error instanceof Error) {
+        errorMessage.value = errorMessage.value.concat(error.message)
+      }
     }
   }
   return propertiesObject
@@ -210,8 +221,18 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
 
 <template>
   <main class="flex column">
-    <h1>Now let's preview!</h1>
-    <div class="flex column box">
+    <div class="flex row space-between">
+      <h1>Now let's preview!</h1>
+      <SimpleSpinner v-if="isLoading" class="spinner" />
+    </div>
+    <div v-if="errorMessage" class="flex column">
+      <div class="flex column box">
+        <h2 class="error">An error occured</h2>
+        <p>{{ errorMessage }}</p>
+      </div>
+      <button @click="returnHandler">Return</button>
+    </div>
+    <div v-if="!errorMessage" class="flex column box">
       <div class="flex column">
         <h2>Result of Mapping</h2>
         <p>
@@ -235,7 +256,6 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
         </table>
       </div>
       <h2>Entry preview</h2>
-
       <table>
         <caption>
           Here you see a preview of the mapping using the first row of the CSV data:
@@ -264,18 +284,19 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
         database.
       </p>
     </div>
-    <div v-if="isEntryDone" class="flex column box">
+    <div v-if="isEntryDone && !errorMessage" class="flex column box">
       <h2>Done!</h2>
       <p>{{ entries.length }} new entries have been succesfully completed!</p>
       <h2>Errors</h2>
       <p>{{ errors.length }} entries have run into an error</p>
     </div>
-    <div class="flex row">
-      <button v-if="!isEntryDone" @click="acceptHandler">Accept</button>
-      <button @click="returnHandler">Return</button>
+    <div v-if="!errorMessage" class="flex row">
+      <button v-if="!isEntryDone" :disabled="isLoading" @click="acceptHandler">Accept</button>
+      <button :disabled="isLoading" @click="returnHandler">Return</button>
     </div>
   </main>
 </template>
+
 <style scoped>
 table {
   width: 100%;
@@ -290,5 +311,9 @@ caption {
 th {
   font-size: large;
   text-align: start;
+}
+.spinner {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 </style>
