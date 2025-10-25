@@ -6,6 +6,7 @@ import { fileName } from '@/store'
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const fileSizeLimit = 5 * 1024 * 1024 // 5MB
+const isSubmitted = ref<boolean>(false)
 
 /**
  * Emits events to the parent component.
@@ -14,19 +15,43 @@ const fileSizeLimit = 5 * 1024 * 1024 // 5MB
 const emit = defineEmits(['fileParsed'])
 
 /**
+ * Show the user feedback on submission using custom validity of the input field.
+ */
+function submitHandler() {
+  const csvFile = fileInputRef.value?.files?.[0]
+  if (fileInputRef.value?.reportValidity() && csvFile instanceof File) {
+    try {
+      isSubmitted.value = true
+      uploadFile(csvFile)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Uploading file failed with the following message:', error.message)
+      } else {
+        console.error('Uploading error')
+      }
+    }
+  }
+}
+
+/**
+ * Set custom validity for input element.
+ * Enable the submit button.
+ */
+function changeHandler() {
+  const csvFile = fileInputRef.value?.files?.[0]
+  fileInputRef.value?.setCustomValidity(fileValidationMessage(csvFile))
+  isSubmitted.value = false
+}
+
+/**
  * Parses the selected CSV file.
  * Emits 'fileParsed' event on success with the parsed data.
  */
-function uploadFile() {
-  const csvFile = fileInputRef.value?.files?.[0] as File
-  parseFileAsync(csvFile)
-    .then((output) => {
-      emit('fileParsed', output)
-      fileName.value = csvFile.name
-    })
-    .catch((error) => {
-      console.error('Error parsing file:', error.message)
-    })
+function uploadFile(csvFile: File) {
+  parseFileAsync(csvFile).then((output) => {
+    emit('fileParsed', output)
+    fileName.value = csvFile.name
+  })
 }
 
 /**
@@ -58,8 +83,7 @@ function parseFileAsync(file: File) {
  * Returns an error message if the file is invalid, otherwise returns an empty string.
  * @returns {string} - Error message or empty string if valid.
  */
-function isUploadedFileValid(): string {
-  const file = fileInputRef.value?.files?.[0]
+function fileValidationMessage(file: File | undefined): string {
   // Check if the file input exists and has files
   if (file) {
     // Check if the file is a CSV
@@ -75,30 +99,24 @@ function isUploadedFileValid(): string {
   }
   return '' // Valid file
 }
-
-/**
- * Checks the uploaded file and sets custom validity based on validation results.
- */
-function checkUploadedFile() {
-  fileInputRef.value?.setCustomValidity(isUploadedFileValid())
-}
 </script>
 
 <template>
   <div class="flex column box">
     <h2>Upload a CSV file</h2>
-    <form @submit.prevent="uploadFile">
+    <form @submit.prevent="submitHandler">
       <div class="flex column">
         <p :hidden="fileName === ''">Currently uploaded: {{ fileName }}</p>
         <label for="fileUpload">Select a file to upload</label>
         <input
           type="file"
           id="fileUpload"
-          @change="checkUploadedFile"
           ref="fileInputRef"
           accept=".csv"
+          required="true"
+          @change="changeHandler"
         />
-        <button type="submit">Upload</button>
+        <button :disabled="isSubmitted" type="submit">Upload</button>
       </div>
     </form>
   </div>
