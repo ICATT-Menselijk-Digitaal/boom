@@ -31,6 +31,12 @@ a,
   border: 1px solid #ccc;
   border-radius: 8px;
 }
+.space-between {
+  justify-content: space-between;
+}
+.error {
+  color: var(--vt-c-text-red)
+}
 label {
   margin-right: 1em;
 }

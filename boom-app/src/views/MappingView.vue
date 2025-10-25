@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MappingRow from '@/components/MappingRow.vue'
+import SimpleSpinner from '@/components/SimpleSpinner.vue'
 import { fetchJSON, removeAllBefore } from '@/helpers'
 import router from '@/router'
 import {
@@ -12,12 +13,24 @@ import {
   autoMapping,
   mapping,
 } from '@/store'
-import { type Mapping, type ObjectType, type ObjectTypeVersionMetaData } from '@/types'
-import { computed, watch } from 'vue'
+import {
+  type Mapping,
+  type ObjectType,
+  type ObjectTypeMetaData,
+  type ObjectTypeVersionMetaData,
+  type PaginateObjectTypeResponse,
+} from '@/types'
+import { computed, onMounted, ref, watch } from 'vue'
 
+const isLoading = ref<boolean>(false)
+const errorMessage = ref<string>('')
 const isObjectSelected = computed(() => {
   return selectedObjectType.value !== undefined
 })
+const isVersionSelected = computed(() => {
+  return selectedObjectVersion.value !== undefined
+})
+
 // Fetch the verions as soon as an objecttype is selected.
 watch(selectedObjectType, async () => {
   selectedObjectVersion.value = undefined
@@ -28,6 +41,8 @@ watch(selectedObjectType, async () => {
 watch(selectedObjectVersion, () => {
   autoMapping.value = createMapping(selectedObjectVersion.value?.jsonSchema, csvData.value.headers)
 })
+// Fetch the list of objects types when page is loaded.
+onMounted(async () => (objectTypesMetaDataList.value = await fetchObjectTypes()))
 
 /**
  * Create a mapping of property names to header names.
@@ -79,10 +94,37 @@ function setMappingFromFormData(formEvent: Event): Mapping {
 }
 
 /**
+ * Fetches the list of ObjectTypes
+ */
+async function fetchObjectTypes(): Promise<ObjectTypeMetaData[]> {
+  isLoading.value = true
+  try {
+    const response = await fetch('/objecttypes')
+    if (!response.ok) {
+      throw new Error(`Request failed with status: ${response.status}`)
+    }
+    const contentType = response.headers.get('content-type')
+    if (!contentType?.includes('application/json')) {
+      throw new Error('Incorrect content type in response of ObjectTypes API call')
+    }
+    const responseContent = (await response.json()) as PaginateObjectTypeResponse
+    return responseContent.results
+  } catch (error) {
+    if (error instanceof Error) {
+      errorMessage.value = `Fetching the objecttypes from the server failed with the message: ${error.message}`
+    }
+  } finally {
+    isLoading.value = false
+  }
+  return []
+}
+
+/**
  * Fetch all version meta data.
  * @returns A Promise with a list of ObjectType version meta data
  */
 async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
+  isLoading.value = true
   const versionURLs = selectedObjectType.value?.versions ?? []
   const fetchResponses = []
   // fetch the data for all versions
@@ -93,8 +135,11 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
       )
       fetchResponses.push(response)
     } catch (error) {
-      // Temporary log the error until a more user friendely option is available.
-      console.log(error)
+      if (error instanceof Error) {
+        errorMessage.value = `Fetching the objecttypes from the server failed with the message: ${error.message}`
+      }
+    } finally {
+      isLoading.value = false
     }
   }
   return Promise.resolve(fetchResponses)
@@ -104,11 +149,18 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
 <template>
   <main class="flex column">
     <h1>Ok let's Map!</h1>
-    <div class="flex column box">
-      <h2>Select Object Type</h2>
+    <div v-if="!isLoading && errorMessage" class="flex column box">
+      <h2 class="error">An error occured</h2>
+      <p>{{ errorMessage }}</p>
+    </div>
+    <div v-if="!errorMessage" class="flex column box">
+      <div class="flex row space-between">
+        <h2>Select Object Type</h2>
+        <SimpleSpinner v-if="isLoading" class="small" />
+      </div>
       <p>Select an object type from the list below that you want to use.</p>
       <div class="flex row">
-        <label for="selectObjectType">Object type</label>
+        <label for="selectObjectType">Object type:</label>
         <select id="selectObjectType" v-model="selectedObjectType">
           <option
             v-for="objectType in objectTypesMetaDataList"
@@ -118,8 +170,8 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
             {{ objectType.name }}
           </option>
         </select>
-        <label for="selectVersion">Version</label>
-        <select id="selectVersion" v-model="selectedObjectVersion">
+        <label for="selectVersion">Version:</label>
+        <select :disabled="!isObjectSelected" id="selectVersion" v-model="selectedObjectVersion">
           <option
             v-for="version in objectTypesVersionMetaDataList"
             :key="version.version"
@@ -130,7 +182,7 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
         </select>
       </div>
     </div>
-    <div v-if="isObjectSelected" class="flex column box">
+    <div v-if="isVersionSelected" class="flex column box">
       <h2>Map properties to header names</h2>
       <p>For each object type property, select the CSV header name that matches it.</p>
       <form id="mapping-form" class="flex column" @submit.prevent="submitHandler">
@@ -144,7 +196,7 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
         />
       </form>
     </div>
-    <button v-if="isObjectSelected" type="submit" form="mapping-form">Save mapping</button>
+    <button v-if="isVersionSelected" type="submit" form="mapping-form">Confirm mapping</button>
   </main>
 </template>
 
@@ -154,5 +206,9 @@ h1 {
 }
 button {
   align-self: flex-start;
+}
+.small {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 </style>
