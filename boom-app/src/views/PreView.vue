@@ -274,11 +274,13 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
           </li>
         </ul>
       </div>
-      <h2>Satisfied?</h2>
-      <p>
-        If you are satisfied with the mapping, press <b>Accept</b> below to insert all the data as
-        new objects into the database.
-      </p>
+      <div v-if="!isEntryDone && !errorMessage" class="flex column">
+        <h2>Satisfied?</h2>
+        <p>
+          If you are satisfied with the mapping, press <b>Accept</b> below to insert all the data as
+          new objects into the database.
+        </p>
+      </div>
     </div>
     <div v-if="isEntryDone && !errorMessage" class="flex column box">
       <h2>Done!</h2>
