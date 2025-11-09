@@ -20,7 +20,7 @@ import {
   type ObjectTypeVersionMetaData,
   type PaginateObjectTypeResponse,
 } from '@/types'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const isLoading = ref<boolean>(false)
 const errorMessage = ref<string>('')
@@ -30,17 +30,7 @@ const isObjectSelected = computed(() => {
 const isVersionSelected = computed(() => {
   return selectedObjectVersion.value !== undefined
 })
-// Fetch the list of objects types when page is loaded.
-watch(
-  router.currentRoute,
-  async () => {
-    objectTypesMetaDataList.value = await fetchObjectTypes()
-    if (selectedObjectType.value) {
-      objectTypesVersionMetaDataList.value = await fetchObjectVersions()
-    }
-  },
-  { immediate: true },
-)
+
 // Fetch the verions as soon as an objecttype is selected.
 watch(selectedObjectType, async () => {
   selectedObjectVersion.value = undefined
@@ -51,6 +41,8 @@ watch(selectedObjectType, async () => {
 watch(selectedObjectVersion, () => {
   autoMapping.value = createMapping(selectedObjectVersion.value?.jsonSchema, csvData.value.headers)
 })
+// Fetch the list of objects types when page is loaded.
+onMounted(async () => (objectTypesMetaDataList.value = await fetchObjectTypes()))
 
 /**
  * Create a mapping of property names to header names.

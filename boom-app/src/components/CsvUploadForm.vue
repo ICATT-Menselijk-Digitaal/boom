@@ -48,14 +48,10 @@ function changeHandler() {
  * Emits 'fileParsed' event on success with the parsed data.
  */
 function uploadFile(csvFile: File) {
-  parseFileAsync(csvFile)
-    .then((output) => {
-      emit('fileParsed', output)
-      fileName.value = csvFile.name
-    })
-    .catch((error) => {
-      throw error
-    })
+  parseFileAsync(csvFile).then((output) => {
+    emit('fileParsed', output)
+    fileName.value = csvFile.name
+  })
 }
 
 /**
