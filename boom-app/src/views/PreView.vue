@@ -238,7 +238,7 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
       <div class="flex column box">
         <h2>Result of your Mapping</h2>
         <p>
-          Here you see the result of mapping the Object-type properties to the CSV header names:
+          Here you see the result of mapping the CSV header names to the Object-type properties:
         </p>
         <table>
           <thead>
@@ -260,29 +260,19 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
       <!-- Preview box -->
       <div class="flex column box">
         <h2>Preview of a new object</h2>
-        <table>
-          <caption>
-            Here you see a preview of how the first row of the CSV data will be inserted as a new
-            object:
-          </caption>
-          <thead>
-            <tr>
-              <th
-                v-for="(_, propertyName) in convertDataToObjects(csvData, mapping).at(0)"
-                :key="propertyName"
-              >
-                {{ propertyName }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td v-for="value in convertDataToObjects(csvData, mapping).at(0)" :key="value">
-                {{ value }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <caption>
+          Here you see a preview of how the first row of the CSV data will be inserted as a new
+          object:
+        </caption>
+        <h3>New object</h3>
+        <ul>
+          <li
+            v-for="(propertyValue, propertyName) in convertDataToObjects(csvData, mapping).at(0)"
+            :key="propertyName"
+          >
+            {{ propertyName }}: {{ propertyValue }}
+          </li>
+        </ul>
       </div>
       <h2>Satisfied?</h2>
       <p>
