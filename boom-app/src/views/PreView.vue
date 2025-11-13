@@ -261,7 +261,15 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
   try {
     const response = await fetch(request)
     if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`)
+      // Try to get response body for error details
+      let errorBody = ''
+      try {
+        const text = await response.text()
+        errorBody = text ? `\nResponse body: ${text}` : ''
+      } catch {
+        // If reading body fails, continue without it
+      }
+      throw new Error(`Response status: ${response.status}${errorBody}`)
     }
     const contentType = response.headers.get('content-type')
     if (!contentType || !contentType.includes('application/json')) {
