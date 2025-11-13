@@ -168,16 +168,11 @@ function postSingleObject(typeUrl: string, version: number, properties: MappedRe
  * @param searchResults Search results returned from the server
  */
 function hasObject(mappedObject: MappedRecord, searchResults: ObjectData[]): boolean {
-  for (const existingObject of searchResults) {
-    let hasObject: boolean = true
-    for (const [property, value] of Object.entries(existingObject.record.data)) {
-      hasObject = mappedObject[property] !== undefined && value === mappedObject[property]
-    }
-    if (hasObject) {
-      return true
-    }
-  }
-  return false
+  return searchResults.some(existingObject =>
+    Object.entries(existingObject.record.data).every(([property, value]) =>
+      mappedObject[property] === value
+    )
+  )
 }
 
 /**
