@@ -18,6 +18,8 @@
         correctly.
       </li>
     </ol>
+    <p>Be aware: type checking on entries is not done in this version of the BOOM-app.</p>
+    <p>It is up to the user to make sure the CSV values are all of the correct type.</p>
     <p>To start press the <b>Next</b> button</p>
   </div>
 </template>
