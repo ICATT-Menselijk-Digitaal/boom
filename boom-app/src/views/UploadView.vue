@@ -32,7 +32,7 @@ async function handleFileParsed(receivedData: CsvOutput) {
 
 <template>
   <main class="flex column">
-    <h1>Let's Upload!</h1>
+    <h1>Upload a CSV file</h1>
     <div v-if="errorMessage" class="flex column box">
       <h2 class="error">An error occured</h2>
       <p>{{ errorMessage }}</p>

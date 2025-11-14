@@ -23,8 +23,46 @@ import { ref } from 'vue'
 
 const isLoading = ref<boolean>(false)
 const errorMessage = ref<string>()
+const showErrorDialog = ref<boolean>(false)
+const currentErrorMessage = ref<string>('')
+const errorDialogResolve = ref<((value: boolean) => void) | null>(null)
 
 /* ------------- HANDLER FUNCTIONS --------------- */
+
+/**
+ * Shows an error dialog to the user with options to continue or stop.
+ * @param message The error message to display
+ * @returns Promise that resolves to true if user wants to continue, false otherwise
+ */
+function showErrorDialogToUser(message: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    currentErrorMessage.value = message
+    showErrorDialog.value = true
+    errorDialogResolve.value = resolve
+  })
+}
+
+/**
+ * Handles the user's decision to continue after an error.
+ */
+function handleContinue() {
+  showErrorDialog.value = false
+  if (errorDialogResolve.value) {
+    errorDialogResolve.value(true)
+    errorDialogResolve.value = null
+  }
+}
+
+/**
+ * Handles the user's decision to stop after an error.
+ */
+function handleStop() {
+  showErrorDialog.value = false
+  if (errorDialogResolve.value) {
+    errorDialogResolve.value(false)
+    errorDialogResolve.value = null
+  }
+}
 
 /**
  * Handles the accept button click.
@@ -37,7 +75,7 @@ async function acceptHandler() {
   try {
     const searchResults: ObjectData[] = await searchObjectsByTypeVersion()
     if (searchResults) {
-      postObjects(newObjects, searchResults)
+      await postObjects(newObjects, searchResults)
     } else {
       throw new Error('Unable to search through objects.')
     }
@@ -120,19 +158,36 @@ function validateObject(record: CsvRecord, headerName: string) {
  * @param newObjects The objects to be posted
  * @param searchResults The objects that are already in the database that have the same type/version
  */
-function postObjects(newObjects: MappedRecord[], searchResults: ObjectData[]) {
+async function postObjects(newObjects: MappedRecord[], searchResults: ObjectData[]) {
+  let shouldContinue = true
+
   for (const newObject of newObjects) {
+    if (!shouldContinue) {
+      break
+    }
+
     const isDuplicate = hasObject(newObject, searchResults)
     if (!isDuplicate) {
-      postSingleObject(
-        selectedObjectVersion.value?.objectType ?? '',
-        selectedObjectVersion.value?.version ?? 0,
-        newObject,
-      )
-        .then(() => entries.value.push(newObject))
-        .catch(() => {
-          errors.value.push(newObject)
-        })
+      try {
+        await postSingleObject(
+          selectedObjectVersion.value?.objectType ?? '',
+          selectedObjectVersion.value?.version ?? 0,
+          newObject,
+        )
+        entries.value.push(newObject)
+      } catch (error) {
+        errors.value.push(newObject)
+
+        // Determine error message
+        let errorMsg = 'An error occured during entry of the following object:\n\n'
+        errorMsg += `Object: ${JSON.stringify(newObject)}\n\n`
+        if (error instanceof Error) {
+          errorMsg += `Error message: ${error.message}`
+        }
+
+        // Show error dialog and wait for user decision
+        shouldContinue = await showErrorDialogToUser(errorMsg)
+      }
     }
   }
   isEntryDone.value = true
@@ -194,7 +249,7 @@ function searchObjectsByTypeVersion(): Promise<ObjectData[]> {
 }
 
 /**
- * Performs a POST request with standard headers used in all of the api POST requests used.
+ * Performs a POST request with standard headers used in all of the api POST requests.
  * @param headers Headers object
  * @param body request body as a JSON object
  */
@@ -206,7 +261,15 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
   try {
     const response = await fetch(request)
     if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`)
+      // Try to get response body for error details
+      let errorBody = ''
+      try {
+        const text = await response.text()
+        errorBody = text ? `\nResponse body: ${text}` : ''
+      } catch {
+        // If reading body fails, continue without it
+      }
+      throw new Error(`Response status: ${response.status}${errorBody}`)
     }
     const contentType = response.headers.get('content-type')
     if (!contentType || !contentType.includes('application/json')) {
@@ -221,10 +284,23 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
 
 <template>
   <main class="flex column">
+    <!-- Error Dialog Modal -->
+    <div v-if="showErrorDialog" class="modal-overlay">
+      <div class="modal-content">
+        <h2 class="error">An error has occured</h2>
+        <p>{{ currentErrorMessage }}</p>
+        <div class="modal-actions">
+          <button @click="handleStop" class="btn-stop">Stop</button>
+          <button @click="handleContinue" class="btn-continue">Continue</button>
+        </div>
+      </div>
+    </div>
+
     <div class="flex row space-between">
-      <h1>Now let's preview!</h1>
+      <h1>Check your mapping</h1>
       <SimpleSpinner v-if="isLoading" class="spinner" />
     </div>
+    <!-- Error feedback box -->
     <div v-if="errorMessage" class="flex column">
       <div class="flex column box">
         <h2 class="error">An error occured</h2>
@@ -232,11 +308,12 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
       </div>
       <button @click="returnHandler">Return</button>
     </div>
-    <div v-if="!errorMessage" class="flex column box">
-      <div class="flex column">
-        <h2>Result of Mapping</h2>
+    <div v-if="!isEntryDone && !errorMessage" class="flex column">
+      <!-- Result box -->
+      <div class="flex column box">
+        <h2>Result of your Mapping</h2>
         <p>
-          Here you see the result of mapping the Object-type properties to the CSV header names:
+          Here you see the result of mapping the CSV header names to the Object-type properties:
         </p>
         <table>
           <thead>
@@ -255,34 +332,30 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
           </tbody>
         </table>
       </div>
-      <h2>Entry preview</h2>
-      <table>
+      <!-- Preview box -->
+      <div v-if="!isEntryDone && !errorMessage" class="flex column box">
+        <h2>Preview of a new object</h2>
         <caption>
-          Here you see a preview of the mapping using the first row of the CSV data:
+          Here you see a preview of how the first row of the CSV data will be inserted as a new
+          object:
         </caption>
-        <thead>
-          <tr>
-            <th
-              v-for="(_, propertyName) in convertDataToObjects(csvData, mapping).at(0)"
-              :key="propertyName"
-            >
-              {{ propertyName }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td v-for="value in convertDataToObjects(csvData, mapping).at(0)" :key="value">
-              {{ value }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <h2>Satisfied?</h2>
-      <p>
-        If you are satisfied with the mapping, press accept to enter all the new objects into the
-        database.
-      </p>
+        <h3>New object</h3>
+        <ul>
+          <li
+            v-for="(propertyValue, propertyName) in convertDataToObjects(csvData, mapping).at(0)"
+            :key="propertyName"
+          >
+            {{ propertyName }}: {{ propertyValue }}
+          </li>
+        </ul>
+      </div>
+      <div v-if="!isEntryDone && !errorMessage" class="flex column">
+        <h2>Satisfied?</h2>
+        <p>
+          If you are satisfied with the mapping, press <b>Accept</b> below to insert all the data as
+          new objects into the database.
+        </p>
+      </div>
     </div>
     <div v-if="isEntryDone && !errorMessage" class="flex column box">
       <h2>Done!</h2>
@@ -315,5 +388,84 @@ th {
 .spinner {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  color: black;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content p {
+  word-wrap: break-word;
+  margin: 1rem 0;
+  white-space: pre-line;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.btn-stop {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-stop:hover {
+  background-color: #c82333;
+}
+
+.btn-continue {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-continue:hover {
+  background-color: #218838;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .modal-content {
+    background-color: #2d2d2d;
+    color: #f0f0f0;
+  }
+
+  .modal-content h2.error {
+    color: #ff6b6b;
+  }
 }
 </style>

@@ -15,7 +15,7 @@ const selectedHeaderName = defineModel<string>({
   <div class="flex wrapper">
     <label :for="props.objectTypePropertyName"
       >Object type property
-      <i class="green">{{ props.objectTypePropertyName }}</i>
+      <b class="green">{{ props.objectTypePropertyName }}</b>
       maps to: <i>{{ required ? '(required)' : '' }}</i>
     </label>
     <select

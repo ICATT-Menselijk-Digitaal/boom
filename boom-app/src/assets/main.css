@@ -37,9 +37,6 @@ a,
 .error {
   color: var(--vt-c-text-red)
 }
-label {
-  margin-right: 1em;
-}
 button {
   padding: 0.5em 1.5em;
   border-radius: 2em;
@@ -62,6 +59,12 @@ input {
 }
 h1, h2{
   font-weight: bold;
+}
+b {
+  font-weight: bold;
+}
+th {
+  font-size: medium;
 }
 
 @media (hover: hover) {
