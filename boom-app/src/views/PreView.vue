@@ -218,15 +218,17 @@ function postSingleObject(typeUrl: string, version: number, properties: MappedRe
 
 /**
  * Determines if the provided search results has any object that matches the provided mapped object.
- * All properties have to be the same for the function to return true.
+ * The new object should have the same number of properties and all properties should be the same for the function to return true.
  * @param mappedObject An object based on the mapping
  * @param searchResults Search results returned from the server
  */
 function hasObject(mappedObject: MappedRecord, searchResults: ObjectData[]): boolean {
-  return searchResults.some((existingObject) =>
-    Object.entries(existingObject.record.data).every(
-      ([property, value]) => mappedObject[property] === value,
-    ),
+  return searchResults.some(
+    (existingObject) =>
+      Object.entries(existingObject.record.data).length === Object.keys(mappedObject).length &&
+      Object.entries(existingObject.record.data).every(
+        ([property, value]) => mappedObject[property] === value,
+      ),
   )
 }
 
