@@ -223,10 +223,10 @@ function postSingleObject(typeUrl: string, version: number, properties: MappedRe
  * @param searchResults Search results returned from the server
  */
 function hasObject(mappedObject: MappedRecord, searchResults: ObjectData[]): boolean {
-  return searchResults.some(existingObject =>
-    Object.entries(existingObject.record.data).every(([property, value]) =>
-      mappedObject[property] === value
-    )
+  return searchResults.some((existingObject) =>
+    Object.entries(existingObject.record.data).every(
+      ([property, value]) => mappedObject[property] === value,
+    ),
   )
 }
 
@@ -330,10 +330,10 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
       <!-- Preview box -->
       <div v-if="!isEntryDone && !errorMessage" class="flex column box">
         <h2>Preview of a new object</h2>
-        <caption>
+        <p>
           Here you see a preview of how the first row of the CSV data will be inserted as a new
           object:
-        </caption>
+        </p>
         <h3>New object</h3>
         <ul>
           <li
