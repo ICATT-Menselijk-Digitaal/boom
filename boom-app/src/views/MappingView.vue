@@ -108,17 +108,30 @@ function setMappingFromFormData(formEvent: Event): Mapping {
  */
 async function fetchObjectTypes(): Promise<ObjectTypeMetaData[]> {
   isLoading.value = true
+  const allResults: ObjectTypeMetaData[] = []
+  let nextUrl: string | null | undefined = '/objecttypes'
+
   try {
-    const response = await fetch('/objecttypes')
-    if (!response.ok) {
-      throw new Error(`Request failed with status: ${response.status}`)
+    // Keep fetching pages until there's no next URL
+    while (nextUrl) {
+      const response = await fetch(nextUrl)
+      if (!response.ok) {
+        throw new Error(`Request failed with status: ${response.status}`)
+      }
+      const contentType = response.headers.get('content-type')
+      if (!contentType?.includes('application/json')) {
+        throw new Error('Incorrect content type in response of ObjectTypes API call')
+      }
+      const responseContent = (await response.json()) as PaginateObjectTypeResponse
+      allResults.push(...responseContent.results)
+
+      // Update nextUrl - if it's null or empty string, the loop will stop
+      nextUrl =
+        responseContent.next && responseContent.next !== ''
+          ? removeAllBefore('objecttypes', responseContent.next)
+          : null
     }
-    const contentType = response.headers.get('content-type')
-    if (!contentType?.includes('application/json')) {
-      throw new Error('Incorrect content type in response of ObjectTypes API call')
-    }
-    const responseContent = (await response.json()) as PaginateObjectTypeResponse
-    return responseContent.results
+    return allResults
   } catch (error) {
     if (error instanceof Error) {
       errorMessage.value = `Fetching the objecttypes from the server failed with the message: ${error.message}`
@@ -137,21 +150,23 @@ async function fetchObjectVersions(): Promise<ObjectTypeVersionMetaData[]> {
   isLoading.value = true
   const versionURLs = selectedObjectType.value?.versions ?? []
   const fetchResponses = []
-  // fetch the data for all versions
-  for (const url of versionURLs) {
-    try {
-      const response = await fetchJSON<ObjectTypeVersionMetaData>(
-        removeAllBefore('objecttypes', url),
-      )
-      fetchResponses.push(response)
-    } catch (error) {
-      errorMessage.value = 'Fetching the object versions from the server failed'
-      if (error instanceof Error) {
-        errorMessage.value = errorMessage.value.concat(' with the message: ', error.message)
+  try {
+    // fetch the data for all versions
+    for (const url of versionURLs) {
+      try {
+        const response = await fetchJSON<ObjectTypeVersionMetaData>(
+          removeAllBefore('objecttypes', url),
+        )
+        fetchResponses.push(response)
+      } catch (error) {
+        errorMessage.value = 'Fetching the object versions from the server failed'
+        if (error instanceof Error) {
+          errorMessage.value = errorMessage.value.concat(' with the message: ', error.message)
+        }
       }
-    } finally {
-      isLoading.value = false
     }
+  } finally {
+    isLoading.value = false
   }
   return Promise.resolve(fetchResponses)
 }

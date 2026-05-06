@@ -218,21 +218,18 @@ function postSingleObject(typeUrl: string, version: number, properties: MappedRe
 
 /**
  * Determines if the provided search results has any object that matches the provided mapped object.
- * All properties have to be the same for the function to return true.
+ * The new object should have the same number of properties and all properties should be the same for the function to return true.
  * @param mappedObject An object based on the mapping
  * @param searchResults Search results returned from the server
  */
 function hasObject(mappedObject: MappedRecord, searchResults: ObjectData[]): boolean {
-  for (const existingObject of searchResults) {
-    let hasObject: boolean = true
-    for (const [property, value] of Object.entries(existingObject.record.data)) {
-      hasObject = mappedObject[property] !== undefined && value === mappedObject[property]
-    }
-    if (hasObject) {
-      return true
-    }
-  }
-  return false
+  return searchResults.some(
+    (existingObject) =>
+      Object.entries(existingObject.record.data).length === Object.keys(mappedObject).length &&
+      Object.entries(existingObject.record.data).every(
+        ([property, value]) => mappedObject[property] === value,
+      ),
+  )
 }
 
 /**
@@ -335,10 +332,10 @@ async function postRequest<T>(body: object, urlExtension = ''): Promise<T> {
       <!-- Preview box -->
       <div v-if="!isEntryDone && !errorMessage" class="flex column box">
         <h2>Preview of a new object</h2>
-        <caption>
+        <p>
           Here you see a preview of how the first row of the CSV data will be inserted as a new
           object:
-        </caption>
+        </p>
         <h3>New object</h3>
         <ul>
           <li
